@@ -7,10 +7,9 @@ import axios from 'axios'
 import "./style/Registration.css"
 import gsap from 'gsap'
 
-function Auth(props) {
+function Auth() {
     const history = useHistory();
 
-    const [isLogin, setLogin] = useState(false)
     const [isRegistration, setRegistration] = useState(true)
 
     const [username, setUsername] = useState("")
@@ -24,15 +23,12 @@ function Auth(props) {
 
     const circles = createRef();
 
-    const mountedTL = useRef();
-    const newBookTL = useRef();
-
 
 
 
     const dispatch = useDispatch()
 
-    if (me) history.push('/app')
+    if (me && me.username) history.push('/app')
 
     useEffect(() => {
         

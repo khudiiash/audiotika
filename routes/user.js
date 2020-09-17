@@ -5,8 +5,8 @@ let User = require('../models/User');
 
 
 router.route('/login').post((req, res) => {
-    let {name, email } = req.body
-    User.findOne({email})
+    let {username, email, password } = req.body
+    User.findOne({username, password})
       .then((user) => {
         if (user) {
           console.log('found user, sending', user)
@@ -15,8 +15,9 @@ router.route('/login').post((req, res) => {
         else {
           console.log('no such user, creating')
           const newUser = new User({
-            name,
+            username,
             email,
+            password,
             books: [],
           });
           newUser.save()
