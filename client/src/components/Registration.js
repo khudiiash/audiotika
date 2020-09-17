@@ -53,7 +53,7 @@ function Registration(props) {
     const responseFacebook = (response) => {
         let {email, name} = response
         setLoggedIn(true)
-        axios.post('http:localhost:5000/user/login', {name,email})
+        axios.post('/user/login', {name,email})
             .then(res => {  
                 dispatch(setUser(res.data))
                 history.push("/app");
