@@ -18,7 +18,8 @@ const DELETE_BOOK = 'DELETE_BOOK'
 const initialState = {
     user: {},
     books: [],
-    current: {}
+    current: {},
+    proxy: ""
 }
 function rootReducer(state = initialState, action) {
     switch (action.type) {
@@ -70,7 +71,8 @@ store.subscribe(throttle(() => {
     saveState({
       user: store.getState().user,
       books: store.getState().books,
-      current: store.getState().current
+      current: store.getState().current,
+      proxy: store.getState().proxy
     });
   }, 1000));
 

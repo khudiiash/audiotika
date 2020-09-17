@@ -15,6 +15,8 @@ function Auth() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
+    const proxy = useSelector(state => state.proxy)
+
 
     let me = useSelector(state => state.user)
  
@@ -22,9 +24,6 @@ function Auth() {
 
 
     const circles = createRef();
-
-
-
 
     const dispatch = useDispatch()
 
@@ -69,14 +68,18 @@ function Auth() {
           password
        }
        let errors = varify(user)
-       if (errors.any) {
-           if (!isRegistration) errors.email = ""
+       if (isRegistration && errors.any) {
            setError(errors)
        } else {
-         axios.post('/user/login', user)
+        if (errors.username || errors.password) setError(errors)
+        else {
+            axios.post(proxy + '/user/login', user)
             .then((res) => {
                 dispatch(setUser(res.data))
             })
+            .catch(err => console.log(err))
+        }
+       
        }
    }
    const onInputFocus =()=> {

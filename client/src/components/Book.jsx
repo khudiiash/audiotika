@@ -19,6 +19,7 @@ function Book({ book, isCurrent }) {
    
 
     const user = useSelector(state => state.user)
+    const proxy = useSelector(state => state.proxy)
 
     let [loading, setLoading] = useState(false)
 
@@ -53,7 +54,7 @@ function Book({ book, isCurrent }) {
         const audio = document.getElementById('audio')
 
         e.stopPropagation()
-        axios.delete('/books/'+_id)
+        axios.delete(proxy + '/books/'+_id)
         dispatch(deleteBook(book))
         if (audio && !audio.paused && isCurrent) {
             audio.pause()
@@ -64,8 +65,8 @@ function Book({ book, isCurrent }) {
     function playBook() {
         //gsap.to(bookRef.current, .5, {scale: 1.05, repeat: 1, yoyo: true})
         setLoading(true)
-        let socket = io();
-        axios.post('/user/update-current', {userID: user._id, currentBookID: book._id})
+        let socket = io(proxy);
+        axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         socket.emit('download-book', {title: book.title, chapter: book.chapter})
         socket.on('audio-loaded', function (data) {
             console.log('Audio Loaded')
@@ -81,7 +82,7 @@ function Book({ book, isCurrent }) {
                         audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
                         book.src = audio.src
                         socket.emit('stream-done', {create: false})
-                        axios.get('/books/'+book._id)
+                        axios.get(proxy + '/books/'+book._id)
                             .then(res => {
                                 setLoading(false)
                                 dispatch(setCurrent(res.data))

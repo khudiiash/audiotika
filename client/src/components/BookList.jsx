@@ -11,9 +11,11 @@ function BookList() {
     let user = useSelector(state => state.user)
     let current = useSelector(state => state.current)
     let books = useSelector(state => state.books)
+    const proxy = useSelector(state => state.proxy)
+
 
     if (!books.length || (current && !books.some(b => b.title === current.title))) {
-        axios.get('/books')
+        axios.get(proxy + '/books')
            .then(res => {
               dispatch(setBooks(books = res.data.filter(book => book.userID === user._id)))
             })

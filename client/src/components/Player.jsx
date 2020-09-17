@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef, createRef, memo} from 'react';
-import {useDispatch, useStore} from "react-redux";
+import {useDispatch, useSelector, useStore} from "react-redux";
 import "./style/Player.css"
 import { nextChapter } from '../redux';
 import io from "socket.io-client";
@@ -48,6 +48,8 @@ const onPlay = () => {
 const Next = ({current}) => {
 
   const dispatch = useDispatch()
+  const proxy = useSelector(state => state.proxy)
+
 
   const onNext = () => {
     const audio = document.getElementById('audio');
@@ -60,10 +62,10 @@ const Next = ({current}) => {
 
       dispatch(nextChapter(current))
 
-      axios.post('/books/update-time/'+current._id, {time: 0})
-      axios.post('/books/update-chapter/'+current._id, {chapter: current.chapter})
+      axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
+      axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
 
-      let socket = io();
+      let socket = io(proxy);
         socket.emit('download-book', {title, chapter: current.chapter})
         socket.on('audio-loaded', function () {
              socket.emit('audio-ready');
@@ -90,6 +92,8 @@ const Next = ({current}) => {
 }
 const Prev = ({current}) => {
   const dispatch = useDispatch()
+  const proxy = useSelector(state => state.proxy)
+
 
   const onPrev = () => {
     const audio = document.getElementById('audio');
@@ -102,10 +106,10 @@ const Prev = ({current}) => {
     current = {...current, chapter: current.chapter - 1, time: 0}
     dispatch(nextChapter(current))
   
-    axios.post('/books/update-time/'+current._id, {time: 0})
-    axios.post('/books/update-chapter/'+current._id, {chapter: current.chapter})
+    axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
+    axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
   
-    let socket = io();
+    let socket = io(proxy);
       socket.emit('download-book', {title, chapter: current.chapter})
       socket.on('audio-loaded', function () {
            socket.emit('audio-ready');
@@ -137,6 +141,7 @@ const Seek = (props) => {
   const audio = document.getElementById('audio')
   let [currentTime, setCurrentTime] = useState(0)
   let [duration, setDuration] = useState(0)
+  const proxy = useSelector(state => state.proxy)
   const input = React.createRef();
 
   useEffect(() => {
@@ -157,7 +162,7 @@ const Seek = (props) => {
       if(!cleanupFunction && currentTime !==  parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
         if (duration !== audio.duration) setDuration(duration = audio.duration)
         setCurrentTime( currentTime = parseInt(audio.currentTime, 10))
-        axios.post('/books/update-time/'+props.currentID, {time: currentTime})
+        axios.post(proxy + '/books/update-time/'+props.currentID, {time: currentTime})
       
       }
     })
@@ -188,14 +193,13 @@ const Seek = (props) => {
 
 
 
-
-
-
 function Player() {
     const store = useStore();
     const playerRef = createRef();
     const playerTextRef = createRef();
     const playerBoxRef = createRef();
+    const proxy = useSelector(state => state.proxy)
+
 
     const mountedTL = useRef();
     const newBookTL = useRef();
@@ -209,13 +213,8 @@ function Player() {
 
     store.subscribe(() => {
         setCurrent(store.getState().current)
-        setMounted(false)
-        console.log(`%c CURRENT ${store.getState().current.time}`, 'color: #ff00ff')
     })
 
-    
-
-  
 
     useEffect(() => {
         mountedTL.current = gsap.timeline()
@@ -237,10 +236,10 @@ function Player() {
 
       dispatch(nextChapter(current))
 
-      axios.post('/books/update-time/'+current._id, {time: 0})
-      axios.post('/books/update-chapter/'+current._id, {chapter: current.chapter})
+      axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
+      axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
 
-      let socket = io();
+      let socket = io(proxy);
         socket.emit('download-book', {title, chapter: current.chapter})
         socket.on('audio-loaded', function () {
              socket.emit('audio-ready');

@@ -14,6 +14,8 @@ function Search() {
     let [isVisible, setVisible] = useState(false)
     let [isSearching, setSearching] = useState(false)
     let isMobile = window.innerWidth < window.innerHeight
+    const proxy = useSelector(state => state.proxy)
+
 
     const user = useSelector(state => state.user)
 
@@ -35,7 +37,7 @@ function Search() {
     
         if (title) {
             lastTitle = title;
-            let socket = io();
+            let socket = io(proxy);
             socket.emit('download-book', {title, chapter: 1})
 
             setSearching(true)
@@ -64,12 +66,12 @@ function Search() {
                 lastTitle = data.title
                 if (!books.filter(b => b.title === lastTitle).length) {
                     const book = {userID: user._id,title: lastTitle, author, chapter: 1, chapters, cover: "", time: 0}
-                    axios.post('/books/add', {...book})
+                    axios.post(proxy + '/books/add', {...book})
                         .then(res => {
                             let {book} = res.data    
                             dispatch(addBook(book))
                             dispatch(setCurrent(book))
-                            axios.post('/user/update-current', {userID: user._id, currentBookID: book._id})
+                            axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
                     })
                     books.push(book)
                  }
