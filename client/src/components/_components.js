@@ -1,8 +1,5 @@
-export {default as Home} from './Home';
-export {default as Welcome} from './Welcome';
-export {default as Registration} from './Registration';
-
-
+export {default as Home} from './Home.jsx';
+export {default as Auth} from './Auth.jsx';
 
 export {default as Header} from './Header.jsx';
 export {default as User} from './User.jsx';

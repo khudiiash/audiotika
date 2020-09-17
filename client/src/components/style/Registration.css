@@ -1,9 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
+
 .registration {
     width: 100vw;
-    height: 93vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+    overflow: hidden;
+ 
 }
 .registration-circles {
     position: absolute;
@@ -13,13 +18,14 @@
     justify-content: center;
     align-items: center;
     z-index: 0;
+    overflow: hidden;
 }
 
 .registration-circle {
     width: 40vw;
     height: 40vw;
     position: absolute;
-    background: radial-gradient(rgb(48, 72, 83), #000);
+    background: radial-gradient(rgb(48, 48, 48), #000);
     border-radius: 50%;
     z-index: -1;
 }
@@ -27,18 +33,18 @@
     width: 20vw;
     height: 20vw;
     position: absolute;
-    background: radial-gradient(rgb(58, 66, 68), #000);
+    background: radial-gradient(rgb(66, 66, 66), #000);
     border-radius: 50%;
     left: 20%;
     top: 10%;
     z-index: -2;
-opacity: .5;
+    opacity: .5;
 }
 .registration-circle.third {
     width: 25vw;
     height: 25vw;
     position: absolute;
-    background: radial-gradient(rgb(39, 72, 82), #000);
+    background: radial-gradient(rgb(54, 54, 54), #000);
     border-radius: 50%;
     left: 60%;
     top: 0;
@@ -50,7 +56,7 @@ opacity: .5;
     width: 35vw;
     height: 35vw;
     position: absolute;
-    background: radial-gradient(rgb(28, 39, 53), #000);
+    background: radial-gradient(rgb(29, 29, 29), #000);
     border-radius: 50%;
     left: 65%;
     top: 20%;
@@ -61,40 +67,82 @@ opacity: .5;
     width: 45vw;
     height: 45vw;
     position: absolute;
-    background: radial-gradient(rgb(28, 46, 53), #000);
+    background: radial-gradient(rgb(44, 44, 44), #000);
     border-radius: 50%;
     left: 10%;
     top: 40%;
     z-index: -2;
-opacity: .5;
+    opacity: .5;
 }
 
 .registration-circle.sixth {
     width: 40vw;
     height: 40vw;
     position: absolute;
-    background: radial-gradient(rgb(37, 54, 65), #000);
+    background: radial-gradient(rgb(49, 49, 49), #000);
     border-radius: 50%;
     left: 70%;
     top: 40%;
     z-index: -2;
-opacity: .5;
-opacity: .5;
+    opacity: .5;
 }
-.registration-button {
 
-    position: absolute;
+
+.registration-form {
+     position: absolute;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 20vw;
+    height: 20vh;
+}
+.registration-footer {
+    color: #797979c5;
+    font-size: 12px;
+    cursor: pointer;
 }
 
-.kep-login-facebook {
-    border-radius: 5px !important;
-    z-index: 1 !important;
-    background: rgb(0, 63, 100) !important;
-    border: none !important;
-    box-shadow: 0 0 45px rgba(0,0,0,.3);
-    transition: .2s !important;
+.registration-form input {
+    width: 200px;
+   background: rgb(32, 32, 32);
+   border: none;
+   margin: 5px;
+   height: 15%;
+   transition: .3s ease-in-out;
+   color: #EB778E;
+   padding: 0 10px;
+   border-radius: 2px;
 }
-.kep-login-facebook:hover {
-    background: #002A50 !important;
+.registration-form input:focus {
+    width: 200px;
+    background: rgb(32, 32, 32);
+    border: none;
+    outline: 0;
+    height: 15%;
+ }
+ .registration-form-button {
+    margin: 10px;
+    width: 220px;
+    height: 40px;
+    background-color: rgba(68, 68, 68, 0.253);
+    border-radius: 5px;
+    font-family: 'Montserrat', sans-serif;
+    color: #EB778E;
+    border: none;
+    transition: .3s;
+}
+.registration-form-button:focus {
+   outline: none;
+   border:1px solid #EB778E
+
+}
+.registration-error {
+    color: #EB778E;
+    font-size: 10px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    transition: .2s;
 }
