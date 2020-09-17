@@ -74,9 +74,8 @@ function Registration(props) {
             <div className="registration-circle sixth"></div>
         </div>
         <div className="registration-button">
-            
         <FacebookLogin
-                appId={process.env.FBID}
+                appId='1621385711364237'
                 autoLoad={false}
                 fields="name,email"
                 onClick={onClick}
