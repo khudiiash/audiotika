@@ -19,9 +19,8 @@ router.route('/login').post((req, res) => {
             email,
             books: [],
           });
-          console.log(newUser)
           newUser.save()
-            .then(() => res.json({msg: "User Created"}))
+            .then(() => res.json(user))
             .catch(err => res.json({msg: err}))
         }
     })
