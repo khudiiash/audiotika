@@ -12,6 +12,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 0;
 }
 
 .registration-circle {
@@ -80,7 +81,11 @@ opacity: .5;
 opacity: .5;
 opacity: .5;
 }
+.registration-button {
 
+    position: absolute;
+    z-index: 1;
+}
 
 .kep-login-facebook {
     border-radius: 5px !important;
@@ -88,8 +93,8 @@ opacity: .5;
     background: rgb(0, 63, 100) !important;
     border: none !important;
     box-shadow: 0 0 45px rgba(0,0,0,.3);
-    transition: 1s !important;
+    transition: .2s !important;
 }
 .kep-login-facebook:hover {
-    background: #000 !important;
+    background: #002A50 !important;
 }

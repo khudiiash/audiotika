@@ -60,8 +60,8 @@ function Registration(props) {
 
             })
     }
-    const onClicked = () => {
-        console.log(process.env)
+    const onClick = () => {
+        console.log('click')
     }
     return (
         <div className='registration'>
@@ -73,13 +73,16 @@ function Registration(props) {
             <div className="registration-circle fifth"></div>
             <div className="registration-circle sixth"></div>
         </div>
-            <FacebookLogin
+        <div className="registration-button">
+        <FacebookLogin
                 appId='1621385711364237'
-                autoLoad={true}
+                autoLoad={false}
                 fields="name,email,picture"
-                onClick={onClicked}
+                onClick={onClick}
                 callback={responseFacebook}
             />
+        </div>
+           
         </div>
     );
 }
