@@ -1,0 +1,31 @@
+.booklist {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  background: #111;
+  height: 18vh;
+  border-radius: 10px 10px 0 0;
+  position: relative;
+  top: -3.4vh;
+  overflow-x: scroll;
+
+}
+
+/* width */
+::-webkit-scrollbar {
+  height: 0;
+  width: 0;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px transparent;
+  border-radius: 1px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 10px;
+}
+
