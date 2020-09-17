@@ -13,9 +13,9 @@ function BookList() {
     let books = useSelector(state => state.books)
 
     if (!books.length || (current && !books.some(b => b.title === current.title))) {
-        axios.get('')
+        axios.get('/books')
            .then(res => {
-               if (res.data) dispatch(setBooks(books = res.data.filter(book => book.userID === user._id)))
+              dispatch(setBooks(books = res.data.filter(book => book.userID === user._id)))
             })
         
     }

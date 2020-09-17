@@ -60,10 +60,10 @@ const Next = ({current}) => {
 
       dispatch(nextChapter(current))
 
-      axios.post('/update-time/'+current._id, {time: 0})
-      axios.post('/update-chapter/'+current._id, {chapter: current.chapter})
+      axios.post('/books/update-time/'+current._id, {time: 0})
+      axios.post('/books/update-chapter/'+current._id, {chapter: current.chapter})
 
-      let socket = io('');
+      let socket = io();
         socket.emit('download-book', {title, chapter: current.chapter})
         socket.on('audio-loaded', function () {
              socket.emit('audio-ready');
@@ -102,10 +102,10 @@ const Prev = ({current}) => {
     current = {...current, chapter: current.chapter - 1, time: 0}
     dispatch(nextChapter(current))
   
-    axios.post('/update-time/'+current._id, {time: 0})
-    axios.post('/update-chapter/'+current._id, {chapter: current.chapter})
+    axios.post('/books/update-time/'+current._id, {time: 0})
+    axios.post('/books/update-chapter/'+current._id, {chapter: current.chapter})
   
-    let socket = io('');
+    let socket = io();
       socket.emit('download-book', {title, chapter: current.chapter})
       socket.on('audio-loaded', function () {
            socket.emit('audio-ready');
@@ -157,7 +157,7 @@ const Seek = (props) => {
       if(!cleanupFunction && currentTime !==  parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
         if (duration !== audio.duration) setDuration(duration = audio.duration)
         setCurrentTime( currentTime = parseInt(audio.currentTime, 10))
-        axios.post('/update-time/'+props.currentID, {time: currentTime})
+        axios.post('/books/update-time/'+props.currentID, {time: currentTime})
       
       }
     })
@@ -237,10 +237,10 @@ function Player() {
 
       dispatch(nextChapter(current))
 
-      axios.post('/update-time/'+current._id, {time: 0})
-      axios.post('/update-chapter/'+current._id, {chapter: current.chapter})
+      axios.post('/books/update-time/'+current._id, {time: 0})
+      axios.post('/books/update-chapter/'+current._id, {chapter: current.chapter})
 
-      let socket = io('');
+      let socket = io();
         socket.emit('download-book', {title, chapter: current.chapter})
         socket.on('audio-loaded', function () {
              socket.emit('audio-ready');
