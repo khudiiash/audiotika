@@ -3,8 +3,7 @@ const bodyParser = require('body-parser')
 const fs = require('fs')
 const cors = require('cors')
 const app = express()
-const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'))
-const io = require('socket.io').listen(server)
+
 const ss = require('socket.io-stream')
 const path = require('path')
 const findAuthor = require('./utils/findAuthor')
@@ -21,9 +20,14 @@ app.use(express.urlencoded({ extended: true }))
 const uri = "mongodb+srv://Dmytro:149600earthsun@cluster0-mwooj.mongodb.net/audioteka?retryWrites=true&w=majority";
 mongoose.connect(process.env.MONGODB_URI || uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
 
+const connection = mongoose.connection;
+connection.once('open', () => {
+    console.log("MongoDB connected");
+})
 
 app.use('/books', require('./routes/books'));
 app.use('/user', require('./routes/user'));
+
 
 
 if (process.env.NODE_ENV === 'production') {
@@ -34,10 +38,9 @@ if (process.env.NODE_ENV === 'production') {
 
 }
 
-const connection = mongoose.connection;
-connection.once('open', () => {
-    console.log("MongoDB connected");
-})
+const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'))
+const io = require('socket.io').listen(server)
+
 
 io.on('connection', function (socket) {
     audio = "";
