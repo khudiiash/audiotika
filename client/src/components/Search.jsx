@@ -9,7 +9,6 @@ import "./style/Search.css";
 import { addBook, setCurrent } from '../redux/index.js';
 
 
-
 function Search() {
     let [title, setTitle] = useState("")
     let [isVisible, setVisible] = useState(false)
@@ -65,7 +64,7 @@ function Search() {
                 lastTitle = data.title
                 if (!books.filter(b => b.title === lastTitle).length) {
                     const book = {userID: user._id,title: lastTitle, author, chapter: 1, chapters, cover: "", time: 0}
-                    axios.post('/add', {...book})
+                    axios.post('/books/add', {...book})
                         .then(res => {
                             let {book} = res.data    
                             dispatch(addBook(book))
