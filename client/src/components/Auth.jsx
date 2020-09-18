@@ -10,7 +10,7 @@ import gsap from 'gsap'
 function Auth() {
     const history = useHistory();
 
-    const [isRegistration, setRegistration] = useState(true)
+    const [isRegistration, setRegistration] = useState(false)
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
@@ -67,21 +67,55 @@ function Auth() {
           email,
           password
        }
+       console.log(user)
+
        let errors = varify(user)
-       if (isRegistration && errors.any) {
+       if (errors.any) {
            setError(errors)
        } else {
         if (errors.username || errors.password) setError(errors)
         else {
-            axios.post(proxy + '/user/login', user)
+            axios.post(proxy + '/user/login', {user, isSignUp: true, isSignIn: false})
             .then((res) => {
-                dispatch(setUser(res.data))
+                if (res.data) dispatch(setUser(res.data))
+                else {
+                    errors.login = "Failed to sign up"
+                    setError(errors)
+                }
             })
             .catch(err => console.log(err))
         }
        
        }
    }
+   const onSignIn= (e) => {
+    e.preventDefault()
+    let user = {
+       username,
+       password
+    }
+    let errors = varify(user)
+    errors.email = ""
+    if (!errors.username && !errors.password) {errors.any = false}
+    
+    if (errors.any) {
+        console.log(errors)
+        setError(errors)
+    } else {
+         axios.post(proxy + '/user/login', {user, isSignUp: false, isSignIn: true})
+         .then((res) => {
+             console.log(res)
+             if (res.data) dispatch(setUser(res.data))
+             else {
+                errors.login = "Wrong username or password"
+                setError(errors)
+             } 
+         })
+         .catch(err => console.log(err))
+     }
+    
+   }
+
    const onInputFocus =()=> {
        setError({})
    }
@@ -95,9 +129,9 @@ function Auth() {
                 <div className="registration-circle fifth"></div>
                 <div className="registration-circle sixth"></div>
            </div>
-           <form onSubmit={onSignUp} className="registration-form">
+           <form onSubmit={isRegistration ? onSignUp : onSignIn} className="registration-form">
            <div className="registration-form-header">
-
+                <div className='registration-error' style={{height: error && error.login ? "10%" : 0}}>{error.login}</div>
            </div>
             
             <input className="registration-form-username" 

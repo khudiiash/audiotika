@@ -151,7 +151,7 @@ const Seek = (props) => {
         setDuration(duration = Math.floor(audio.duration));
         console.log(secToTime(duration))
         setCurrentTime(currentTime = props.currentTime)
-        if (!audio.currentTime) audio.currentTime = currentTime
+        if (!audio.currentTime && currentTime) audio.currentTime = currentTime
         clearInterval(interval)
 
       }

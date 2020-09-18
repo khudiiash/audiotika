@@ -39,7 +39,6 @@ router.route('/:id').delete((req, res) => {
 router.route('/update-time/:id').post((req, res) => {
     const {time} = req.body
 
-    console.log('updated time to '+time)
     Book.findById(req.params.id)
     .then(Book => {
       Book.time = time

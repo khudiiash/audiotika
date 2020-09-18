@@ -5,30 +5,44 @@ let User = require('../models/User');
 
 
 router.route('/login').post((req, res) => {
-    let {username, email, password } = req.body
-    User.findOne({username, password})
-      .then((user) => {
-        if (user) {
-          console.log('found user, sending', user)
-          res.json(user)
-        }
-        else {
-          console.log('no such user, creating')
-          const newUser = new User({
-            username,
-            email,
-            password,
-            books: [],
-          });
-          newUser.save()
-            .then(() => res.json(user))
-            .catch(err => res.json({msg: err}))
-        }
-    })
-});
+  let { user: {username, email, password}, isSignIn, isSignUp } = req.body
+
+  if (isSignIn) {
+    console.log("Signing In", username, password )
+    User.findOne({ username, password })
+      .then(user => {
+        console.log('Result: ', user)
+        res.json(user)
+      })
+      .catch((err) => console.log(err))
+  }
+  if (isSignUp && email) {
+    console.log("Signing Up")
+    User.findOne({ username, email })
+      .then(user => {
+        if (user) res.json(user)
+        else createNewUser()
+      })
+
+      function createNewUser() {
+        const newUser = new User({
+          username,
+          email,
+          password,
+          books: [],
+        });
+        newUser.save()
+          .then(() => res.json(user))
+          .catch(() => res.status(500).send('Wrong User Info'))
+      }
+    
+
+  }
+})
+
 
 router.route('/update-current').post((req, res) => {
-  let {currentBookID, userID} = req.body
+  let { currentBookID, userID } = req.body
 
   User.findById(userID)
     .then((user) => {
@@ -38,7 +52,7 @@ router.route('/update-current').post((req, res) => {
         user.save()
           .then(() => res.send('Current Book Updated'))
       }
-  })
+    })
 });
 
 module.exports = router;
