@@ -7,9 +7,9 @@
   position: absolute;
   display: flex;
   justify-self: flex-end;
-  width: 100vw;
+  width: 50vw;
   height: 3vh;
-  left: 0;
+  right: 0;
   top: 3.2vh;
 
 }

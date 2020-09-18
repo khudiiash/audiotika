@@ -77,8 +77,7 @@ io.on('connection', function (socket) {
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
 
-
-        rutracker.login({ username: 'Khudiiash', password: '149600earthsun' })
+        rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
             .then(() => rutracker.search({ query: title, sort: 'seeds' }))
             .then(torrents => {
                 torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))

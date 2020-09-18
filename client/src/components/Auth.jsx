@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, createRef} from 'react';
 import {useDispatch, useSelector} from "react-redux"
 import { setUser } from "../redux"
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import {varify} from './_utils'
 import axios from 'axios'
 import "./style/Registration.css"
@@ -19,6 +19,7 @@ function Auth() {
 
 
     let me = useSelector(state => state.user)
+    let location = useLocation();
  
     const [error, setError] = useState({})
 
@@ -27,10 +28,12 @@ function Auth() {
 
     const dispatch = useDispatch()
 
-    if (me && me.username) history.push('/app')
+    
 
     useEffect(() => {
-        
+        console.log('Auth Effect')
+        console.log(location.pathname.includes('/app'))
+        if (me && me.username && !location.pathname.includes('/app')) history.push('/app')
         gsap.utils.toArray(circles.current.children).forEach(circle => {
             tweenProperty(circle, "scale", .8, 1);
             tweenProperty(circle, "x", -300, 300);
@@ -67,7 +70,6 @@ function Auth() {
           email,
           password
        }
-       console.log(user)
 
        let errors = varify(user)
        if (errors.any) {
@@ -108,7 +110,10 @@ function Auth() {
          axios.post(proxy + '/user/login', {user, isSignUp: false, isSignIn: true})
          .then((res) => {
              console.log(res)
-             if (res.data) dispatch(setUser(res.data))
+             if (res.data) {
+                 history.push('/app')
+                 dispatch(setUser(res.data))
+             }
              else {
                 errors.login = "Wrong username or password"
                 setError(errors)

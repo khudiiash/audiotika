@@ -19,7 +19,7 @@ const initialState = {
     user: {},
     books: [],
     current: {},
-    proxy: ""
+    proxy: "http://localhost:5000"
 }
 function rootReducer(state = initialState, action) {
     switch (action.type) {

@@ -213,10 +213,14 @@ function Player() {
 
     store.subscribe(() => {
         setCurrent(store.getState().current)
-    })
+        console.log('Player Subscribe : current')
 
+    })
+    console.log('Player ')
 
     useEffect(() => {
+      console.log('Player Useeffect : current')
+
         mountedTL.current = gsap.timeline()
         .from(playerRef.current, 1, {y: 150})
         .from(playerBoxRef.current, 1, {y: 25, opacity: 0}, '-=.5')
@@ -226,6 +230,7 @@ function Player() {
 
  
     const onEnded = () => {
+      console.log('onEnded')
     
       const audio = document.getElementById('audio');
       audio.currentTime = 0;
