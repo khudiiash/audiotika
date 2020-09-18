@@ -9,7 +9,7 @@ router.route('/login').post((req, res) => {
 
   if (isSignIn) {
     console.log("Signing In", username, password )
-    User.findOne({ username, password })
+    User.findOne({ username: username, password: password })
       .then(user => {
         console.log('Result: ', user)
         res.json(user)
@@ -35,8 +35,6 @@ router.route('/login').post((req, res) => {
           .then(() => res.json(user))
           .catch(() => res.status(500).send('Wrong User Info'))
       }
-    
-
   }
 })
 
