@@ -31,7 +31,10 @@ function Auth() {
     
 
     useEffect(() => {
-        if (me && me.username && !location.pathname.includes('/app')) history.push('/app')
+        if (me && me.username && !location.pathname.includes('/app')) {
+            console.log('REDIRECT TO APP')
+            history.push('/app')
+        }
         gsap.utils.toArray(circles.current.children).forEach(circle => {
             tweenProperty(circle, "scale", .8, 1);
             tweenProperty(circle, "x", -300, 300);
@@ -91,8 +94,9 @@ function Auth() {
        
        }
    }
-   const onSignIn= (e) => {
+   const onSignIn = (e) => {
     e.preventDefault()
+    console.log("SIGNING IN CLICKED")
     let user = {
        username,
        password
