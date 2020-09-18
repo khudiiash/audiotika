@@ -5,14 +5,14 @@ import axios from 'axios'
 import "./style/App.css"
 
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function App() {
-
+ const user = useSelector(state => state.user )
   return (
     <Router>
        <div className="app">
-          <Route exact path="/" component={Auth}/>
-          <Route exact path="/app" component={Home}/>
+          <Route exact path="/" component={ user ? Home : Auth }/>
       </div>
     </Router>
    
