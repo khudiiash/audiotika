@@ -78,8 +78,8 @@ function Auth() {
             axios.post(proxy + '/user/login', {user, isSignUp: true, isSignIn: false})
             .then((res) => {
                 if (res.data) dispatch(setUser(res.data))
-                else if (res?.config?.data?.user) {
-                   dispatch(setUser(res.config.data.user))
+                else if (JSON.parse(res?.config?.data)) {
+                    dispatch(setUser(JSON.parse(res.config.data).user))
                 }
                 else {
                     errors.login = "Failed to sign up"
@@ -109,8 +109,8 @@ function Auth() {
          .then((res) => {
              console.log(res)
              if (res.data) dispatch(setUser(res.data))
-             else if (JSON.parse(res.config?.data?.user)) {
-                dispatch(setUser(JSON.parse(res.config.data.user)))
+             else if (JSON.parse(res?.config?.data)) {
+                dispatch(setUser(JSON.parse(res.config.data).user))
              }
              else {
                 errors.login = "Wrong username or password"
