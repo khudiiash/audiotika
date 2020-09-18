@@ -5,8 +5,9 @@ let User = require('../models/User');
 
 
 router.route('/login').post((req, res) => {
+  
   let { user: {username, email, password}, isSignIn, isSignUp } = req.body
-
+  console.log(req.body)
   if (isSignIn) {
     console.log("Signing In", username, password )
     User.findOne({ username: username, password: password })
