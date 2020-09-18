@@ -31,6 +31,8 @@ function Auth() {
     
 
     useEffect(() => {
+        console.log('AUTH MOUNTED')
+
         if (me && me.username && !location.pathname.includes('/app')) {
             console.log('REDIRECT TO APP')
             history.push('/app')
@@ -65,6 +67,7 @@ function Auth() {
     }
     }, [])
    const onSignUp = (e) => {
+       console.log('ON SIGH UP')
        e.preventDefault()
        let user = {
           username,
