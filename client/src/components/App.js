@@ -13,7 +13,7 @@ function App() {
   return (
     <Router>
        <div className="app">
-          <Route exact path="/" component={ user ? Home : Auth }/>
+          <Route exact path="/" component={ user.username ? Home : Auth }/>
       </div>
     </Router>
    
