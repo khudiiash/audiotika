@@ -13,7 +13,8 @@ const fileExists = require('file-exists-promise')
 const mongoose = require('mongoose');
 
 app.use(cors())
-app.use(bodyParser());
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 

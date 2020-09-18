@@ -17,7 +17,8 @@ function BookList() {
     if (!books.length || (current && !books.some(b => b.title === current.title))) {
         axios.get(proxy + '/books')
            .then(res => {
-              dispatch(setBooks(books = res.data.filter(book => book.userID === user._id)))
+              if (res.data) dispatch(setBooks(books = res.data.filter(book => book.userID === user._id)))
+
             })
         
     }

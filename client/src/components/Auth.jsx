@@ -109,9 +109,6 @@ function Auth() {
          .then((res) => {
              console.log(res)
              if (res.data) dispatch(setUser(res.data))
-             else if (JSON.parse(res?.config?.data)) {
-                dispatch(setUser(JSON.parse(res.config.data).user))
-             }
              else {
                 errors.login = "Wrong username or password"
                 setError(errors)
