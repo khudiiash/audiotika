@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 
 function App() {
  const user = useSelector(state => state.user )
+ console.log("APP: USER: ", user)
   return (
     <Router>
        <div className="app">
