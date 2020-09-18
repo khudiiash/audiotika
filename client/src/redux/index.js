@@ -69,7 +69,7 @@ export const store = createStore(rootReducer, persistedState, window.__REDUX_DEV
 window.store = store;
 store.subscribe(throttle(() => {
     saveState({
-
+      user: store.getState().user,
       books: store.getState().books,
       current: store.getState().current,
       proxy: store.getState().proxy
