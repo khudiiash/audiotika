@@ -10,7 +10,7 @@ router.route('/login').post((req, res) => {
   console.log(req.body)
   if (isSignIn) {
     console.log("Signing In", username, password )
-    User.findOne({ username: username, password: password })
+    User.findOne({ username: username })
       .then(user => {
         console.log('Result: ', user)
         res.json(user)
