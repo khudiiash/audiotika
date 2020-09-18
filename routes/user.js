@@ -7,21 +7,17 @@ let User = require('../models/User');
 router.route('/login').post((req, res) => {
   
   let { user: {username, email, password}, isSignIn, isSignUp } = req.body
-  console.log(req.body)
   if (isSignIn) {
-    console.log("Signing In", username, password )
     User.find()
       .then(users => console.log(users))
-      
+
     User.findOne({ username: username })
       .then(user => {
-        console.log('Result: ', user)
         res.json(user)
       })
       .catch((err) => console.log(err))
   }
   if (isSignUp && email) {
-    console.log("Signing Up")
     User.findOne({ username, email })
       .then(user => {
         if (user) res.json(user)

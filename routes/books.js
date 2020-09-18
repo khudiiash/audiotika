@@ -7,7 +7,6 @@ let Book = require('../models/Book');
 router.route('/').get((req, res) => {
     Book.find()
         .then(books => {
-          console.log('Books: ', books)
           res.json(books.reverse())
         })
         .catch(err => res.send(err))
