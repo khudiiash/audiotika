@@ -31,8 +31,6 @@ function Auth() {
     
 
     useEffect(() => {
-        console.log('Auth Effect')
-        console.log(location.pathname.includes('/app'))
         if (me && me.username && !location.pathname.includes('/app')) history.push('/app')
         gsap.utils.toArray(circles.current.children).forEach(circle => {
             tweenProperty(circle, "scale", .8, 1);
@@ -104,9 +102,13 @@ function Auth() {
     if (!errors.username && !errors.password) {errors.any = false}
     
     if (errors.any) {
+        console.log("AUTH ERRORS", errors)
+
         console.log(errors)
         setError(errors)
+
     } else {
+        console.log("AXIOS POST: ", user)
          axios.post(proxy + '/user/login', {user, isSignUp: false, isSignIn: true})
          .then((res) => {
              console.log(res)
