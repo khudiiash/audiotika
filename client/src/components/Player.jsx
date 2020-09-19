@@ -201,6 +201,7 @@ const Seek = (props) => {
   useEffect(() => {
     let cleanupFunction = false;
     let interval = setInterval(() => {
+      concols.log('checking audio, ', audio)
       if (audio && audio.duration) {
         setDuration(duration = Math.floor(audio.duration));
         console.log(secToTime(duration))

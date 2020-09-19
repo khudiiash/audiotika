@@ -93,7 +93,9 @@ function Book({ book, isCurrent }) {
                     
                 } else {
                     console.log('Stream Complete')
+
                     audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
+                    console.log('Audio: ', audio)
                     socket.emit('stream-done', {create: false})
                     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, forFuture: true})
                     axios.get(proxy + '/books/'+book._id)

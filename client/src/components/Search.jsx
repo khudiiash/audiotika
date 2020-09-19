@@ -68,6 +68,7 @@ function Search() {
                         console.log('%c Search Chapter 1', 'color: purple')
 
                         let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
+                        console.log('Audio: ', audio)
                         audio.src = src
                         socket.emit('stream-done', {create: true, src})
                         socket.emit('download-chapter', {title, chapter: 2, forFuture: true})
