@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'))
 const io = require('socket.io').listen(server)
-
+let audiodir;
 
 io.on('connection', function (socket) {
     audio = "";
@@ -50,7 +50,7 @@ io.on('connection', function (socket) {
     author = "";
     chapters = 0;
     chapter = 0;
-    let audiodir = path.join(__dirname, "audio")
+    audiodir = path.join(__dirname, "audio")
     fs.mkdir(path.join(audiodir), (err) => console.log(err))
 
     socket.on('download-chapter', function (data) {
@@ -79,11 +79,7 @@ io.on('connection', function (socket) {
                     fs.readdir(__dirname, function(err, items) {
                         items.forEach(item => console.log(item))
                     });
-                    fs.readdir(audiodir, (err, items) => {
-                        if (!err && items && items.length) {
-                            fs.mkdir(path.join(dirname), err => console.log(err))
-                        }
-                    })
+                    
                     rutracker.getMagnetLink(torrent.id)
                         .then(URI => {
                             var WebTorrent = require('webtorrent')
@@ -110,7 +106,7 @@ io.on('connection', function (socket) {
                                                 .then(function (stat) {
                                                     if (audio !== audioPath) {
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
-                                                        console.log("Sending back " + forFuture ? " for future" : "")
+                                                        console.log("Sending back")
                                                         socket.emit('audio-loaded', {forFuture})
                                                         audio = audioPath
                                                     }
@@ -144,7 +140,14 @@ io.on('connection', function (socket) {
     });
     socket.on('stream-done', function ({create, src, nextsrc}) {
         socket.emit('book-ready', { create, title, author, chapters, src, nextsrc })
-        fs.rmdir(audiodir, { recursive: true }, (err) => console.log(err))
+        fs.readdir(audiodir, (err, files) => {
+            if (err) throw err;
+            for (const file of files) {
+              fs.unlink(path.join(directory, file), err => {
+                if (err) throw err;
+              });
+            }
+          });
     })
 });
 
