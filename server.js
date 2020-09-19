@@ -50,6 +50,7 @@ io.on('connection', function (socket) {
     author = "";
     chapters = 0;
     chapter = 0;
+    let dirname = "0"
 
     socket.on('download-chapter', function (data) {
         title = data.title
@@ -73,7 +74,13 @@ io.on('connection', function (socket) {
                     let torrent = torrents[0]
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title);
-                    fs.mkdir('./files/' + title, err => console.log(''))
+                    fs.readdir(path.join(__dirname, 'files'), function(err, items) {
+                        if (items) {
+                            console.log('ITEMS: ', items.length)
+                            dirname = path.join(__dirname, 'files', String(items.length))
+                            fs.mkdir(dirname, (err) => console.log(""))
+                        }
+                    });
                     rutracker.getMagnetLink(torrent.id)
                         .then(URI => {
                             var WebTorrent = require('webtorrent')
@@ -92,11 +99,11 @@ io.on('connection', function (socket) {
                                 torrentFiles.forEach(function (file, index) {
                                     if (index === chapter - 1) {
                                         const stream = file.createReadStream();
-                                        const audioPath = process.cwd() + '/files/' + title + '/' + file.name;
+                                        const audioPath = path.join(dirname, file.name)
                                         const writer = fs.createWriteStream(audioPath);
                                         stream.on('data', function (data) {
                                             writer.write(data);
-                                            fileExists(path.resolve(process.cwd() + '/files/' + title + '/' + file.name))
+                                            fileExists(path.resolve(path.join(dirname,file.name)))
                                                 .then(function (stat) {
                                                     if (audio !== audioPath) {
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
@@ -134,7 +141,8 @@ io.on('connection', function (socket) {
     });
     socket.on('stream-done', function ({create, src, nextsrc}) {
         socket.emit('book-ready', { create, title, author, chapters, src, nextsrc })
-        fs.rmdir('./files/' + title, { recursive: true }, (err) => console.log(''))
+        console.log(dirname)
+        fs.rmdir(dirname, { recursive: true }, (err) => console.log(err))
     })
 });
 

@@ -268,8 +268,8 @@ function Player() {
     console.log('%c Player', 'color: green')
 
     useEffect(() => {
-  
-        
+        gsap.config({force3D: false})
+
 
         mountedTL.current = gsap.timeline()
         .from(playerRef.current, 1, {y: 150})
