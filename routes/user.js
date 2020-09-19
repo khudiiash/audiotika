@@ -46,7 +46,6 @@ router.route('/update-current').post((req, res) => {
     .then((user) => {
       if (user) {
         user.currentBookID = currentBookID
-        console.log(user)
         user.save()
           .then(() => res.send('Current Book Updated'))
       }

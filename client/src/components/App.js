@@ -8,12 +8,12 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 function App() {
- const user = useSelector(state => state.user )
- console.log("APP: USER: ", user)
+ console.log('%c APP ', 'color: orange')
   return (
     <Router>
        <div className="app">
-          <Route exact path="/" component={ user.username ? Home : Auth }/>
+          <Route exact path="/" component={Auth}/>
+          <Route exact path="/app" component={Home}/>
       </div>
     </Router>
    

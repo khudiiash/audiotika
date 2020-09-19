@@ -51,31 +51,17 @@ io.on('connection', function (socket) {
     chapters = 0;
     chapter = 0;
 
-    socket.on('play-book', function (data) {
-        let { title, chapter } = data
-        fs.exists('./files/' + title, exists => {
-            if (exists) {
-                fs.readdir('./files/' + title, (err, files) => {
-                    let file = files[chapter - 1]
-                    const stream = file.createReadStream();
-                    const audioPath = process.cwd() + '/files/' + title + '/' + file.name;
-                    audio = audioPath;
-                    socket.emit('audio-loaded')
-                })
-            }
-        })
-
-    })
-    socket.on('download-book', function (data) {
+    socket.on('download-chapter-future', function (data) {
         title = data.title
         chapter = data.chapter
         playing = false;
-        audio = ""
+        audio = "";
         author = "No Author";
         chapters = 0;
-        console.log('downloading ', title)
+        console.log('downloading ', title, 'chapter: ', chapter, ' forFuture')
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
+
 
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
             .then(() => rutracker.search({ query: title, sort: 'seeds' }))
@@ -91,7 +77,7 @@ io.on('connection', function (socket) {
                             var WebTorrent = require('webtorrent')
                             var client = new WebTorrent()
                             client.add(URI, function (torrent) {
-
+                                console.log('Torrent: '+torrent.name, 'Files: ', torrent.files.length)
 
                                 let torrentFiles = torrent.files.filter((f, i) => {
                                     if (/.mp3|\.aac|\.wav/.test(f.name)) return f
@@ -101,10 +87,11 @@ io.on('connection', function (socket) {
                                     return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
                                 }
                                 torrentFiles = torrentFiles.sort(customSort);
+
+                                console.log('Torrent: '+torrent.name, 'Sorted Files: ', torrentFiles.length)
+
                                 torrentFiles.forEach(function (file, index) {
-                                    console.log(file.name)
                                     if (index === chapter - 1) {
-                                        console.log('Getting MP3')
                                         const stream = file.createReadStream();
                                         const audioPath = process.cwd() + '/files/' + title + '/' + file.name;
                                         const writer = fs.createWriteStream(audioPath);
@@ -113,9 +100,9 @@ io.on('connection', function (socket) {
                                             fileExists(path.resolve(process.cwd() + '/files/' + title + '/' + file.name))
                                                 .then(function (stat) {
                                                     if (audio !== audioPath) {
-                                                        console.log(file.name)
+                                                        console.log('Current File: ', file.name)
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
-                                                        socket.emit('audio-loaded')
+                                                        socket.emit('audio-loaded', {forFuture})
                                                         audio = audioPath
                                                     }
 
@@ -132,20 +119,93 @@ io.on('connection', function (socket) {
             }
             )
     })
-    socket.on('audio-ready', function (data) {
+
+    socket.on('download-chapter', function (data) {
+        title = data.title
+        chapter = data.chapter
+        let forFuture = data.forFuture
+        playing = false;
+        audio = "";
+        author = "No Author";
+        chapters = 0;
+        console.log('downloading ', title, 'chapter: ', chapter, ' forFuture', forFuture)
+
+        const RutrackerApi = require('rutracker-api');
+        const rutracker = new RutrackerApi();
+
+
+        rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
+            .then(() => rutracker.search({ query: title, sort: 'seeds' }))
+            .then(torrents => {
+                torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))
+                if (torrents.length) {
+                    let torrent = torrents[0]
+                    author = findAuthor(torrent.title);
+                    title = findTitle(torrent.title);
+                    fs.mkdir('./files/' + title, err => console.log('Folder Exists'))
+                    rutracker.getMagnetLink(torrent.id)
+                        .then(URI => {
+                            var WebTorrent = require('webtorrent')
+                            var client = new WebTorrent()
+                            client.add(URI, function (torrent) {
+                                console.log('Torrent: '+torrent.name, 'Files: ', torrent.files.length)
+
+                                let torrentFiles = torrent.files.filter((f, i) => {
+                                    if (/.mp3|\.aac|\.wav/.test(f.name)) return f
+                                }
+                                )
+                                var customSort = function (a, b) {
+                                    return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
+                                }
+                                torrentFiles = torrentFiles.sort(customSort);
+
+                                console.log('Torrent: '+torrent.name, 'Sorted Files: ', torrentFiles.length)
+
+                                torrentFiles.forEach(function (file, index) {
+                                    if (index === chapter - 1) {
+                                        const stream = file.createReadStream();
+                                        const audioPath = process.cwd() + '/files/' + title + '/' + file.name;
+                                        const writer = fs.createWriteStream(audioPath);
+                                        stream.on('data', function (data) {
+                                            writer.write(data);
+                                            fileExists(path.resolve(process.cwd() + '/files/' + title + '/' + file.name))
+                                                .then(function (stat) {
+                                                    if (audio !== audioPath) {
+                                                        console.log('Current File: ', file.name)
+                                                        chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
+                                                        socket.emit('audio-loaded', {forFuture})
+                                                        audio = audioPath
+                                                    }
+
+                                                })
+
+                                        });
+                                    }
+                                })
+
+
+                            })
+                        })
+                }
+            }
+            )
+    })
+    socket.on('audio-ready', function ({forFuture}) {
         var stream = ss.createStream();
         var filename = audio;
-        ss(socket).emit('audio-stream', stream, { name: filename });
+        
+
+        ss(socket).emit('audio-stream', stream, { name: filename, forFuture});
         fs.createReadStream(filename).pipe(stream);
+    
     });
     socket.on('cover-ready', function (data) {
         fs.readFile(cover, function (err, data) {
             socket.emit('got-cover', { image: true, buffer: data, title, author, chapters });
         });
     });
-    socket.on('stream-done', function (data) {
-        let create = data.create
-        if (create) socket.emit('book-ready', { title, author, chapters })
+    socket.on('stream-done', function ({create, src, nextsrc}) {
+        socket.emit('book-ready', { create, title, author, chapters, src, nextsrc })
         fs.rmdir('./files/' + title, { recursive: true }, (err) => console.log('Folder Does Not Exist'))
     })
 });

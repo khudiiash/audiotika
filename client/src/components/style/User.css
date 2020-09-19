@@ -2,18 +2,19 @@
 
 
 .user {
-    width: 20vw;
-    height: 20px;
+    width: 30%;
+    height: 100%;
+    top: -15px;
     left: 15px;
-    top: -5px;
     position: relative;
     display: flex;
+    justify-content: center;
+    align-items: center;
 
 }
 .user-icon {
     width: 20px;
-    height: 20px;
-    margin-top: -5px;
+    width: 20px;
 }
 .user-name {
     width: 100%;
@@ -21,17 +22,22 @@
     font-family: "Montserrat", sans-serif;
     font-weight:600;
     font-size: .7em;
-    margin-left: 25px;
-    margin-top: -15px;
-    display: flex;
-    align-items: center;
     user-select: none;
+    margin: 0 10px;
+
 
 }
 .user svg {
-    fill: #e8e8e8;
+    fill: #6d6d6d;
     width: 100%;
 }
+.user-quit {
+    width:  20px;
+    height: 20px;
+    border: none;
+    margin: 0 20px;
+}
+.door-1{fill:#666;}.door-2{fill:#444;}
 
 @media screen and (max-width: 700px) {
     .user {

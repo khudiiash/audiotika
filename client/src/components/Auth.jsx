@@ -19,8 +19,7 @@ function Auth() {
 
 
     let me = useSelector(state => state.user)
-    let location = useLocation();
- 
+
     const [error, setError] = useState({})
 
 
@@ -31,10 +30,9 @@ function Auth() {
     
 
     useEffect(() => {
-        console.log('AUTH MOUNTED')
+        console.log('%c AUTH MOUNTED: '+me.username, 'color: goldenrod')
 
-        if (me && me.username && !location.pathname.includes('/app')) {
-            console.log('REDIRECT TO APP')
+        if (me && me.username) {
             history.push('/app')
         }
         gsap.utils.toArray(circles.current.children).forEach(circle => {
@@ -137,6 +135,8 @@ function Auth() {
        setError({})
    }
     return (
+        <>
+        
         <div className='registration'>
             <div ref={circles} className="registration-circles">
                 <div className="registration-circle first"></div>
@@ -176,6 +176,7 @@ function Auth() {
            
          
         </div>
+        </>
     );
 }
 

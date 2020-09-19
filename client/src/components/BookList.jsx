@@ -15,11 +15,11 @@ function BookList() {
 
 
     if (!books.length || (current && !books.some(b => b.title === current.title))) {
-        // axios.get(proxy + '/books')
-        //    .then(res => {
-        //        console.log(res.data, books)
-        //       if (res.data && res.data.some(book => book.userID === user._id)) dispatch(setBooks(books = res.data.filter(book => book.userID === user._id)))
-        //     })
+        axios.get(proxy + '/books')
+           .then(res => {
+               console.log(res.data, books)
+              if (res.data && res.data.some(book => book.userID === user._id)) dispatch(setBooks(books = res.data.filter(book => book.userID === user._id)))
+            })
         
     }
     return (

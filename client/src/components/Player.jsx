@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useRef, createRef, memo} from 'react';
 import {useDispatch, useSelector, useStore} from "react-redux";
 import "./style/Player.css"
-import { nextChapter } from '../redux';
+import { nextChapter, setCurrent } from '../redux';
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import axios from "axios"
@@ -9,6 +9,8 @@ import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon } from '../assets/ico
 import {secToTime} from './_utils'
 import './style/Inputs.css'
 import gsap from 'gsap'
+
+
 
 const Play = (props) => {
   let [isPlaying,setPlaying] = useState(false)
@@ -46,42 +48,52 @@ const onPlay = () => {
 }
 
 const Next = ({current}) => {
-
-  const dispatch = useDispatch()
   const proxy = useSelector(state => state.proxy)
+  const dispatch = useDispatch()
 
 
   const onNext = () => {
     const audio = document.getElementById('audio');
+
+    if (current.nextsrc) {
       audio.currentTime = 0;
-      audio.pause()
-      audio.src = undefined
-      let {title, chapters} = current
-      if (current.chapter + 1 <= chapters) {
-      current = {...current, chapter: current.chapter + 1, time: 0}
-
+      audio.src = current.nextsrc
+      audio.play()
+      let {title, chapter, chapters} = current
+      current = {...current, chapter: chapter + 1, time: 0}
       dispatch(nextChapter(current))
-
       axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
       axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
+      
+      // Get next chapter src
+      const socket = io(proxy);
+    
+      socket.emit('download-chapter', {title, chapter: current.chapter + 1, forFuture: true})
 
-      let socket = io(proxy);
-        socket.emit('download-book', {title, chapter: current.chapter})
-        socket.on('audio-loaded', function () {
-             socket.emit('audio-ready');
-              ss(socket).on('audio-stream', function(stream, data) {
-                  let parts = [];
-                  stream.on('data', (chunk) => {
-                      parts.push(chunk);
-                  });
-                  stream.on('end', function () {
-                      socket.emit('stream-done', {create: false})
-                      audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
-                      audio.play()                 
+      socket.on('audio-loaded', function (data) {
+        socket.emit('audio-ready', {forFuture: true});
+      });
+      ss(socket).on('audio-stream', function(stream, {forFuture}) {
+          let parts = [];
+          stream.on('data', (chunk) => {
+              parts.push(chunk);
+          });
+          stream.on('end', function () {
+              const audio = document.getElementById('audio')
+                  console.log('Future Stream Complete')
+                  current.nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
+                  socket.emit('stream-done', {create: false})
+                  axios.get(proxy + '/books/'+current._id)
+                  .then(res => {
+                        dispatch(setCurrent({...res.data, chapter: current.chapter, nextsrc: current.nextsrc}))
+                  })
+              
+          });
+    });
 
-                  });
-              });
-            });
+     
+
+
      }
   }
   return (
@@ -99,8 +111,7 @@ const Prev = ({current}) => {
     const audio = document.getElementById('audio');
     if (current.chapter > 1) {
       audio.currentTime = 0;
-      audio.pause()
-      audio.src = undefined
+      audio.src = current.nextsrc
   
     let {title} = current
     current = {...current, chapter: current.chapter - 1, time: 0}
@@ -110,24 +121,8 @@ const Prev = ({current}) => {
     axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
   
     let socket = io(proxy);
-      socket.emit('download-book', {title, chapter: current.chapter})
-      socket.on('audio-loaded', function () {
-           socket.emit('audio-ready');
-            ss(socket).on('audio-stream', function(stream, data) {
-                let parts = [];
-                stream.on('data', (chunk) => {
-                    parts.push(chunk);
-                });
-                stream.on('end', function () {
-                    socket.emit('stream-done', {create: false})
-                    audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
-                    audio.play()                 
-  
-                });
-            });
-          });
-    } else {
-      audio.currentTime = 0
+    socket.emit('download-chapter', {title, chapter: current.chapter + 1, forFuture: true})
+    
     }
     
   }
@@ -213,13 +208,13 @@ function Player() {
 
     store.subscribe(() => {
         setCurrent(store.getState().current)
-        console.log('Player Subscribe : current')
 
     })
-    console.log('Player ')
+    console.log('%c Player', 'color: green')
 
     useEffect(() => {
-      console.log('Player Useeffect : current')
+  
+        
 
         mountedTL.current = gsap.timeline()
         .from(playerRef.current, 1, {y: 150})
@@ -228,39 +223,52 @@ function Player() {
 
     }, []);
 
+   
+     
+
  
     const onEnded = () => {
       console.log('onEnded')
-    
       const audio = document.getElementById('audio');
       audio.currentTime = 0;
-      audio.pause()
-      audio.src = undefined
-      let {title} = current
+      audio.src = current.nextsrc
+      audio.play()
+      let {title, chapters} = current
+      if (current.chapter + 1 <= chapters) {
       current = {...current, chapter: current.chapter + 1, time: 0}
-
-      dispatch(nextChapter(current))
+      const socket = io(proxy);
+      socket.on('audio-loaded', function (data) {
+        socket.emit('audio-ready', {forFuture: true});
+      });
+      ss(socket).on('audio-stream', function(stream, {forFuture}) {
+          let parts = [];
+          stream.on('data', (chunk) => {
+              parts.push(chunk);
+          });
+          stream.on('end', function () {
+              const audio = document.getElementById('audio')
+                  console.log('Future Stream Complete')
+                  current.nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
+                  socket.emit('stream-done', {create: false})
+                  axios.get(proxy + '/books/'+current._id)
+                  .then(res => {
+                      dispatch(setCurrent(current))
+                  })
+          });
+    });
 
       axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
       axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
 
-      let socket = io(proxy);
-        socket.emit('download-book', {title, chapter: current.chapter})
-        socket.on('audio-loaded', function () {
-             socket.emit('audio-ready');
-              ss(socket).on('audio-stream', function(stream, data) {
-                  let parts = [];
-                  stream.on('data', (chunk) => {
-                      parts.push(chunk);
-                  });
-                  stream.on('end', function () {
-                      socket.emit('stream-done', {create: false})
-                      audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts));
-                      audio.play()                 
 
-                  });
-              });
-            });
+      if (current && current.chapter < current.chapters) {
+        //Downdload future chapter
+         socket.emit('download-chapter', {title, chapter: current.chapter + 1, forFuture: true})
+      }
+     }
+      
+
+     
     }
 
     const toggleView = () => {
