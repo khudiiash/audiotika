@@ -62,7 +62,7 @@ io.on('connection', function (socket) {
         chapters = 0;
         console.log('downloading ', title, 'chapter: ', chapter, ' forFuture', forFuture)
 
-        fs.mkdir(path.join(audiodir))
+        fs.mkdir(path.join(audiodir), (err) => console.log(err))
 
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
@@ -81,7 +81,7 @@ io.on('connection', function (socket) {
                     });
                     fs.readdir(audiodir, (err, items) => {
                         if (!err && items && items.length) {
-                            fs.mkdir(path.join(dirname))
+                            fs.mkdir(path.join(dirname), err => console.log(err))
                         }
                     })
                     rutracker.getMagnetLink(torrent.id)
@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
                             client.add(URI, function (torrent) {
 
                                 let torrentFiles = torrent.files.filter((f, i) => {
-                                    if (/.mp3|\.aac|\.wav/.test(f.name)) return f
+                                    if (/.mp3|\.aac|\.wav/.test(f.name)) return fx
                                 }
                                 )
                                 var customSort = function (a, b) {
