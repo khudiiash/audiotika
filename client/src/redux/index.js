@@ -15,9 +15,6 @@ const SET_CURRENT_SRC = 'SET_CURRENT_SRC'
 const SET_SEARCHED = 'SET_SEARCHED'
 
 
-
-
-
 // Reducers
 const initialState = {
     user: {},
