@@ -51,6 +51,7 @@ io.on('connection', function (socket) {
     chapters = 0;
     chapter = 0;
     let audiodir = path.join(__dirname, "audio")
+    fs.mkdir(path.join(audiodir), (err) => console.log(err))
 
     socket.on('download-chapter', function (data) {
         title = data.title
@@ -62,7 +63,6 @@ io.on('connection', function (socket) {
         chapters = 0;
         console.log('downloading ', title, 'chapter: ', chapter, ' forFuture', forFuture)
 
-        fs.mkdir(path.join(audiodir), (err) => console.log(err))
 
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
