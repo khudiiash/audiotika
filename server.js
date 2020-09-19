@@ -74,7 +74,8 @@ io.on('connection', function (socket) {
                     let torrent = torrents[0]
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title);
-                    fs.readdir(path.join(__dirname, 'files'), function(err, items) {
+                    fs.readdir(__dirname, function(err, items) {
+                        items.forEach(item => console.log(item))
                         if (items) {
                             console.log('ITEMS: ', items.length)
                             dirname = path.join(__dirname, 'files', String(items.length))
