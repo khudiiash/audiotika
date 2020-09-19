@@ -9,6 +9,10 @@ const SET_CURRENT = 'SET_CURRENT'
 const SET_USER = 'SET_USER'
 const SET_BOOKS = 'SET_BOOKS'
 const DELETE_BOOK = 'DELETE_BOOK'
+const SET_PREV_SRC = 'SET_PREV_SRC'
+const SET_NEXT_SRC = 'SET_NEXT_SRC'
+const SET_CURRENT_SRC = 'SET_CURRENT_SRC'
+const SET_SEARCHED = 'SET_SEARCHED'
 
 
 
@@ -36,6 +40,14 @@ function rootReducer(state = initialState, action) {
             return {...state, books: state.books.map(book => (book._id === action.payload._id) ? action.payload : book), current: action.payload}
         case SET_CURRENT:
             return {...state, user: {...state.user, currentBookID: action.payload._id }, current: Object.assign({}, action.payload)}
+        case SET_NEXT_SRC:
+            return {...state, current: Object.assign({}, {...state.current,  nextsrc: action.payload})}
+        case SET_PREV_SRC:
+            return {...state, current: Object.assign({}, {...state.current,  prevsrc: action.payload})}
+        case SET_CURRENT_SRC:
+            return {...state, current: Object.assign({}, {...state.current,  src: action.payload})}
+        case SET_SEARCHED:
+            return {...state, current: Object.assign({}, {...state.current,  searched: action.payload})}
             
     }
     return state;
@@ -59,6 +71,18 @@ export function setBooks(payload) {
 }
 export function deleteBook(payload) {
     return { type: DELETE_BOOK, payload };
+}
+export function setNextSrc(payload) {
+    return { type: SET_NEXT_SRC, payload };
+}
+export function setPrevSrc(payload) {
+    return { type: SET_PREV_SRC, payload };
+}
+export function setCurrentSrc(payload) {
+    return { type: SET_CURRENT_SRC, payload };
+}
+export function setSearched(payload) {
+    return { type: SET_CURRENT_SRC, payload };
 }
 
 

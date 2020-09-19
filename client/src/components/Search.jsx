@@ -23,6 +23,9 @@ function Search() {
     let lastTitle = "";
     let books = useSelector(state => state.books)
 
+    console.log('%c Search', 'color: yellow')
+
+
     let dispatch = useDispatch()
     const onChange = (e) => {
         setTitle(title = e.target.value)
@@ -55,13 +58,15 @@ function Search() {
                 stream.on('end', function () {
                     const audio = document.getElementById('audio')
                     if (forFuture) {
-
+                        console.log('%c Search Chapter 2', 'color: purple')
                         console.log('Future Stream Complete')
                         let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
-                        socket.emit('stream-done', {create: false, src: current.src, nextsrc})
+                        socket.emit('stream-done', {create: false, nextsrc: nextsrc, src: current.src})
                        
                     } else {
                         console.log('Stream Complete')
+                        console.log('%c Search Chapter 1', 'color: purple')
+
                         let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
                         audio.src = src
                         socket.emit('stream-done', {create: true, src})
@@ -75,12 +80,15 @@ function Search() {
             socket.on('book-ready', ({create, title, author, chapters, src, nextsrc}) => {
                 lastTitle = title
                 if (create) {
+                    console.log('%c Book Created', 'color: lime')
                     if (Array.isArray(books) && !books.filter(b => b.title === lastTitle).length) {
                         const book = {userID: user._id,title: lastTitle, author, chapter: 1, chapters, cover: "", src, time: 0}
                         axios.post(proxy + '/books/add', {...book})
                             .then(res => {
                                 let {book} = res.data    
                                 book.src = src
+                                book.searched = true;
+                                console.log("CREATING: ", book)
                                 dispatch(addBook(book))
                                 dispatch(setCurrent(book))
                                 axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
@@ -88,7 +96,8 @@ function Search() {
                         books.push(book)
                      }
                 } else {
-                    dispatch(setCurrent({...current, nextsrc}))
+                    current.nextsrc = nextsrc
+                    if (current.title) dispatch(setCurrent(current))
                 }
                 
             })
@@ -100,7 +109,7 @@ function Search() {
     }
 
     const searchStyle = {
-        width: isVisible ? (isMobile ? "100%" : "50%") : "0", 
+        width: isVisible ? (isMobile ? "75%" : "50%") : "0", 
         opacity: isVisible ? 1 : 0
     }
     

@@ -56,6 +56,7 @@ router.route('/update-chapter/:id').post((req, res) => {
     Book.findById(req.params.id)
     .then(Book => {
       Book.chapter = chapter
+      console.log(Book)
       Book.save()
         .then(() => res.json('Book chapter updated'))
         .catch(err => res.status(400).json('Error: ' + err));
