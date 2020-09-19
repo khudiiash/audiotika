@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
                             client.add(URI, function (torrent) {
 
                                 let torrentFiles = torrent.files.filter((f, i) => {
-                                    if (/.mp3|\.aac|\.wav/.test(f.name)) return fx
+                                    if (/.mp3|\.aac|\.wav/.test(f.name)) return f
                                 }
                                 )
                                 var customSort = function (a, b) {
