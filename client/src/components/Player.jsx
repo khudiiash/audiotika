@@ -235,7 +235,7 @@ const Seek = (props) => {
     return (
     <div className='player-controls-seek'>
       <p className="player-controls-cts">{secToTime(audio.currentTime)}</p>
-      <input type="range" value={audio.currentTime} min={0} max={Number.isInteger(duration) ? duration : 0} onChange={onChange} />
+      <input type="range" value={audio.currentTime} min={0} max={duration} onChange={onChange} />
       <p className="player-controls-ds">{duration ? secToTime(duration) : "00:00" }</p>
     </div>
   )
