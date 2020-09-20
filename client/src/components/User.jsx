@@ -18,7 +18,7 @@ function User() {
         <div className='user'>
            <div className="user-quit" onClick={quit}><QuitIcon/></div>
            <div className="user-icon"><UserIcon/></div>
-           <div className="user-name">{user.username}</div>
+           <div className="user-name">{"Dmytro Khudiash" || user.username}</div>
 
         </div>
     );

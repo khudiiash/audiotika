@@ -198,20 +198,10 @@ const Seek = (props) => {
 
   useEffect(() => {
     let cleanupFunction = false;
-    // let interval = setInterval(() => {
-    //   if (audio && audio.duration) {
-    //     setDuration(duration = Math.floor(audio.duration));
-    //     setCurrentTime(currentTime = props.currentTime)
-    //     if (!audio.currentTime && currentTime) audio.currentTime = currentTime
-    //     clearInterval(interval)
 
-    //   }
-    // }, 1)
     setDuration(duration = Math.floor(audio.duration));
     setCurrentTime(currentTime = props.currentTime)
-    console.log(audio.src, audio.duration)
     if (!audio.currentTime && currentTime) audio.currentTime = currentTime
-    //clearInterval(interval)
 
     
     audio.addEventListener('timeupdate', () => {
@@ -271,13 +261,12 @@ function Player() {
     useEffect(() => {
         gsap.config({force3D: false})
 
+        setTimeout(() => setFullView(!isFullView), 1500)
 
         mountedTL.current = gsap.timeline()
         .from(playerRef.current, 1, {y: 150})
         .from(playerBoxRef.current, 1, {y: 25, opacity: 0}, '-=.5')
         .staggerFrom(playerBoxRef.current.children, 1, {y: 25, opacity: 0}, .5)
-
-
         
 
     }, []);
@@ -360,12 +349,12 @@ function Player() {
    
     
     let playerBoxStyle = {
-      top: isFullView ? (isMobile ? '10vh' : '15vh') : (isMobile ? '7vh' : '10vh'), 
-      height: isFullView ? (isMobile ? "80vh" : "60vh") : (isMobile ? "60vh" : "60vh")
+      top: isFullView ? (isMobile ? '10vh' : '15vh') : (isMobile ? '8vh' : '10vh'), 
+      height: isFullView ? (isMobile ? "70vh" : "55vh") : (isMobile ? "60vh" : "60vh")
     }
     
     let playerStyle = {
-      top: isFullView ? (isMobile ? "-30vh" : "-22vh") : (isMobile ?  "-5vh" : '-5vh')
+      top: isFullView ? (isMobile ? "-30vh" : "-20vh") : (isMobile ?  "-5vh" : '-5vh')
     }
    
 

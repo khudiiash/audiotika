@@ -11,7 +11,7 @@
   border-radius: 10px 10px 0 0;
   position: relative;
   top: -20.5vh;
-  transition: .6s ease-in-out;
+  transition: .3s ease-in-out;
   user-select: none;
 }
 .player-box {
@@ -25,7 +25,7 @@
   justify-content: center;
   align-items: center;
   border-radius: 8px;
-  transition: .6s ease-in-out;
+  transition: .3s ease-in-out;
   
 }
 .player-controls {
@@ -108,7 +108,7 @@
 #play-button {
   transition: .5s;
 }
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 660px) {
   .player-chapter {
     bottom: 9px;
     font-size: 12px;
@@ -116,6 +116,7 @@
   .player-box {
     width: 100%;
     height: 0vh;
+
   }
   .player-author {
     font-size: 12px;

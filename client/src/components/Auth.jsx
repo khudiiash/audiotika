@@ -15,6 +15,7 @@ function Auth() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
+    const [text, setText] = useState("")
     const proxy = useSelector(state => state.proxy)
 
 
@@ -98,6 +99,7 @@ function Auth() {
        username,
        password
     }
+    setText('Signin In')
     let errors = varify(user)
     errors.email = ""
     if (!errors.username && !errors.password) {errors.any = false}
@@ -149,11 +151,11 @@ function Auth() {
                 onFocus={onInputFocus}
             >
             </input><div className='registration-error' style={{height: error && error.username ? "10%" : 0}}>{error.username}</div>
-            <input className="registration-form-email" 
-                style={{height: isRegistration ? "15%" : 0, margin: isRegistration ? "10px" : 0}}
+            <input className={isRegistration ? "registration-form-email" : "registration-form-email passive"}
                 type="email" 
                 placeholder="Email"
-                onFocus={onInputFocus}
+                readOnly={isRegistration ? '' : 'readonly'}
+                onFocus={isRegistration ? onInputFocus : {function() {this.blur()}}}
                 onChange={(e) => setEmail(e.target.value)}></input><div className='registration-error' style={{height: error && error.email ? "10%" : 0}}>{error.email}</div>
             <input className="registration-form-password" 
                 type="password" 

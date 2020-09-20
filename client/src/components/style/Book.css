@@ -67,7 +67,7 @@
 }
 /*# sourceMappingURL=Book.css.map */
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 660px) {
   .book {
     width: 150px;
     margin: 5px 0 0 5px;
@@ -78,6 +78,11 @@
   }
   
   .book-author {
-    font-size: .4rem;
+    font-size: 7px;
   }
+  .book-loader {
+    -webkit-transform: scale(.7);
+    transform: scale(.7);
+  }
+ 
 }

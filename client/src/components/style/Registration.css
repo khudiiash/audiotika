@@ -146,3 +146,16 @@ opacity: .5;
     align-items: center;
     transition: .2s;
 }
+
+@media screen and (max-width: 660px) {
+    .registration-form {
+        width: 40vw;
+        height: 40vh;
+    }
+    .registration-form-email.passive {
+        pointer-events: none;
+        opacity: 0;
+        height: 0;
+        margin: 0;
+    }
+}

@@ -3,9 +3,9 @@
 
 .user {
     width: 30%;
-    height: 100%;
-    top: -15px;
+    height: 8vh;
     left: 15px;
+    top: -10px;
     position: relative;
     display: flex;
     justify-content: center;
@@ -15,6 +15,9 @@
 .user-icon {
     width: 20px;
     width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .user-name {
     width: 100%;
@@ -39,21 +42,17 @@
 }
 .door-1{fill:#666;}.door-2{fill:#444;}
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 660px) {
     .user {
-        width: 15vw;
+        top: -10px;
+        width: 40vw;
         left: 10px;
-
     }
-   .user-name {
-       display: none;
-   }
-   .user-icon {
-    width: 15px;
-    height: 15px;
-   }
-   .user-quit {
-    width: 15px;
-    height: 15px;
-   }
+    .user-quit {
+        margin: 0 15px 0 0;
+    }
+    .user-name {
+        font-size: 8px;
+    }
+   
 }
