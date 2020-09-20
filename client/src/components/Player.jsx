@@ -269,14 +269,10 @@ function Player() {
 
     }, []);
 
-   
-
-   
-     
-
  
     const onEnded = () => {
       const audio = document.getElementById('audio');
+      if (isMobile) audio.pause()
       audio.currentTime = 0;
       audio.src = current.nextsrc
       if (current.chapter + 1 <= current.chapters) {
