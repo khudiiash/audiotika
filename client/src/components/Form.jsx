@@ -7,9 +7,6 @@ import { addArticle } from "../redux"
 function Form() {
     const dispatch = useDispatch();
     let [title, updateTitle] = useState("")
-
-    //console.log(store.getState())
-
     const handleChange = (e) => {
        updateTitle(title = e.target.value)
     }

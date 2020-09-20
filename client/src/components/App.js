@@ -8,7 +8,7 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 function App() {
- console.log('%c APP ', 'color: orange')
+ console.log('%c APP', 'color: orange')
   return (
     <Router>
        <div className="app">

@@ -11,7 +11,6 @@ function User() {
     const history = useHistory()
     let user = useSelector(state => state.user)
     const quit = () => {
-        console.log('quittng')
         dispatch(setUser({}))
         history.push('/')
     }

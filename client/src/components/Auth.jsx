@@ -30,8 +30,6 @@ function Auth() {
     
 
     useEffect(() => {
-        console.log('%c AUTH MOUNTED: '+me.username, 'color: goldenrod')
-
         if (me && me.username) {
             history.push('/app')
         }
@@ -65,7 +63,6 @@ function Auth() {
     }
     }, [])
    const onSignUp = (e) => {
-       console.log('ON SIGH UP')
        e.preventDefault()
        let user = {
           username,
@@ -97,7 +94,6 @@ function Auth() {
    }
    const onSignIn = (e) => {
     e.preventDefault()
-    console.log("SIGNING IN CLICKED")
     let user = {
        username,
        password
@@ -107,16 +103,11 @@ function Auth() {
     if (!errors.username && !errors.password) {errors.any = false}
     
     if (errors.any) {
-        console.log("AUTH ERRORS", errors)
-
-        console.log(errors)
         setError(errors)
 
     } else {
-        console.log("AXIOS POST: ", user)
          axios.post(proxy + '/user/login', {user, isSignUp: false, isSignIn: true})
          .then((res) => {
-             console.log(res)
              if (res.data) {
                  history.push('/app')
                  dispatch(setUser(res.data))

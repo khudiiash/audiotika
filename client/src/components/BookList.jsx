@@ -13,28 +13,21 @@ function BookList() {
     let books = useSelector(state => state.books)
     const proxy = useSelector(state => state.proxy)
     useEffect(() => {
-        console.log('%c Booklist', 'color: brown')
-
         axios.get(proxy + '/books')
            .then(res => {
               if (res.data && res.data !== books && res.data.some(book => book.userID === user._id)) {
-                  console.log("Setting Books")
                   dispatch(setBooks(res.data.filter(book => book.userID === user._id)))
               }
         })
     }, [])
     useEffect(() => {
-        console.log('%c Booklist', 'color: brown')
-
         axios.get(proxy + '/books')
            .then(res => {
               if (res.data.length !== books.length) {
-                  console.log("Setting Books")
                   dispatch(setBooks(res.data.filter(book => book.userID === user._id)))
               }
         })
     }, [current])
-    console.log(books)
     
     return (
         <div className="booklist">

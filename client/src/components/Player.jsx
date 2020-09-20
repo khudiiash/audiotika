@@ -9,6 +9,7 @@ import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon } from '../assets/ico
 import {secToTime} from './_utils'
 import './style/Inputs.css'
 import gsap from 'gsap'
+import { isInteger } from 'lodash';
 
 
 
@@ -120,9 +121,7 @@ const Prev = ({current}) => {
         audio.play()
         axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
         axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
-  
-        console.log(current)
-        dispatch(setCurrent(current))
+          dispatch(setCurrent(current))
 
 
 
@@ -152,7 +151,6 @@ const Prev = ({current}) => {
               parts.push(chunk);
           });
           stream.on('end', function () {
-            console.log(forFuture)
             if (forFuture) {
               const audio = document.getElementById('audio')
               console.log('Future Stream Complete')
@@ -200,17 +198,20 @@ const Seek = (props) => {
 
   useEffect(() => {
     let cleanupFunction = false;
-    let interval = setInterval(() => {
-      console.log('checking audio, ', audio)
-      if (audio && audio.duration) {
-        setDuration(duration = Math.floor(audio.duration));
-        console.log(secToTime(duration))
-        setCurrentTime(currentTime = props.currentTime)
-        if (!audio.currentTime && currentTime) audio.currentTime = currentTime
-        clearInterval(interval)
+    // let interval = setInterval(() => {
+    //   if (audio && audio.duration) {
+    //     setDuration(duration = Math.floor(audio.duration));
+    //     setCurrentTime(currentTime = props.currentTime)
+    //     if (!audio.currentTime && currentTime) audio.currentTime = currentTime
+    //     clearInterval(interval)
 
-      }
-    }, 1)
+    //   }
+    // }, 1)
+    setDuration(duration = Math.floor(audio.duration));
+    setCurrentTime(currentTime = props.currentTime)
+    console.log(audio.src, audio.duration)
+    if (!audio.currentTime && currentTime) audio.currentTime = currentTime
+    //clearInterval(interval)
 
     
     audio.addEventListener('timeupdate', () => {
@@ -234,7 +235,7 @@ const Seek = (props) => {
     return (
     <div className='player-controls-seek'>
       <p className="player-controls-cts">{secToTime(audio.currentTime)}</p>
-      <input type="range" value={audio.currentTime} min={0} max={duration} onChange={onChange} />
+      <input type="range" value={audio.currentTime} min={0} max={Number.isInteger(duration) ? duration : 0} onChange={onChange} />
       <p className="player-controls-ds">{duration ? secToTime(duration) : "00:00" }</p>
     </div>
   )
@@ -266,7 +267,6 @@ function Player() {
     store.subscribe(() => {
         setCurrent(store.getState().current)
     })
-    console.log('%c Player', 'color: green')
 
     useEffect(() => {
         gsap.config({force3D: false})
@@ -278,9 +278,7 @@ function Player() {
         .staggerFrom(playerBoxRef.current.children, 1, {y: 25, opacity: 0}, .5)
 
 
-        return () => {
-          console.log('Unmount')
-        }
+        
 
     }, []);
 

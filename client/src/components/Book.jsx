@@ -17,8 +17,6 @@ function Book({ book, isCurrent }) {
     const { _id } = book
 
     const dispatch = useDispatch()
-    console.log('%c Book', 'color: brown')
-
 
     const user = useSelector(state => state.user)
     const proxy = useSelector(state => state.proxy)
@@ -73,7 +71,7 @@ function Book({ book, isCurrent }) {
         console.log('Downloading Chapter: ', book.chapter, ' Current Chapter: ', current.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, forFuture: false})
         socket.on('audio-loaded', function (data) {
-            socket.emit('audio-ready', {forFuture: data.forFuture});
+        socket.emit('audio-ready', {forFuture: data.forFuture});
                 
         });
         ss(socket).on('audio-stream', function(stream, {forFuture}) {
@@ -95,7 +93,6 @@ function Book({ book, isCurrent }) {
                     console.log('Stream Complete')
 
                     audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
-                    console.log('Audio: ', audio)
                     socket.emit('stream-done', {create: false})
                     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, forFuture: true})
                     axios.get(proxy + '/books/'+book._id)
