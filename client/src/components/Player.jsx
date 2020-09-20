@@ -9,7 +9,6 @@ import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon } from '../assets/ico
 import {secToTime} from './_utils'
 import './style/Inputs.css'
 import gsap from 'gsap'
-import { isInteger } from 'lodash';
 
 
 
@@ -280,7 +279,6 @@ function Player() {
       const audio = document.getElementById('audio');
       audio.currentTime = 0;
       audio.src = current.nextsrc
-      audio.play()
       if (current.chapter + 1 <= current.chapters) {
       let {title, chapter, src, nextsrc} = current;
       current = {...current, chapter: chapter + 1, time: 0, src: nextsrc, prevsrc: src}
