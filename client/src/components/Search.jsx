@@ -56,12 +56,12 @@ function Search() {
                     const audio = document.getElementById('audio')
                     if (forFuture) {
                         console.log('Future Stream Complete')
-                        let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
+                        let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
                         socket.emit('stream-done', {create: false, nextsrc: nextsrc, src: current.src})
                        
                     } else {
                         console.log('Stream Complete')
-                        let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
+                        let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
                         audio.src = src
                         socket.emit('stream-done', {create: true, src})
                         socket.emit('download-chapter', {title, chapter: 2, forFuture: true})
