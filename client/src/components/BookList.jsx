@@ -29,16 +29,16 @@ function BookList() {
         })
     }, [current])
 
-    books = [
-        {
-            title: "Гарри Поттер и Философский камень",
-            author: "Джоан Роулинг",
-            chapter: 1,
-            chapters: 145,
-            time: 0,
+    // books = [
+    //     {
+    //         title: "Гарри Поттер и Философский камень",
+    //         author: "Джоан Роулинг",
+    //         chapter: 1,
+    //         chapters: 145,
+    //         time: 0,
     
-        }
-    ]
+    //     }
+    // ]
     
     return (
         <div className="booklist">
