@@ -264,7 +264,6 @@ function Player() {
         setTimeout(() => setFullView(!isFullView), 1500)
 
         mountedTL.current = gsap.timeline()
-        .from(playerRef.current, 1, {y: 150})
         .from(playerBoxRef.current, 1, {y: 25, opacity: 0}, '-=.5')
         .staggerFrom(playerBoxRef.current.children, 1, {y: 25, opacity: 0}, .5)
         
@@ -350,11 +349,11 @@ function Player() {
     
     let playerBoxStyle = {
       top: isFullView ? (isMobile ? '10vh' : '15vh') : (isMobile ? '8vh' : '10vh'), 
-      height: isFullView ? (isMobile ? "70vh" : "55vh") : (isMobile ? "60vh" : "60vh")
+      height: isFullView ? (isMobile ? "70vh" : "60vh") : (isMobile ? "60vh" : "55vh")
     }
     
     let playerStyle = {
-      top: isFullView ? (isMobile ? "-30vh" : "-20vh") : (isMobile ?  "-5vh" : '-5vh')
+      top: isFullView ? (isMobile ? "-30vh" : "-22vh") : (isMobile ?  "-5vh" : '-5vh')
     }
    
 
