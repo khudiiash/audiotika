@@ -116,6 +116,7 @@
   .player-box {
     width: 100%;
     height: 0vh;
+    box-shadow: none;
 
   }
   .player-author {

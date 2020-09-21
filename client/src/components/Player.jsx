@@ -197,22 +197,21 @@ const Seek = (props) => {
 
   useEffect(() => {
     let cleanupFunction = false;
-
-    setDuration(duration = Math.floor(audio.duration));
+    setDuration(audio.duration)
     setCurrentTime(currentTime = props.currentTime)
     if (!audio.currentTime && currentTime) audio.currentTime = currentTime
 
-    
     audio.addEventListener('timeupdate', () => {
       if(!cleanupFunction && currentTime !==  parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
         if (duration !== audio.duration) setDuration(duration = audio.duration)
-        setCurrentTime( currentTime = parseInt(audio.currentTime, 10))
+        if (audio.currentTime === 0 && props.currentTime !== 0) setCurrentTime(currentTime = props.currentTime)
+        else setCurrentTime( currentTime = parseInt(audio.currentTime, 10))
         axios.post(proxy + '/books/update-time/'+props.currentID, {time: currentTime})
       
       }
     })
     return () => cleanupFunction = true;
-  }, [props.currentTime])
+  }, [props.src])
 
  
   const onChange = ({target: { value }}) => {
@@ -220,11 +219,11 @@ const Seek = (props) => {
     if (audio) audio.currentTime = value;
     
   }
-
+    
     return (
     <div className='player-controls-seek'>
       <p className="player-controls-cts">{secToTime(audio.currentTime)}</p>
-      <input type="range" value={audio.currentTime} min={0} max={duration} onChange={onChange} />
+      <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration } onChange={onChange} />
       <p className="player-controls-ds">{duration ? secToTime(duration) : "00:00" }</p>
     </div>
   )
@@ -272,9 +271,9 @@ function Player() {
  
     const onEnded = () => {
       const audio = document.getElementById('audio');
-      if (isMobile) audio.pause()
       audio.currentTime = 0;
       audio.src = current.nextsrc
+      audio.play()
       if (current.chapter + 1 <= current.chapters) {
       let {title, chapter, src, nextsrc} = current;
       current = {...current, chapter: chapter + 1, time: 0, src: nextsrc, prevsrc: src}
@@ -289,13 +288,9 @@ function Player() {
           });
           stream.on('end', function () {
               const audio = document.getElementById('audio')
-                  console.log('Future Stream Complete')
+                  console.log('%cPLAYER: Future Stream Complete', 'color: DeepSkyBlue')
                   current.nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
                   socket.emit('stream-done', {create: false})
-                  axios.get(proxy + '/books/'+current._id)
-                  .then(res => {
-                      dispatch(setCurrent(current))
-                  })
           });
     });
       dispatch(nextChapter(current))
@@ -362,9 +357,9 @@ function Player() {
               <Play title={current?.title}/>
               <Next  current={current}/>
            </div>
-              {current && <Seek currentTime={current.time} currentID={current._id}/>}
+              {current && <Seek currentTime={current.time} src={current.src} currentID={current._id}/>}
             <audio id='audio' onEnded={onEnded}>         
-              <source src={current && current.src} type="audio/mpeg"></source>
+              {current.src && <source src={current.src} type="audio/mpeg"></source>}
             </audio>
           </div>
         </div>

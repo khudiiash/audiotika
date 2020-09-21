@@ -24,25 +24,19 @@ function BookList() {
         axios.get(proxy + '/books')
            .then(res => {
               if (res.data.length !== books.length) {
-                  dispatch(setBooks(res.data.filter(book => book.userID === user._id)))
+                  console.log('Setting Books')
+                  dispatch(setBooks(res.data.filter(book => {
+                      if (book._id === user.currentBookID) {book.isCurrent = true; return book}
+                      else if (book.userID === user._id) return book
+                  })))
               }
         })
-    }, [current])
+    }, [current, user])
 
-    // books = [
-    //     {
-    //         title: "Гарри Поттер и Философский камень",
-    //         author: "Джоан Роулинг",
-    //         chapter: 1,
-    //         chapters: 145,
-    //         time: 0,
-    
-    //     }
-    // ]
     
     return (
         <div className="booklist">
-            {books && Array.isArray(books) ? books.map(book => <Book book={book} key={book._id} isCurrent={current && current._id === book._id} />) : ""}
+            {books && Array.isArray(books) ? books.map(book => <Book book={book} key={book._id} isCurrent={book.isCurrent} />) : ""}
         </div>
     );
 }

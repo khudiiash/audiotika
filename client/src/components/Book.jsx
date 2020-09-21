@@ -9,7 +9,7 @@ import gsap from "gsap";
 import { setCurrent, deleteBook } from "../redux";
 import { CloseIcon, ClockLoader } from '../assets/icons'
 
-function Book({ book, isCurrent }) {
+function Book({ book }) {
     const bookRef = createRef();
     const enterTL = useRef();
     const current = useSelector(state => state.current)
@@ -28,8 +28,8 @@ function Book({ book, isCurrent }) {
     useEffect(() => {
         let bookHTML = bookRef.current
         
-        
-        if (isCurrent && !current.searched) {
+        if (book._id === user.currentBookID && !current.searched) {
+            console.log('play book')
             playBook()
         } else {
             dispatch(setSearched(false))
@@ -56,7 +56,7 @@ function Book({ book, isCurrent }) {
         e.stopPropagation()
         axios.delete(proxy + '/books/'+_id)
         dispatch(deleteBook(book))
-        if (audio && !audio.paused && isCurrent) {
+        if (audio && !audio.paused && book._id === user.currentBookID) {
             audio.pause()
             dispatch(setCurrent({}))
         }

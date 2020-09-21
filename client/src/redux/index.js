@@ -1,4 +1,6 @@
-import { createStore } from "redux"
+import { createStore, applyMiddleware } from "redux";
+import thunk from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension'; 
 import throttle from 'lodash.throttle';
 
 import {loadState, saveState} from "./localStorage"
@@ -61,6 +63,9 @@ export function nextChapter(payload) {
 export function setCurrent(payload) {
     return { type: SET_CURRENT, payload };
 }
+export function setCurrentAsync(payload) {
+    return { type: SET_CURRENT_ASYNC, payload };
+}
 export function setUser(payload) {
     return { type: SET_USER, payload };
 }
@@ -87,7 +92,7 @@ export function setSearched(payload) {
 
 // Store
 const persistedState = loadState();
-export const store = createStore(rootReducer, persistedState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+export const store = createStore(rootReducer, persistedState, composeWithDevTools(applyMiddleware(thunk)))
 
 window.store = store;
 store.subscribe(throttle(() => {

@@ -17,6 +17,7 @@ function Auth() {
     const [email, setEmail] = useState("")
     const [text, setText] = useState("")
     const proxy = useSelector(state => state.proxy)
+    const passwordField = createRef()
 
 
     let me = useSelector(state => state.user)
@@ -155,10 +156,11 @@ function Auth() {
                 type="email" 
                 placeholder="Email"
                 readOnly={isRegistration ? '' : 'readonly'}
-                onFocus={isRegistration ? onInputFocus : {function() {this.blur()}}}
+                onFocus={isRegistration ? onInputFocus : (e) => {e.target.blur(); passwordField.current.focus()}}
                 onChange={(e) => setEmail(e.target.value)}></input><div className='registration-error' style={{height: error && error.email ? "10%" : 0}}>{error.email}</div>
             <input className="registration-form-password" 
-                type="password" 
+                type="password"
+                ref={passwordField}
                 placeholder="Password"
                 onFocus={onInputFocus}
                 onChange={(e) => setPassword(e.target.value)}></input><div className='registration-error' style={{height: error && error.password ? "10%" : 0}}>{error.password}</div>
