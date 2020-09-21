@@ -117,7 +117,6 @@ io.on('connection', function (socket) {
                                                         audio = audioPath
                                                         return
                                                     }
-
                                                 })
 
                                         });
