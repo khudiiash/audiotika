@@ -273,7 +273,7 @@ function Player() {
       const audio = document.getElementById('audio');
       audio.currentTime = 0;
       audio.src = current.nextsrc
-      if (!navigator.indexOf("Safari") > -1) audio.play()
+      if (!window.navigator.indexOf("Safari") > -1) audio.play()
       if (current.chapter + 1 <= current.chapters) {
       let {title, chapter, src, nextsrc} = current;
       current = {...current, chapter: chapter + 1, time: 0, src: nextsrc, prevsrc: src}
