@@ -63,7 +63,7 @@ const Next = ({current}) => {
       audio.src = current.nextsrc
       try {audio.play()} catch {console.log('Error in On Next: failed to play audio')}
       let {title, chapter, src, nextsrc} = current
-      current = {...current, chapter: chapter + 1, time: 0, src: nextsrc, prevsrc: src}
+      current = {...current, chapter: current.chapter + 1, time: 0, src: nextsrc, prevsrc: src}
       axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
       axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
 
@@ -73,7 +73,7 @@ const Next = ({current}) => {
       // Get next chapter src
       const socket = io(proxy);
     
-      socket.emit('download-chapter', {title, chapter: current.chapter + 1, forFuture: true})
+      socket.emit('download-chapter', {title: current.title, chapter: current.chapter + 1, forFuture: true})
 
       socket.on('audio-loaded', function (data) {
         socket.emit('audio-ready', {forFuture: true});
