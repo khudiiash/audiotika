@@ -287,11 +287,16 @@ function Player() {
             }
         }
       if (current.chapter + 1 <= current.chapters) {
+        console.log('Socket: Downloading Next Chapter')
+          //Downdload future chapter
+      socket.emit('download-chapter', {title, chapter: current.chapter + 1, forFuture: true})
       let {title, chapter, src, nextsrc} = current;
       current = {...current, chapter: chapter + 1, time: 0, src: nextsrc, prevsrc: src}
       const socket = io(proxy);
       socket.on('audio-loaded', function (data) {
         socket.emit('audio-ready', {forFuture: true});
+        console.log('Socket: Loaded')
+
       });
       ss(socket).on('audio-stream', function(stream, {forFuture}) {
           let parts = [];
@@ -311,10 +316,7 @@ function Player() {
       axios.post(proxy + '/books/update-chapter/'+current._id, {chapter: current.chapter})
 
 
-      if (current && current.chapter < current.chapters) {
-        //Downdload future chapter
-         socket.emit('download-chapter', {title, chapter: current.chapter + 1, forFuture: true})
-      }
+     
      }
       
 
