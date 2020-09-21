@@ -273,7 +273,15 @@ function Player() {
       const audio = document.getElementById('audio');
       audio.currentTime = 0;
       audio.src = current.nextsrc
-      if (!window.navigator.indexOf("Safari") > -1) audio.play()
+      
+      var ua = navigator.userAgent.toLowerCase(); 
+          if (ua.indexOf('safari') != -1) { 
+            if (ua.indexOf('chrome') > -1) {
+              audio.play() // Chrome
+            } else {
+              console.log('Safari')
+            }
+        }
       if (current.chapter + 1 <= current.chapters) {
       let {title, chapter, src, nextsrc} = current;
       current = {...current, chapter: chapter + 1, time: 0, src: nextsrc, prevsrc: src}
