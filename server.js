@@ -71,21 +71,24 @@ io.on('connection', function (socket) {
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
             .then(() => rutracker.search({ query: title, sort: 'seeds' }))
             .then(torrents => {
+
                 torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))
+                console.log('Found torrents: ', torrents.length)
+
                 if (torrents.length) {
                     let torrent = torrents[0]
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title);
-                    fs.readdir(__dirname, function(err, items) {
-                        items.forEach(item => console.log(item))
-                    });
-                    
+    
+                    console.log('Working with torrent')
+
                     rutracker.getMagnetLink(torrent.id)
                         .then(URI => {
+                            console.log('Working with Magnet URL')
+
                             var WebTorrent = require('webtorrent')
                             var client = new WebTorrent()
                             client.add(URI, function (torrent) {
-
                                 let torrentFiles = torrent.files.filter((f, i) => {
                                     if (/.mp3|\.aac|\.wav/.test(f.name)) return f
                                 }
@@ -95,8 +98,11 @@ io.on('connection', function (socket) {
                                 }
                                 torrentFiles = torrentFiles.sort(customSort);
 
+                                console.log('Torrent Files: ', torrentFiles.length)
+
                                 torrentFiles.forEach(function (file, index) {
                                     if (index === chapter - 1) {
+                                        console.log('Current File: ', file.name)
                                         const stream = file.createReadStream();
                                         const audioPath = path.join(audiodir, file.name)
                                         const writer = fs.createWriteStream(audioPath);
@@ -109,6 +115,7 @@ io.on('connection', function (socket) {
                                                         console.log("Sending back")
                                                         socket.emit('audio-loaded', {forFuture})
                                                         audio = audioPath
+                                                        return
                                                     }
 
                                                 })
