@@ -125,7 +125,7 @@ io.on('connection', function (socket) {
 
 
                             })
-                        })
+                        }).catch(err => console.log("Magnet Link Error", err))
                 }
             }
             )
