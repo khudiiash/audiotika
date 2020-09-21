@@ -32,12 +32,11 @@ const Play = (props) => {
 const onPlay = () => {
     const audio = document.getElementById('audio')
     console.log('Play Button')
-    if (audio.src && !isPlaying) {
+    if (audio.src && audio.paused) {
       try {audio.play()} catch {console.log('Error in On Play')}
       setPlaying(isPlaying = !isPlaying)
-    } else if (audio.src && isPlaying) {
+    } else if (audio.src && !audio.paused) {
       try {audio.pause()} catch {console.log('Error in On Pause')}
-
       setPlaying(isPlaying = !isPlaying)
     }
   }
@@ -51,13 +50,12 @@ const onPlay = () => {
 const Next = ({current}) => {
   const proxy = useSelector(state => state.proxy)
   const dispatch = useDispatch()
-  console.log('Next Button')
 
 
   const onNext = () => {
     const audio = document.getElementById('audio');
 
-    console.log('Next Button')
+    console.log('Next Clicked')
 
 
     if (current.chapter < current.chapters) {
