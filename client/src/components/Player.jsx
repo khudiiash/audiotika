@@ -33,10 +33,11 @@ const onPlay = () => {
     const audio = document.getElementById('audio')
     console.log('Play Button')
     if (audio.src && !isPlaying) {
-      audio.play() 
+      try {audio.play()} catch {console.log('Error in On Play')}
       setPlaying(isPlaying = !isPlaying)
     } else if (audio.src && isPlaying) {
-      audio.pause() 
+      try {audio.pause()} catch {console.log('Error in On Pause')}
+
       setPlaying(isPlaying = !isPlaying)
     }
   }
