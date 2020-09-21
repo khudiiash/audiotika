@@ -32,12 +32,12 @@ const Play = (props) => {
 const onPlay = () => {
     const audio = document.getElementById('audio')
     console.log('Play Button')
-    if (audio.src && audio.paused) {
+    if (audio.src && !isPlaying) {
       try {audio.play()} catch {console.log('Error in On Play')}
-      setPlaying(isPlaying = !isPlaying)
-    } else if (audio.src && !audio.paused) {
+      setPlaying(true)
+    } else if (audio.src && isPlaying) {
       try {audio.pause()} catch {console.log('Error in On Pause')}
-      setPlaying(isPlaying = !isPlaying)
+      setPlaying(false)
     }
   }
   return (

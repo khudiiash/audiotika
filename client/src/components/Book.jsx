@@ -68,7 +68,7 @@ function Book({ book }) {
         setLoading(true)
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
-        console.log('Downloading Chapter: ', book.chapter, ' Current Chapter: ', current.chapter)
+        console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, forFuture: false})
         socket.on('audio-loaded', function (data) {
         socket.emit('audio-ready', {forFuture: data.forFuture});
@@ -91,9 +91,9 @@ function Book({ book }) {
                     
                 } else {
                     console.log('Stream Complete')
-
                     audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
                     socket.emit('stream-done', {create: false})
+                    console.log('Book: downloading future chapter: ', book.chapter)
                     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, forFuture: true})
                     axios.get(proxy + '/books/'+book._id)
                         .then(res => {
