@@ -31,6 +31,7 @@ const Play = (props) => {
  
 const onPlay = () => {
     const audio = document.getElementById('audio')
+    console.log('Play Button')
     if (audio.src && !isPlaying) {
       audio.play() 
       setPlaying(isPlaying = !isPlaying)
@@ -49,15 +50,19 @@ const onPlay = () => {
 const Next = ({current}) => {
   const proxy = useSelector(state => state.proxy)
   const dispatch = useDispatch()
+  console.log('Next Button')
 
 
   const onNext = () => {
     const audio = document.getElementById('audio');
 
+    console.log('Next Button')
+
+
     if (current.chapter < current.chapters) {
       audio.currentTime = 0;
       audio.src = current.nextsrc
-      audio.play()
+      try {audio.play()} catch {console.log('Error in On Next: failed to play audio')}
       let {title, chapter, src, nextsrc} = current
       current = {...current, chapter: chapter + 1, time: 0, src: nextsrc, prevsrc: src}
       axios.post(proxy + '/books/update-time/'+current._id, {time: 0})
