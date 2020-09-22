@@ -270,13 +270,17 @@ function Player() {
 
     }, []);
 
- 
+    const onCanPlayThrough = () => {
+      console.log('Can Play Through')
+    }
     const onEnded = () => {
       const audio = document.getElementById('audio');
       audio.pause();
+      audio.unload()
       audio.currentTime = 0;
       audio.src = current.nextsrc;
       audio.load();
+      audio.volume = 0;
       audio.play();
       
       // var ua = navigator.userAgent.toLowerCase(); 
@@ -374,7 +378,7 @@ function Player() {
               <Next  current={current}/>
            </div>
               {current && <Seek currentTime={current.time} src={current.src} currentID={current._id}/>}
-            <audio id='audio' onEnded={onEnded}>         
+            <audio id='audio' onEnded={onEnded} onCanPlayThrough={onCanPlayThrough}>         
               {current.src && <source src={current.src} type="audio/mpeg"></source>}
             </audio>
           </div>
