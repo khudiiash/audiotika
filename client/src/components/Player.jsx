@@ -276,7 +276,6 @@ function Player() {
     const onEnded = () => {
       const audio = document.getElementById('audio');
       audio.pause();
-      audio.unload()
       audio.currentTime = 0;
       audio.src = current.nextsrc;
       audio.load();
