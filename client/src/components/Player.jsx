@@ -273,8 +273,10 @@ function Player() {
  
     const onEnded = () => {
       const audio = document.getElementById('audio');
+      audio.pause();
       audio.currentTime = 0;
-      audio.src = current.nextsrc
+      audio.src = current.nextsrc;
+      audio.play();
       
       var ua = navigator.userAgent.toLowerCase(); 
           if (ua.indexOf('safari') != -1) { 
