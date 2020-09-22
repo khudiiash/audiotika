@@ -276,16 +276,17 @@ function Player() {
       audio.pause();
       audio.currentTime = 0;
       audio.src = current.nextsrc;
+      audio.load();
       audio.play();
       
-      var ua = navigator.userAgent.toLowerCase(); 
-          if (ua.indexOf('safari') != -1) { 
-            if (ua.indexOf('chrome') > -1) {
-              audio.play() // Chrome
-            } else {
-              console.log('Safari')
-            }
-        }
+      // var ua = navigator.userAgent.toLowerCase(); 
+      //     if (ua.indexOf('safari') != -1) { 
+      //       if (ua.indexOf('chrome') > -1) {
+      //         audio.play() // Chrome
+      //       } else {
+      //         console.log('Safari')
+      //       }
+      //   }
       if (current.chapter + 1 <= current.chapters) {
         console.log('Socket: Downloading Next Chapter')
       //Downdload future chapter
