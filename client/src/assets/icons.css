@@ -82,7 +82,9 @@
       stroke-dasharray: 1 1;
       stroke-dashoffset: 1;
       transform-origin: 50% 50%;
+      -webkit-transform: rotate(-.25turn);
       transform: rotate(-.25turn);
+
     }
   
   
@@ -94,14 +96,16 @@
   @keyframes PlayerSpin {
     0% {
       stroke-dashoffset: 1;
-      transform: rotate(-.25turn);
+      -webkit-transform: rotate(-.25turn);
     }
     50% {
       stroke-dashoffset: 0;
     }
     100% {
       stroke-dashoffset: -1;
+      -webkit-transform: rotate(.75turn);
       transform: rotate(.75turn);
+
     }
   }
 
