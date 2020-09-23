@@ -265,7 +265,7 @@ const Seek = (props) => {
   }
   const Chapter = (props) => {
     let { chapter, chapters } = props
-    return <><div className='player-chapter'>{chapter} / {chapters}</div></>
+    return <p className='player-chapter'>{chapter} / {chapters}</p>
   }
   return (
     <div className='player-controls-seek'>
