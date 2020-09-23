@@ -25,7 +25,7 @@ const initialState = {
     current: {},
     player: {isLoading: true, isPlaying: false, isPaused: false},
     proxy: "",
-    proxy: "http://localhost:5000",
+    //proxy: "http://localhost:5000",
 
 }
 function rootReducer(state = initialState, action) {
