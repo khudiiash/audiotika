@@ -5,7 +5,7 @@ import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading } from '
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import axios from "axios"
-import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerSpinner } from '../assets/icons'
+import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerSpinner, ClockLoader } from '../assets/icons'
 import { secToTime } from './_utils'
 import './style/Inputs.css'
 import gsap from 'gsap'
@@ -42,7 +42,7 @@ const Play = (props) => {
   }
   return (
     <div className='player-controls-play' id="play-button" onClick={onPlay}>
-      {isLoading ? <PlayerSpinner /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
+      {isLoading ? <ClockLoader /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
     </div>
   )
 }

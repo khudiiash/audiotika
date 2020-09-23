@@ -112,6 +112,13 @@
 #play-button {
   transition: .5s;
 }
+
+.player-controls-play .clock-loader {
+  margin-left: -15px;
+  transform: scale(1.4);
+  border: 2px solid #444;
+
+}
 @media screen and (max-width: 660px) {
   
   .player-box {
