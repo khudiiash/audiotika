@@ -62,6 +62,19 @@ export function FacebookIcon() {
 export function ClockLoader() {
     return (<div className="clock-loader"></div>)
 }
+export function PlayerSpinner() {
+    return (
+        <div className="playerSpinner">
+        <span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" focusable="false">
+                <circle cx="14" cy="14" r="12" fill="none" stroke="#000" strokeWidth="4" opacity=".15"/>
+                <circle pathLength="1" cx="14" cy="14" r="12" fill="none" stroke="#555555" strokeWidth="4" strokeDasharray="27 57" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+        </span>
+    </div>
+    )
+}
 export function QuitIcon() {
 return <svg xmlns="http://www.w3.org/2000/svg" className="icon quit" viewBox="0 0 136.87 193"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><rect className="door-1" width="136.87" height="193" rx="5"/><path className="door-2" d="M32.5,24.4,126.22,2.13a8.23,8.23,0,0,1,10.14,8V188.23a3.25,3.25,0,0,1-4.26,3.09L32.25,158.73A3.24,3.24,0,0,1,30,155.64V27.57A3.26,3.26,0,0,1,32.5,24.4Z"/></g></g></svg>
 }
+

@@ -73,19 +73,12 @@ io.on('connection', function (socket) {
             .then(torrents => {
 
                 torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))
-                console.log('Found torrents: ', torrents.length)
-
                 if (torrents.length) {
                     let torrent = torrents[0]
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title);
-    
-                    console.log('Working with torrent')
-
                     rutracker.getMagnetLink(torrent.id)
                         .then(URI => {
-                            console.log('Working with Magnet URL')
-
                             var WebTorrent = require('webtorrent')
                             var client = new WebTorrent()
                             client.add(URI, function (torrent) {
@@ -97,12 +90,8 @@ io.on('connection', function (socket) {
                                     return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
                                 }
                                 torrentFiles = torrentFiles.sort(customSort);
-
-                                console.log('Torrent Files: ', torrentFiles.length)
-
                                 torrentFiles.forEach(function (file, index) {
                                     if (index === chapter - 1) {
-                                        console.log('Current File: ', file.name)
                                         const stream = file.createReadStream();
                                         const audioPath = path.join(audiodir, file.name)
                                         const writer = fs.createWriteStream(audioPath);
@@ -135,7 +124,7 @@ io.on('connection', function (socket) {
         var filename = audio;
         
 
-        ss(socket).emit('audio-stream', stream, { name: filename, forFuture});
+        ss(socket).emit('audio-stream', stream, { name: filename, forFuture, chapter});
         fs.createReadStream(filename).pipe(stream);
     
     });

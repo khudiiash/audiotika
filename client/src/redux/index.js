@@ -15,6 +15,7 @@ const SET_PREV_SRC = 'SET_PREV_SRC'
 const SET_NEXT_SRC = 'SET_NEXT_SRC'
 const SET_CURRENT_SRC = 'SET_CURRENT_SRC'
 const SET_SEARCHED = 'SET_SEARCHED'
+const SET_LOADING = 'SET_LOADING'
 
 
 // Reducers
@@ -22,8 +23,9 @@ const initialState = {
     user: {},
     books: [],
     current: {},
+    player: {isLoading: true, isPlaying: false, isPaused: false},
     proxy: "",
-    //proxy: "http://localhost:5000",
+    proxy: "http://localhost:5000",
 
 }
 function rootReducer(state = initialState, action) {
@@ -48,6 +50,8 @@ function rootReducer(state = initialState, action) {
             return {...state, current: Object.assign({}, {...state.current,  src: action.payload})}
         case SET_SEARCHED:
             return {...state, current: Object.assign({}, {...state.current,  searched: action.payload})}
+        case SET_LOADING:
+            return {...state, player: Object.assign({}, {...state.player, isLoading: action.payload})}
             
     }
     return state;
@@ -87,6 +91,10 @@ export function setCurrentSrc(payload) {
 export function setSearched(payload) {
     return { type: SET_CURRENT_SRC, payload };
 }
+export function setLoading(payload) {
+    return { type: SET_LOADING, payload };
+}
+
 
 
 
@@ -100,6 +108,7 @@ store.subscribe(throttle(() => {
       user: store.getState().user,
       books: store.getState().books,
       current: store.getState().current,
+      player: store.getState().player,
       proxy: store.getState().proxy
     });
   }, 1000));

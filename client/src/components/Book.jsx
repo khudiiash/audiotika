@@ -27,6 +27,7 @@ function Book({ book }) {
 
     useEffect(() => {
         let bookHTML = bookRef.current
+        dispatch(setNextSrc(""))
         
         if (book._id === user.currentBookID && !current.searched) {
             console.log('play book')
@@ -82,15 +83,14 @@ function Book({ book }) {
             stream.on('end', function () {
                 const audio = document.getElementById('audio')
                 if (forFuture) {
-                    console.log('Future Stream Complete')
+                    console.log('Book: Future Stream Complete')
                     let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
                     socket.emit('stream-done', {create: false})
                     axios.get(proxy + '/books/'+book._id)
-                   
                     dispatch(setNextSrc(nextsrc))
                     
                 } else {
-                    console.log('Stream Complete')
+                    console.log('Book: Stream Complete')
                     audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
                     socket.emit('stream-done', {create: false})
                     console.log('Book: downloading future chapter: ', book.chapter + 1)
