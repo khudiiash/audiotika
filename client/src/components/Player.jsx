@@ -325,7 +325,11 @@ function Player() {
 
   }, []);
 
+  const onCanPlayThrough = (e) => {
+    console.log('CAN PLAY THROUGH', e.target.currentTime, current.time)
+    if (e.target.currentTime !== current.time) e.target.currentTime = current.time
 
+  }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
@@ -444,7 +448,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' onEnded={onEnded} >
+        <audio id='audio' onEnded={onEnded} onCanPlayThrough={onCanPlayThrough}>
           {current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
       </div>
