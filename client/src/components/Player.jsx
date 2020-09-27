@@ -17,6 +17,9 @@ const Play = (props) => {
   const isPlaying = useSelector(store => store.player.isPlaying)
   const dispatch = useDispatch()
 
+
+  console.log(isLoading)
+
   const onPlay = () => {
     const audio = document.getElementById('audio')
     if (audio.src && !isPlaying) {
@@ -226,7 +229,6 @@ const Seek = (props) => {
     }
     if (props.src) {
       console.log('%cCurrentTime: '+ currentTime, "color: rose")
-      dispatch(setLoading(false))
     }
 
     console.log('Updating Seek, dispatch Loading to false')
