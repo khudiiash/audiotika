@@ -5,7 +5,7 @@ import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading } from '
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import axios from "axios"
-import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerSpinner, ClockLoader } from '../assets/icons'
+import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading } from '../assets/icons'
 import { secToTime } from './_utils'
 import './style/Inputs.css'
 import gsap from 'gsap'
@@ -42,7 +42,7 @@ const Play = (props) => {
   }
   return (
     <div className='player-controls-play' id="play-button" onClick={onPlay}>
-      {isLoading ? <ClockLoader /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
+      {isLoading ? <PlayerLoading /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
     </div>
   )
 }
@@ -54,12 +54,10 @@ const Next = ({ current }) => {
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 
-  console.log('NEXTSRC ', current.nextsrc)
-
   const onNext = () => {
     const audio = document.getElementById('audio');
     let isFutureLoaded = true;
-    if (current.chapter < current.chapters) {
+    if (current && current.chapter < current.chapters) {
 
       audio.currentTime = 0;
       if (audio.src === current.nextsrc || !current.nextsrc) isFutureLoaded = false
@@ -144,7 +142,7 @@ const Prev = ({ current }) => {
   const onPrev = () => {
     const audio = document.getElementById('audio');
 
-    if (current.chapter > 1) {
+    if (current && current.chapter > 1) {
       if (current.prevsrc) {
         current.nextsrc = current.src
         current.src = current.prevsrc
@@ -162,7 +160,7 @@ const Prev = ({ current }) => {
 
 
 
-      } else {
+      } else if (current) {
         dispatch(setLoading(true))
         current.time = 0
         audio.pause()
@@ -326,8 +324,7 @@ function Player() {
   }, []);
 
   const onCanPlayThrough = (e) => {
-    console.log('CAN PLAY THROUGH', e.target.currentTime, current.time)
-    if (e.target.currentTime !== current.time) e.target.currentTime = current.time
+    if (current && current.time && e.target.currentTime !== current.time) e.target.currentTime = current.time
 
   }
   const onEnded = () => {
@@ -344,13 +341,14 @@ function Player() {
 
       const socket = io(proxy);
       if (isFutureLoaded) {
-        console.log('%c Found', 'color: green')
+  
         audio.src = current.src
         if (!isSafari) audio.play()
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
       } else {
         console.log('%c Not Found', 'color: red')
-        audio.pause()
+        audio.src = "";
+        audio.pause();
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter, forFuture: false })
         dispatch(setLoading(true))
       }
@@ -449,7 +447,7 @@ function Player() {
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
         <audio id='audio' onEnded={onEnded} onCanPlayThrough={onCanPlayThrough}>
-          {current.src && <source src={current.src} type="audio/mpeg"></source>}
+          {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
       </div>
     </div>
