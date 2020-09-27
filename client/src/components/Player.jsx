@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, createRef, memo } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
-import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading } from '../redux';
+import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying} from '../redux';
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import axios from "axios"
@@ -13,15 +13,16 @@ import gsap from 'gsap'
 
 
 const Play = (props) => {
-  let [isPlaying, setPlaying] = useState(false)
   const isLoading = useSelector(store => store.player.isLoading)
+  const isPlaying = useSelector(store => store.player.isPlaying)
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    setPlaying(false)
+    dispatch(setPlaying(false))
     let playinterval = setInterval(() => {
       const audio = document.getElementById('audio')
       if (audio && audio.src && !audio.paused && !isPlaying) {
-        setPlaying(true);
+        dispatch(setPlaying(true))
         clearInterval(playinterval);
       }
     }, 1)
@@ -33,11 +34,11 @@ const Play = (props) => {
   const onPlay = () => {
     const audio = document.getElementById('audio')
     if (audio.src && !isPlaying) {
-      try { audio.play() } catch { console.log('Error in On Play') }
-      setPlaying(true)
+      audio.play()
+      dispatch(setPlaying(true))
     } else if (audio.src && isPlaying) {
-      try { audio.pause() } catch { console.log('Error in On Pause') }
-      setPlaying(false)
+      audio.pause()
+      dispatch(setPlaying(false))
     }
   }
   return (
@@ -269,12 +270,17 @@ const Seek = (props) => {
   }
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />
-      <div className='player-controls-text'>
-        <div className="divlayer-controls-cts">{secToTime(audio.currentTime)}</div>
-        <Chapter chapter={props.chapter} chapters={props.chapters} />
-        <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
-      </div>
+    
+      {props.src && <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />}
+      {
+        props.src && 
+        <div className='player-controls-text'>
+          <div className="divlayer-controls-cts">{secToTime(audio.currentTime)}</div>
+          <Chapter chapter={props.chapter} chapters={props.chapters} />
+          <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
+        </div>
+      }
+     
 
     </div>
   )
@@ -329,11 +335,12 @@ function Player() {
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    dispatch(setPlaying(false))
 
     const audio = document.getElementById('audio');
     let isFutureLoaded = true;
     if (current.chapter < current.chapters) {
-
+      
       audio.currentTime = 0;
       if (audio.src === current.nextsrc || !current.nextsrc) isFutureLoaded = false
 
@@ -343,7 +350,7 @@ function Player() {
       if (isFutureLoaded) {
   
         audio.src = current.src
-        if (!isSafari) audio.play()
+        if (!isSafari) {audio.play();dispatch(setPlaying(true))}
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
       } else {
         console.log('%c Not Found', 'color: red')
@@ -352,7 +359,6 @@ function Player() {
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter, forFuture: false })
         dispatch(setLoading(true))
       }
-
 
       dispatch(nextChapter(current))
 
@@ -425,7 +431,7 @@ function Player() {
 
 
   let playerBoxStyle = {
-    top: isFullView ? (isMobile ? '10vh' : '15vh') : (isMobile ? '8vh' : '10vh'),
+    top: isFullView ? (isMobile ? '10vh' : '15vh') : (isMobile ? '0vh' : '10vh'),
     height: isFullView ? (isMobile ? "70vh" : "60vh") : (isMobile ? "60vh" : "55vh")
   }
 

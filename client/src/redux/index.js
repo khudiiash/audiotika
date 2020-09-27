@@ -16,6 +16,8 @@ const SET_NEXT_SRC = 'SET_NEXT_SRC'
 const SET_CURRENT_SRC = 'SET_CURRENT_SRC'
 const SET_SEARCHED = 'SET_SEARCHED'
 const SET_LOADING = 'SET_LOADING'
+const SET_PLAYING = 'SET_PLAYING'
+
 
 
 // Reducers
@@ -52,6 +54,8 @@ function rootReducer(state = initialState, action) {
             return {...state, current: Object.assign({}, {...state.current,  searched: action.payload})}
         case SET_LOADING:
             return {...state, player: Object.assign({}, {...state.player, isLoading: action.payload})}
+        case SET_PLAYING:
+            return {...state, player: Object.assign({}, {...state.player, isPlaying: action.payload})}
             
     }
     return state;
@@ -93,6 +97,9 @@ export function setSearched(payload) {
 }
 export function setLoading(payload) {
     return { type: SET_LOADING, payload };
+}
+export function setPlaying(payload) {
+    return { type: SET_PLAYING, payload };
 }
 
 

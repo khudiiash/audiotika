@@ -51,10 +51,11 @@ const sizeToString = (bytes) => {
     
         if (title) {
             lastTitle = title;
+            setSearching(true)
             socket.emit('search-book', {title})
             socket.on('search-result', function({result}) {
                 setSearchResult(result)
-                setLoading(false)
+                setSearching(false)
             })
             setTitle(title = "")
             toggleSearch()
@@ -77,7 +78,6 @@ const sizeToString = (bytes) => {
             let {id, title} = result[i]
             socket.emit('download-chapter', {torrentID: id, title, chapter: 1, forFuture: false})
             setSearchResult([])
-            setSearching(true)
 
             socket.on('audio-loaded', function (data) {
                 socket.emit('audio-ready', data);
@@ -112,7 +112,6 @@ const sizeToString = (bytes) => {
                 if (create) {
                     if (Array.isArray(books) && !books.filter(b => b.title === lastTitle).length) {
                         const book = {userID: user._id,title: lastTitle, author, chapter: 1, chapters, cover: "", src, time: 0}
-                        console.log(book)
                         axios.post(proxy + '/books/add', {...book})
                             .then(res => {
                                 let {book} = res.data    
@@ -153,7 +152,7 @@ const sizeToString = (bytes) => {
             <form onSubmit={onSubmit}>
                <div className='search-animation' style={{opacity: isSearching ? 1 : 0}}></div>
                <input type="text" id="search-input" value={title} style={searchStyle} onChange={onChange}/>
-                <button type="submit" id='search-button' onClick={onSubmit}>
+                <button type="submit" id='search-button'>
                     <SearchIcon/>
                 </button>
             </form>
