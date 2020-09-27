@@ -72,10 +72,9 @@ function Book({ book }) {
         console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, forFuture: false})
         socket.on('audio-loaded', function (data) {
-        socket.emit('audio-ready', {forFuture: data.forFuture});
-                
+        socket.emit('audio-ready', data);
         });
-        ss(socket).on('audio-stream', function(stream, {forFuture}) {
+        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, chapters, src}) {
             let parts = [];
             stream.on('data', (chunk) => {
                 parts.push(chunk);
@@ -85,14 +84,14 @@ function Book({ book }) {
                 if (forFuture) {
                     console.log('Book: Future Stream Complete')
                     let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-                    socket.emit('stream-done', {create: false})
+                    socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
                     axios.get(proxy + '/books/'+book._id)
                     dispatch(setNextSrc(nextsrc))
                     
                 } else {
                     console.log('Book: Stream Complete')
                     audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
-                    socket.emit('stream-done', {create: false})
+                    socket.emit('stream-done', {create: false, title, author, chapters, src})
                     console.log('Book: downloading future chapter: ', book.chapter + 1)
                     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, forFuture: true})
                     axios.get(proxy + '/books/'+book._id)

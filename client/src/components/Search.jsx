@@ -83,23 +83,23 @@ const sizeToString = (bytes) => {
                 socket.emit('audio-ready', data);
                     
             });
-            ss(socket).on('audio-stream', function(stream, data) {
+            ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, chapters, src}) {
                 let parts = [];
                 stream.on('data', (chunk) => {
                     parts.push(chunk);
                 });
                 stream.on('end', function () {
                     const audio = document.getElementById('audio')
-                    if (data.forFuture) {
+                    if (forFuture) {
                         console.log('Future Stream Complete')
                         let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
-                        socket.emit('stream-done', {create: false, nextsrc: nextsrc, src: current.src})
+                        socket.emit('stream-done', {create: false, title, author, chapter, chapters, nextsrc, src: current.src})
                     } else {
                         console.log('Stream Complete')
                         let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
                         audio.src = src
-                        socket.emit('stream-done', {create: true, title: data.title, author: data.author, chapters: data.chapters, src})
-                        socket.emit('download-chapter', {title: data.title, chapter: 2, forFuture: true})
+                        socket.emit('stream-done', {create: true, title, author, chapter, chapters, src})
+                        socket.emit('download-chapter', {title, chapter: 2, forFuture: true})
                         setSearching(false)
                         
                     }

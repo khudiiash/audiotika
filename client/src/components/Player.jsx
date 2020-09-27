@@ -84,12 +84,12 @@ const Next = ({ current }) => {
       dispatch(setCurrent(current))
 
       // Get next chapter src
-      socket.on('audio-loaded', function ({forFuture}) {
-        if (forFuture) console.log('Loaded For Future') 
+      socket.on('audio-loaded', function (data) {
+        if (data.forFuture) console.log('Loaded For Future') 
         else console.log('Loaded')
-        socket.emit('audio-ready', { forFuture });
+        socket.emit('audio-ready', data);
       });
-      ss(socket).on('audio-stream', function (stream, { forFuture, chapter }) {
+      ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src}) {
         if (forFuture) console.log('Stream Ready For Future') 
         else console.log('Stream Ready')
         let parts = [];
@@ -102,11 +102,11 @@ const Next = ({ current }) => {
            if (store.getState().current.chapter !== chapter) {
             console.log('%c OnNext: Future', 'color: orange')
             let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-            socket.emit('stream-done', { create: false })
+            socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
             dispatch(setNextSrc(nextsrc))
             dispatch(setLoading(false))
            } else {
-            socket.emit('stream-done', { create: false })
+            socket.emit('stream-done', {create: true, title, author, chapters: chapters, src})
             socket.emit('download-chapter', { title: current.title, chapter: chapter + 1, forFuture: true })
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             audio.src = src
@@ -177,26 +177,26 @@ const Prev = ({ current }) => {
 
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter, forFuture: false })
 
-        socket.on('audio-loaded', function ({ forFuture }) {
-          socket.emit('audio-ready', { forFuture });
+        socket.on('audio-loaded', function (data) {
+          socket.emit('audio-ready', data);
         });
-        ss(socket).on('audio-stream', function (stream, { forFuture }) {
+        ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src}) {
           let parts = [];
           stream.on('data', (chunk) => {
             parts.push(chunk);
           });
-          stream.on('end', function () {
+          stream.on('end', function (data) {
             if (forFuture) {
               const audio = document.getElementById('audio')
               console.log('Future Stream Complete')
               let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-              socket.emit('stream-done', { create: false })
+              socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
               dispatch(setNextSrc(nextsrc))
             } else {
               const audio = document.getElementById('audio')
               console.log('Stream Complete')
               let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-              socket.emit('stream-done', { create: false })
+              socket.emit('stream-done', {create: false, title, author, chapters, src})
               socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
               audio.src = src
               audio.play()
@@ -361,10 +361,10 @@ function Player() {
   
 
       // Get next chapter src
-      socket.on('audio-loaded', function ({forFuture}) {
-        socket.emit('audio-ready', { forFuture });
+      socket.on('audio-loaded', function (data) {
+        socket.emit('audio-ready', data);
       });
-      ss(socket).on('audio-stream', function (stream, { forFuture, chapter }) {
+      ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src}) {
         let parts = [];
         stream.on('data', (chunk) => {
           parts.push(chunk);
@@ -374,7 +374,7 @@ function Player() {
            if (store.getState().current.chapter !== chapter) {
             console.log('%c OnEnded: Future', 'color: orange')
             let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-            socket.emit('stream-done', { create: false })
+            socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
             dispatch(setNextSrc(nextsrc))
             dispatch(setLoading(false))
            } else {
@@ -384,7 +384,7 @@ function Player() {
           else {
             console.log('%c OnEnded: Stream', 'color: orange')
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-            socket.emit('stream-done', { create: false })
+            socket.emit('stream-done', {create: false, title, author, chapters: chapters, src})
             socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
             audio.src = src
             if (!isSafari) audio.play()
@@ -406,7 +406,7 @@ function Player() {
   }
   const PlayerText = (props) => {
 
-    let { title, author, chapter, chapters } = props
+    let { title, author } = props
 
     useEffect(() => {
       if (!mounted)
