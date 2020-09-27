@@ -260,14 +260,12 @@ const Seek = (props) => {
   return (
     <div className='player-controls-seek'>
     
-      <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />}
-        <div className='player-controls-text'>
-          <div className="divlayer-controls-cts">{secToTime(audio.currentTime)}</div>
-          <Chapter chapter={props.chapter} chapters={props.chapters} />
-          <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
+      <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />
+      <div className='player-controls-text'>
+        <div className="divlayer-controls-cts">{secToTime(audio.currentTime)}</div>
+        <Chapter chapter={props.chapter} chapters={props.chapters} />
+        <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
       </div>
-     
-
     </div>
   )
 }
