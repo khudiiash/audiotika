@@ -86,7 +86,7 @@ function Book({ book }) {
                     let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
                     socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
                     axios.get(proxy + '/books/'+book._id)
-                    dispatch(setNextSrc(nextsrc))
+                    if (current.title === title) dispatch(setNextSrc(nextsrc))
                     
                 } else {
                     console.log('Book: Stream Complete')

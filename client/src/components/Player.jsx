@@ -254,20 +254,18 @@ const Seek = (props) => {
   }
   const Chapter = (props) => {
     let { chapter, chapters } = props
-    return <div className='player-chapter'>{chapter} / {chapters}</div>
+    if (chapter) return <div className='player-chapter'>{chapter} / {chapters}</div>
+    else return <div className='player-chapter'></div>
   }
   return (
     <div className='player-controls-seek'>
     
-      {props.src && <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />}
-      {
-        props.src && 
+      <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />}
         <div className='player-controls-text'>
           <div className="divlayer-controls-cts">{secToTime(audio.currentTime)}</div>
           <Chapter chapter={props.chapter} chapters={props.chapters} />
           <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
-        </div>
-      }
+      </div>
      
 
     </div>
