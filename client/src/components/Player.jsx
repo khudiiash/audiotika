@@ -17,20 +17,6 @@ const Play = (props) => {
   const isPlaying = useSelector(store => store.player.isPlaying)
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    dispatch(setPlaying(false))
-    let playinterval = setInterval(() => {
-      const audio = document.getElementById('audio')
-      if (audio && audio.src && !audio.paused && !isPlaying) {
-        dispatch(setPlaying(true))
-        clearInterval(playinterval);
-      }
-    }, 1)
-
-    return () => clearInterval(playinterval);
-
-  }, [props.title])
-
   const onPlay = () => {
     const audio = document.getElementById('audio')
     if (audio.src && !isPlaying) {

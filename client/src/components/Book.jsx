@@ -67,7 +67,6 @@ function Book({ book }) {
     function playBook() {
         //gsap.to(bookRef.current, .5, {scale: 1.05, repeat: 1, yoyo: true})
         setLoading(true)
-        dispatch(setLoading(true))
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         console.log('Book: downloading current chapter: ', book.chapter)
@@ -98,7 +97,6 @@ function Book({ book }) {
                     axios.get(proxy + '/books/'+book._id)
                         .then(res => {
                             setLoading(false)
-                            dispatch(setLoading(false))
                             dispatch(setCurrent({...res.data, src: audio.src}))
                         })
                     
