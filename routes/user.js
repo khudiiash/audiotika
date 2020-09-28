@@ -32,8 +32,8 @@ router.route('/login').post((req, res) => {
           books: [],
         });
         newUser.save()
-          .then(() => res.json(user))
-          .catch(() => res.status(500).send('Wrong User Info'))
+          .then((user) => res.json(user))
+          .catch((err) => {console.log('failed to create use',newUser, err);res.status(500).send('Wrong User Info')})
       }
   }
 })

@@ -297,7 +297,6 @@ function Player() {
 
   useEffect(() => {
     gsap.config({ force3D: false })
-    dispatch(setLoading(true))
     setTimeout(() => setFullView(!isFullView), 1500)
 
     mountedTL.current = gsap.timeline()
