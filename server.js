@@ -134,7 +134,7 @@ io.on('connection', function (socket) {
                                                 .then(function (stat) {
                                                     if (audio !== audioPath) {
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
-                                                        console.log("Sending back")
+                                                        console.log("Sending back", {title: findTitle(torrent.title), author: findAuthor(torrent.title), chapter: data.chapter, chapters, forFuture})
                                                         socket.emit('audio-loaded', {title: findTitle(torrent.title), author: findAuthor(torrent.title), chapter: data.chapter, chapters, forFuture})
                                                         audio = audioPath
                                                         return
