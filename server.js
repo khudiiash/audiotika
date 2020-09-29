@@ -142,15 +142,16 @@ io.on('connection', function (socket) {
                                             fileExists(path.resolve(path.join(audiodir,file.name)))
                                                 .then(function (stat) {
                                                     console.log('File Exists')
-                                                    if (audio !== audioPath) console.log('audio !== audioPath')
-                                                    else console.log('audio === audioPath')
                                                     if (audio !== audioPath) {
+                                                        console.log("Good, we're there")
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
                                                         console.log("Sending back", {title: findTitle(torrent.title), author: findAuthor(torrent.title), chapter: data.chapter, chapters, forFuture})
                                                         socket.emit('audio-loaded', {title: findTitle(torrent.title), author: findAuthor(torrent.title), chapter: data.chapter, chapters, forFuture})
                                                         audio = audioPath
                                                         return
                                                     }
+                                                    else console.log('audio === audioPath')
+                                        
                                                 })
 
                                         });
