@@ -141,12 +141,11 @@ io.on('connection', function (socket) {
                                             writer.write(data);
                                             fileExists(path.resolve(path.join(audiodir,file.name)))
                                                 .then(function (stat) {
-                                                    console.log('File Exists')
                                                     if (audio !== audioPath) {
                                                         console.log("title: ", title)
                                                         console.log("author: ", author)
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
-                                                        console.log("Sending back ", title, chapter)
+                                                        console.log("Sending back ", title, data.chapter)
                                                         socket.emit('audio-loaded', {title, author, chapter: data.chapter, chapters, forFuture})
                                                         audio = audioPath
                                                         return
@@ -166,7 +165,7 @@ io.on('connection', function (socket) {
             )
     })
     socket.on('audio-ready', function (data) {
-        console.log("Audio Ready: ", data)
+        console.log("Audio Ready")
         var stream = ss.createStream();
         var filename = audio;
         ss(socket).emit('audio-stream', stream, { ...data, name: filename});
