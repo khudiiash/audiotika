@@ -54,6 +54,15 @@ io.on('connection', function (socket) {
 
     if (!fs.existsSync(audiodir)){
         fs.mkdirSync(audiodir);
+    } else {
+        fs.readdir(audiodir, (err, files) => {
+            if (err) throw err;
+            for (const file of files) {
+              fs.unlink(path.join(audiodir, file), err => {
+                if (err) throw err;
+              });
+            }
+      });
     }
 
     socket.on('search-book', function(data) {
