@@ -141,6 +141,13 @@ io.on('connection', function (socket) {
                                             writer.write(data);
                                             fileExists(path.resolve(path.join(audiodir,file.name)))
                                                 .then(function (stat) {
+                                                     console.log(audioPath, 'exists')
+                                                     fs.readdir(audiodir, (err, files) => {
+                                                        if (err) throw err;
+                                                        for (const file of files) {
+                                                          console.log(file)
+                                                        }
+                                                      });
                                                     if (audio !== audioPath) {
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
                                                         console.log("Sending back", {title: findTitle(torrent.title), author: findAuthor(torrent.title), chapter: data.chapter, chapters, forFuture})
