@@ -144,8 +144,8 @@ io.on('connection', function (socket) {
                                                     console.log('File Exists')
                                                     if (audio !== audioPath) {
                                                         console.log("Good, we're there, here's the torrent length", torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length)
-                                                        console.log("title: ", findTitle(torrent.title))
-                                                        console.log("name: ", findTitle(torrent.name))
+                                                        console.log("title: ", torrent.title)
+                                                        console.log("name: ", torrent.name)
 
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
                                                         console.log("Sending back", {title: findTitle(torrent.title), author: findAuthor(torrent.title), chapter: data.chapter, chapters, forFuture})
