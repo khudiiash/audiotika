@@ -123,7 +123,7 @@ io.on('connection', function (socket) {
                                     return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
                                 }
                                 torrentFiles = torrentFiles.sort(customSort);
-                                console.log(chapter, data.chapter)
+                                chapter = data.chapter
                                 torrentFiles.forEach(function (file, index) {
                                     if (index === data.chapter - 1) {
                                         console.log('FILE: ', file.name)
@@ -135,12 +135,12 @@ io.on('connection', function (socket) {
                                             fileExists(path.resolve(path.join(audiodir,file.name)))
                                                 .then(function (stat) {
                                                     if (audio !== audioPath) {
-                                                        console.log(chapter, data.chapter)
+                                                        console.log(chapter)
                                                         console.log("title: ", title)
                                                         console.log("author: ", author)
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
-                                                        console.log("Sending back ", title, data.chapter)
-                                                        socket.emit('audio-loaded', {title, author, chapter: data.chapter, chapters, forFuture})
+                                                        console.log("Sending back ", title, chapter)
+                                                        socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture})
                                                         audio = audioPath
                                                         return
                                                     }
