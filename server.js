@@ -109,17 +109,11 @@ io.on('connection', function (socket) {
                 if (torrents.length) {
                     let torrent = torrents[0]
                     author = findAuthor(torrent.title);
-                    title = findTitle(torrent.title); 
-
-                    console.log('inside torrentID: ', torrentID)
-                    console.log('inside data.torrentID: ',data.torrentID)
-
-
+                    title = findTitle(torrent.title);
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
                         .then(URI => {
                             var WebTorrent = require('webtorrent')
                             var client = new WebTorrent()
-                            console.log('URI: ',URI)
                             client.add(URI, function (torrent) {
                                 let torrentFiles = torrent.files.filter((f, i) => {
                                     if (/.mp3|\.aac|\.wav/.test(f.name)) return f
@@ -129,8 +123,7 @@ io.on('connection', function (socket) {
                                     return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
                                 }
                                 torrentFiles = torrentFiles.sort(customSort);
-                                console.log('TORRENT FILES: ', torrentFiles.length)
-
+                                console.log(chapter, data.chapter)
                                 torrentFiles.forEach(function (file, index) {
                                     if (index === data.chapter - 1) {
                                         console.log('FILE: ', file.name)
@@ -189,6 +182,8 @@ io.on('connection', function (socket) {
           });
     })
 });
+
+
 
 
 

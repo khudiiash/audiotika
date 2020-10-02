@@ -119,4 +119,3 @@ store.subscribe(throttle(() => {
       proxy: store.getState().proxy
     });
   }, 1000));
-

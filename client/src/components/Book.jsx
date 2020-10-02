@@ -13,7 +13,7 @@ function Book({ book }) {
     const bookRef = createRef();
     const enterTL = useRef();
     const current = useSelector(state => state.current)
-    
+    let size = 0;
     const { _id } = book
 
     const dispatch = useDispatch()
