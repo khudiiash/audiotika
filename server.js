@@ -135,6 +135,7 @@ io.on('connection', function (socket) {
                                             fileExists(path.resolve(path.join(audiodir,file.name)))
                                                 .then(function (stat) {
                                                     if (audio !== audioPath) {
+                                                        console.log(chapter, data.chapter)
                                                         console.log("title: ", title)
                                                         console.log("author: ", author)
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
