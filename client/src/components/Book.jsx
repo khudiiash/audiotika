@@ -13,7 +13,7 @@ function Book({ book }) {
     const bookRef = createRef();
     const enterTL = useRef();
     const current = useSelector(state => state.current)
-    let size = 0;
+    let chunkSize = 0;
     const { _id } = book
 
     const dispatch = useDispatch()
@@ -74,10 +74,13 @@ function Book({ book }) {
         socket.on('audio-loaded', function (data) {
         socket.emit('audio-ready', data);
         });
-        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, chapters, src}) {
+        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, chapters, src, size}) {
             let parts = [];
             stream.on('data', (chunk) => {
                 parts.push(chunk);
+                chunkSize += chunk.length
+                console.log(Math.floor(chunkSize * 100 / size), '%')
+
             });
             stream.on('end', function () {
                 const audio = document.getElementById('audio')

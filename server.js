@@ -39,6 +39,12 @@ if (process.env.NODE_ENV === 'production') {
 
 }
 
+
+function getFileSize(filename) {
+    var stats = fs.statSync(filename)
+    var fileSizeInBytes = stats["size"]
+    return fileSizeInBytes
+}
 const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'))
 const io = require('socket.io').listen(server)
 let audiodir;
@@ -135,12 +141,12 @@ io.on('connection', function (socket) {
                                             fileExists(path.resolve(path.join(audiodir,file.name)))
                                                 .then(function (stat) {
                                                     if (audio !== audioPath) {
-                                                        console.log(chapter)
+                                                        let size = getFileSize(audioPath)
                                                         console.log("title: ", title)
                                                         console.log("author: ", author)
                                                         chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
-                                                        console.log("Sending back ", title, chapter)
-                                                        socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture})
+                                                        console.log("Sending back ", title, chapter, size, 'bytes')
+                                                        socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture, size})
                                                         audio = audioPath
                                                         return
                                                     }
