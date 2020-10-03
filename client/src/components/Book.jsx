@@ -1,7 +1,8 @@
 import React, { useRef, useState, createRef, useEffect } from "react";
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import axios from 'axios'
-import {store, setNextSrc, setSearched, setLoading} from '../redux'
+import {store, setNextSrc, setSearched, setLoading, setPercent} from '../redux'
+import {secToTime} from './_utils'
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import "./style/Book.css";
@@ -20,10 +21,8 @@ function Book({ book }) {
 
     const user = useSelector(state => state.user)
     const proxy = useSelector(state => state.proxy)
-
     const isLoading = useSelector(state => state.player.isLoading)
-
-   
+    let isCurrent = book._id === user.currentBookID;
 
     useEffect(() => {
         let bookHTML = bookRef.current
@@ -72,17 +71,21 @@ function Book({ book }) {
         console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, forFuture: false})
         socket.on('audio-loaded', function (data) {
+            console.log(data.fileSize+' Kb')
         socket.emit('audio-ready', data);
         });
-        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, chapters, src, size}) {
+        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize}) {
             let parts = [];
+            console.log(stream)
             stream.on('data', (chunk) => {
                 parts.push(chunk);
-                chunkSize += chunk.length
-                console.log(Math.floor(chunkSize * 100 / size), '%')
+                chunkSize += chunk.byteLength
+                dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
 
             });
             stream.on('end', function () {
+                chunkSize = 0;
+                dispatch(setPercent(0))
                 const audio = document.getElementById('audio')
                 if (forFuture) {
                     console.log('Book: Future Stream Complete')
@@ -100,7 +103,7 @@ function Book({ book }) {
                     axios.get(proxy + '/books/'+book._id)
                         .then(res => {
                             dispatch(setLoading(false))
-                            dispatch(setCurrent({...res.data, src: audio.src}))
+                            dispatch(setCurrent({...res.data, src: audio.src, duration}))
                         })
                     
                 }
@@ -121,7 +124,7 @@ function Book({ book }) {
 
                     : <><div className="book-title">{book.title}</div>
                         <div className="book-author">{book.author}</div>
-                        {isLoading && <div className="book-loader"><ClockLoader/></div>}
+                        {isLoading && isCurrent && <div className="book-loader"><ClockLoader/></div>}
                         
                         </>
             }

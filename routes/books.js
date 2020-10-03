@@ -43,6 +43,8 @@ router.route('/update-time/:id').post((req, res) => {
 
     Book.findById(req.params.id)
     .then(Book => {
+      // if (time - Book.time === 1) Book.timeLeft -= 1
+      // if (time > 0 && time < Book.time) Book.timeLeft += Book.time - time
       Book.time = time
       Book.save()
         .then(() => res.json('Book time updated!'))

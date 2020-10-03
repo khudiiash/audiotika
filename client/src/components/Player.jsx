@@ -15,10 +15,12 @@ import gsap from 'gsap'
 const Play = (props) => {
   const isLoading = useSelector(store => store.player.isLoading)
   const isPlaying = useSelector(store => store.player.isPlaying)
+  const percent = useSelector(store => store.player.percent)
   const dispatch = useDispatch()
 
 
   console.log(isLoading)
+  console.log('in player: ', percent)
 
   const onPlay = () => {
     const audio = document.getElementById('audio')
@@ -32,7 +34,7 @@ const Play = (props) => {
   }
   return (
     <div className='player-controls-play' id="play-button" onClick={onPlay}>
-      {isLoading ? <PlayerLoading /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
+      {isLoading ? <PlayerLoading percent={percent}/> : isPlaying ? <PauseIcon /> : <PlayIcon />}
     </div>
   )
 }
@@ -271,8 +273,6 @@ const Seek = (props) => {
 }
 
 
-
-
 function Player() {
   const store = useStore();
   const playerRef = createRef();
@@ -314,6 +314,13 @@ function Player() {
 
   const onCanPlayThrough = (e) => {
     if (current && current.time && e.target.currentTime !== current.time) e.target.currentTime = current.time
+
+  }
+  const onPause = () => {
+    dispatch(setPlaying(false))
+  }
+  const onPlay = () => {
+    dispatch(setPlaying(true))
 
   }
   const onEnded = () => {
@@ -435,7 +442,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' onEnded={onEnded} onCanPlayThrough={onCanPlayThrough}>
+        <audio id='audio' onEnded={onEnded} onPlay={onPlay} onPause={onPause} onCanPlayThrough={onCanPlayThrough}>
           {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
       </div>

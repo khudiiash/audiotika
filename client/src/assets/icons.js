@@ -62,11 +62,15 @@ export function FacebookIcon() {
 export function ClockLoader() {
     return (<div className="clock-loader"></div>)
 }
-export function PlayerLoading() {
+export function PlayerLoading({percent}) {
     return (
-        <svg className='playerLoading'>
-            <circle cx="15" cy="15" r="15"/>
-        </svg>
+        <div className="playerLoadingContainer">
+            <div className='percent'>{percent > 0 ? percent : ''}</div>
+             <svg className='playerLoading'>
+                <circle cx="15" cy="15" r="15"/>
+            </svg>
+        </div>
+       
     )
 }
 export function QuitIcon() {

@@ -139,7 +139,7 @@ const sizeToString = (bytes) => {
                         return <li key={i} onClick={() => onBookClick(i)} className="search-result-list-item">
                                 <div className='search-result-list-item-top'>{t.title}</div>
                                 <div className='search-result-list-item-middle'>{t.author}</div>
-                                <div className='search-result-list-item-bottom'>Size: {sizeToString(t.size)} &#183; Seeds: {t.seeds}</div>
+                    <div className='search-result-list-item-bottom'>Size: {sizeToString(t.size)} &#183; Seeds: {t.seeds}</div>
                             </li>
                     })}
                 </ul>
