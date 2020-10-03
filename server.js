@@ -3,14 +3,11 @@ const bodyParser = require('body-parser')
 const fs = require('fs')
 const cors = require('cors')
 const app = express()
-
 const ss = require('socket.io-stream')
 const path = require('path')
 const findAuthor = require('./utils/findAuthor')
 const findTitle = require('./utils/findTitle')
-const fileExists = require('file-exists-promise')
 
-const mp3Duration = require('mp3-duration');
 
 
 const mongoose = require('mongoose');
