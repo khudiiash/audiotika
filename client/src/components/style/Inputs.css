@@ -24,8 +24,9 @@ input[type=range] {
     border: 0px solid #000000;
     height: 2vh;
     width: 4px;
+
     border-radius: 7px;
-    background: transparent;
+    background: #EB778E;
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -7.6px;
