@@ -31,10 +31,12 @@
 .book-title {
   font-size: .8rem;
   text-align: center;
+  width: 90%;
 }
 
 .book-author {
-  margin-top: 3px;
+  position: relative;
+  top: 10px;
   font-size: .6rem;
 }
 
@@ -56,13 +58,14 @@
 
 .book-loader {
   border-radius: 50%;
-  width: 100%;
+  width: 5%;
   display: flex;
   justify-content: center;
   height: 25px;
   position: absolute;
-  top: 70%;
-  
+  top: 4%;
+  left: 12%;
+  transform: scale(.7);
   cursor: pointer;
 }
 /*# sourceMappingURL=Book.css.map */
@@ -79,7 +82,6 @@
   }
   
   .book-author {
-    margin-top: 10px;
     font-size: 6px;
   }
   .book-loader {
