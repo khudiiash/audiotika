@@ -14,8 +14,9 @@ export function secToTime(d) {
     var sDisplay = s.toString()
 
     
-    return isHour ? hDisplay + (m < 10 ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : isMinute ? (m < 10 ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : "00:" + (s < 10 ? "0"+sDisplay : sDisplay);
+    return isHour ? hDisplay + (m < 10 && isHour ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : isMinute ? mDisplay + (s < 10 ? "0"+sDisplay : sDisplay) : "00:" + (s < 10 ? "0"+sDisplay : sDisplay);
 }
+
 export function varify({username, email, password}) {
     let errors = {username: "", email: "", password: "", any: false}
     if  (!/\@\w+\.(com|net|ua)$/.test(email)) {
