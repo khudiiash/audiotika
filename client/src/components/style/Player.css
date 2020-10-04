@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
-
+@font-face {
+  font-family: "Gotham-Light";
+  src: url("../../assets/Gotham-Light.woff") format("woff");
+ }
+ 
 .player {
   width: 100vw;
   height: 100vh;
@@ -7,7 +11,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Gotham-Light", sans-serif;
   border-radius: 10px 10px 0 0;
   position: relative;
   top: -20.5vh;
@@ -33,6 +37,8 @@
   width: 85%;
   top: 75%;
   display: flex;
+  color: #666;
+
   justify-content: space-around;
 }
 .player-controls svg {
@@ -47,7 +53,7 @@
   margin: 0 10%;
   width: 80%;
   position: relative;
-
+  font-family: "Montserrat";
   text-align: center;
   font-weight: 600;
   color: #EB778E;
@@ -66,13 +72,14 @@
   left: 0;
   width: 100%;
   text-align: center;
-  color: #555;
+  color: #666;
 
 }
 .player-controls-text {
   width: 100%;
   height: 100%;
   position: absolute;
+  color: #666;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -82,7 +89,7 @@
   bottom: 2%;
   width: 76%;
   display: flex;
-  color: #555;
+  color: #888;
   font-size: 14px;
 }
 .player-controls-seek input {
@@ -129,9 +136,9 @@
 }
 .player-speed {
   position: fixed;
-  top: 25px;
-  left: 12%;
-  color: #444;
+  bottom: 14px;
+  right: 30%;
+  color: #666;
 }
 @media screen and (max-width: 660px) {
   
