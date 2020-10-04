@@ -18,6 +18,8 @@ const SET_SEARCHED = 'SET_SEARCHED'
 const SET_LOADING = 'SET_LOADING'
 const SET_PLAYING = 'SET_PLAYING'
 const SET_PERCENT = 'SET_PERCENT'
+const UNLOAD = 'UNLOAD'
+
 
 
 
@@ -60,6 +62,8 @@ function rootReducer(state = initialState, action) {
             return {...state, player: Object.assign({}, {...state.player, isPlaying: action.payload})}
         case SET_PERCENT:
             return {...state, player: Object.assign({}, {...state.player, percent: action.payload})}
+        case UNLOAD:
+            return {...state, player: {...state.player, isPlaying: false, percent: 0}, current: "", books: []}
             
     }
     return state;
@@ -107,6 +111,9 @@ export function setPlaying(payload) {
 }
 export function setPercent(payload) {
     return { type: SET_PERCENT, payload };
+}
+export function unload() {
+    return { type: UNLOAD };
 }
 
 
