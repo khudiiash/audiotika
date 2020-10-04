@@ -7,6 +7,7 @@ import axios from 'axios'
 
 import "./style/Search.css";
 import { addBook, setCurrent, setLoading } from '../redux/index.js';
+import { reduce } from 'lodash';
 
 const sizeToString = (bytes) => {
     let size =  Math.floor(bytes / 1000000)
@@ -146,7 +147,7 @@ const sizeToString = (bytes) => {
         }
 
         return (
-            <div className='search-result'>
+            <div className='search-result' style={{height: result.length > 0 ? '80vh' : 0}}>
                 <ul className='search-result-list'>
                     {result.length > 0 && result.map((t,i) => {
                         return <li key={i} onClick={() => onBookClick(i)} className="search-result-list-item">
