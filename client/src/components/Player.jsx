@@ -272,16 +272,13 @@ const Seek = (props) => {
     setDuration(audio.duration)
     setCurrentTime(currentTime = props.currentTime)
 
-    if (currentTime >= 0) {
+    if (props.currentTime >= 0 && audio) {
+      setDuration(audio.duration)
+      setCurrentTime(currentTime = props.currentTime)
       audio.currentTime = currentTime
+      console.log('%cSet Time '+ audio.currentTime, 'color: green')
     }
-    if (props.src) {
-      let current = store.getState().current
-      if (current.time >= 0 && audio.currentTime !== current.time) {
-      console.log('%cCurrent Time: '+ current.time+', Audio Time: '+audio.currentTime, 'color: yellow')
-      audio.currentTime = current.time
-    }
-    }
+    
 
 
     audio.addEventListener('timeupdate', () => {
@@ -444,8 +441,8 @@ function Player() {
 
   }
 
+ 
   const onCanPlayThrough = () => {}
-
   const toggleView = () => {
     setFullView(!isFullView)
   }
