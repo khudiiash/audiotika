@@ -76,4 +76,11 @@ export function PlayerLoading({percent}) {
 export function QuitIcon() {
 return <svg xmlns="http://www.w3.org/2000/svg" className="icon quit" viewBox="0 0 136.87 193"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><rect className="door-1" width="136.87" height="193" rx="5"/><path className="door-2" d="M32.5,24.4,126.22,2.13a8.23,8.23,0,0,1,10.14,8V188.23a3.25,3.25,0,0,1-4.26,3.09L32.25,158.73A3.24,3.24,0,0,1,30,155.64V27.57A3.26,3.26,0,0,1,32.5,24.4Z"/></g></g></svg>
 }
+export function Back15Icon() {
+    return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 185 185" className="icon controls fifteen"><defs><style></style></defs><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><circle className="cls-1" cx="92.5" cy="92.5" r="92.5"/><path className="cls-2" d="M92.5,9a83.5,83.5,0,0,1,0,167C46.46,176,0,138.54,0,92.5A83.1,83.1,0,0,1,2.8,71C12.29,35.36,53.88,9,92.5,9m0-9A92.5,92.5,0,1,0,185,92.5,92.5,92.5,0,0,0,92.5,0Z"/><text className="cls-3" transform="translate(47.96 125.01)">15</text><polygon className="cls-2" points="7.57 57.26 29.5 1.5 32.13 26.88 55.36 27.88 7.57 57.26"/></g></g></svg>
+}
+export function Forw15Icon() {
+    return <svg xmlns="http://www.w3.org/2000/svg" className="icon controls fifteen" viewBox="0 0 185 185"><defs></defs><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><circle className="cls-1" cx="92.5" cy="92.5" r="92.5"/><path className="cls-2" d="M92.5,9c38.62,0,80.21,26.36,89.7,62A83.1,83.1,0,0,1,185,92.5c0,46-46.46,83.5-92.5,83.5a83.5,83.5,0,0,1,0-167m0-9A92.5,92.5,0,1,0,185,92.5,92.5,92.5,0,0,0,92.5,0Z"/><text className="cls-3" transform="translate(47.96 125.01)">15</text><polygon className="cls-2" points="177.44 57.26 155.5 1.5 152.87 26.88 129.64 27.88 177.44 57.26"/></g></g></svg>
+}
+
 

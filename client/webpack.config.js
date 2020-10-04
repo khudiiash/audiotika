@@ -8,6 +8,7 @@ module.exports = {
         filename: 'bundle.js'
     },
     module: {
+      
       rules: [
         {
           test: /\.jsx?$/,
@@ -21,13 +22,14 @@ module.exports = {
           use: ['style-loader', 'css-loader'],
         },
         {
-          test: /\.(png|jpe?g|svg)$/i,
+          test: /\.(woff|png|jpe?g|svg)$/i,
           use: [
             {
               loader: 'file-loader',
             },
           ],
         },
+        
       ]
     },
     plugins: [

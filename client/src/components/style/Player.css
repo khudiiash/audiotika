@@ -30,7 +30,7 @@
 }
 .player-controls {
   position: absolute;
-  width: 100%;
+  width: 85%;
   top: 75%;
   display: flex;
   justify-content: space-around;
@@ -44,8 +44,8 @@
 }
 .player-title {
   font-size: 22px;
-  margin: 0 5%;
-  width: 90%;
+  margin: 0 10%;
+  width: 80%;
   position: relative;
 
   text-align: center;
@@ -127,6 +127,12 @@
   border: 2px solid #444;
 
 }
+.player-speed {
+  position: fixed;
+  top: 25px;
+  left: 12%;
+  color: #444;
+}
 @media screen and (max-width: 660px) {
   
   .player-box {
@@ -146,6 +152,11 @@
   }
   .player-controls-cts, .player-controls-ds {
     font-size: 14px;
+  }
+  .player-speed {
+    top: 20px;
+    left:10%;
+    
   }
 }
 

@@ -18,6 +18,7 @@ const SET_SEARCHED = 'SET_SEARCHED'
 const SET_LOADING = 'SET_LOADING'
 const SET_PLAYING = 'SET_PLAYING'
 const SET_PERCENT = 'SET_PERCENT'
+const SET_SPEED = 'SET_SPEED'
 const UNLOAD = 'UNLOAD'
 
 
@@ -29,9 +30,9 @@ const initialState = {
     user: {},
     books: [],
     current: {},
-    player: {isLoading: false, isPlaying: false, isPaused: false, percent: 0},
+    player: {isLoading: false, isPlaying: false, isPaused: false, percent: 0, speed: 1},
     proxy: "",
-    //proxy: "http://localhost:5000",
+    proxy: "http://localhost:5000",
 
 }
 function rootReducer(state = initialState, action) {
@@ -62,6 +63,8 @@ function rootReducer(state = initialState, action) {
             return {...state, player: Object.assign({}, {...state.player, isPlaying: action.payload})}
         case SET_PERCENT:
             return {...state, player: Object.assign({}, {...state.player, percent: action.payload})}
+        case SET_SPEED:
+            return {...state, player: Object.assign({}, {...state.player, speed: action.payload})}
         case UNLOAD:
             return {...state, player: {...state.player, isPlaying: false, percent: 0}, current: "", books: []}
             
@@ -111,6 +114,9 @@ export function setPlaying(payload) {
 }
 export function setPercent(payload) {
     return { type: SET_PERCENT, payload };
+}
+export function setSpeed(payload) {
+    return { type: SET_SPEED, payload };
 }
 export function unload() {
     return { type: UNLOAD };

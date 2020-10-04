@@ -1,16 +1,56 @@
 import React, { useState, useEffect, useRef, createRef, memo } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
-import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying, unload, setPercent} from '../redux';
+import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying, unload, setPercent, setSpeed} from '../redux';
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import axios from "axios"
-import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading } from '../assets/icons'
+import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading, Back15Icon, Forw15Icon } from '../assets/icons'
 import { secToTime } from './_utils'
 import './style/Inputs.css'
 import gsap from 'gsap'
 
 
+const Speed = (props) => {
+  let playSpeed = useSelector(state => state.player.speed)
+  const dispatch = useDispatch()
+  const switchSpeed = () => {
+    if (playSpeed < 2.5) playSpeed += .25
+    else playSpeed = .5
+    dispatch(setSpeed(playSpeed))
+    let audio = document.getElementById('audio')
+    audio.playbackRate = playSpeed
+  }
+  console.log(playSpeed)
+  return (
+  <div className="player-speed" onClick={switchSpeed}>{playSpeed}x</div>
+  )
+}
+const Back15 = (props) => {
+  const backward15 = () => {
+    let audio = document.getElementById('audio')
+    if (audio) audio.currentTime = audio.currentTime >= 15 ? audio.currentTime - 15 : 0
+  }
+  return (
+    <div onClick={backward15}>
+      <Back15Icon/>
+    </div>
+  
+  )
+}
+const Forw15 = (props) => {
+
+  const forward15 = () => {
+        let audio = document.getElementById('audio')
+       if (audio) audio.currentTime += 15
+  }
+  return (
+    <div onClick={forward15}>
+      <Forw15Icon/>
+    </div>
+   
+  )
+}
 
 
 const Play = (props) => {
@@ -255,7 +295,9 @@ const Seek = (props) => {
 
   const onChange = ({ target: { value } }) => {
     setCurrentTime(currentTime = parseInt(value));
+    console.log(audio)
     if (audio) audio.currentTime = value;
+    
   }
   const Chapter = (props) => {
     let { chapter, chapters } = props
@@ -264,7 +306,6 @@ const Seek = (props) => {
   }
   return (
     <div className='player-controls-seek'>
-    
       <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />
       <div className='player-controls-text'>
         <div className="divlayer-controls-cts">{secToTime(audio.currentTime)}</div>
@@ -316,12 +357,10 @@ function Player() {
   }, []);
 
   const onCanPlayThrough = (e) => {
-    let current = store.getState().current
-    if (current.time >= 0 && e.target.currentTime !== current.time) {
-      e.target.currentTime = current.time
-    }
-  
-
+    // let current = store.getState().current
+    // if (current.time >= 0 && e.target.currentTime !== current.time) {
+    //   //e.target.currentTime = current.time
+    // }
   }
   const onPause = () => {
     dispatch(setPlaying(false))
@@ -417,6 +456,7 @@ function Player() {
     let { title, author } = props
 
     useEffect(() => {
+      audio.playbackRate = store.getState().player.speed
       if (!mounted)
         newBookTL.current = gsap.timeline()
           .staggerFrom(playerTextRef.current.children, 1, { y: 25, opacity: 0 }, .4)
@@ -446,11 +486,13 @@ function Player() {
     <div id='player' className="player" style={playerStyle} ref={playerRef}>
       <div className="player-hide" style={{ transform: isFullView ? "rotate(0)" : "rotate(180deg)" }} onClick={toggleView}><HideIcon /></div>
       <div className="player-box" style={playerBoxStyle} ref={playerBoxRef}>
-
+        {current && <Speed/>}
         {current && <PlayerText title={current.title} author={current.author} chapter={current.chapter} chapters={current.chapters} />}
         <div className="player-controls">
           <Prev current={current} />
+          <Back15/>
           <Play title={current?.title} />
+          <Forw15/>
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}

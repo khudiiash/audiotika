@@ -109,8 +109,6 @@ function Book({ book }) {
 
                 }
                 
-            
-                
             });
         });
     
