@@ -8,7 +8,7 @@ const BookSchema = new Schema({
   author: {type: String, required: true },
   chapter: { type: Number, required: true },
   chapters: { type: Number, required: true },
-  timeLeft: {type: Number, required: false },
+  torrentID: {type: String, required: false },
   cover: { type: String, required: false },
   time: { type: Number, required: false },
 }, {

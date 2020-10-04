@@ -17,7 +17,7 @@ router.route('/:id').get((req,res) => {
       .then(book => res.json(book))
 })
 router.route('/add').post((req, res) => {
-    let {userID, title, author, chapter, chapters, cover, time} = req.body
+    let {userID, title, author, chapter, chapters, torrentID, cover, time} = req.body
 
 
     const newBook = new Book({
@@ -26,6 +26,7 @@ router.route('/add').post((req, res) => {
         author,
         chapter,
         chapters,
+        torrentID,
         cover,
         time
       });

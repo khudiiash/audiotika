@@ -78,13 +78,13 @@ const sizeToString = (bytes) => {
             let {id, title, author} = result[i]
 
             if (Array.isArray(books) && !books.filter(b => b.title === title).length) {
-                const book = {userID: user._id, title, author, chapter: 1, chapters: 0, cover: "", time: 0}
+                const book = {userID: user._id, torrentID: id, title, author, chapter: 1, chapters: 0, cover: "", time: 0}
                 axios.post(proxy + '/books/add', {...book})
                     .then(res => {
                         let {book} = res.data 
                         console.log('Book Added', book)   
                         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
-                            .then(() => {dispatch(addBook(book)); console.log('Book Dispatched')})
+                            .then(() => dispatch(addBook(book)))
                 })
                     .catch(err => {console.log('%cERROR','color:red');console.log(err)})
                 books.push(book)

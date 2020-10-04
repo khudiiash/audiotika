@@ -66,14 +66,13 @@ function Book({ book }) {
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         console.log('Book: downloading current chapter: ', book.chapter)
-        socket.emit('download-chapter', {title: book.title, chapter: book.chapter, forFuture: false})
+        socket.emit('download-chapter', {title: book.title, chapter: book.chapter, torrentID: book.torrentID, forFuture: false})
         socket.on('audio-loaded', function (data) {
             console.log('Audio Loaded')
             socket.emit('audio-ready', data);
         });
-        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize}) {
+        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize, torrentID}) {
             let parts = [];
-            console.log(stream)
             stream.on('data', (chunk) => {
                 parts.push(chunk);
                 chunkSize += chunk.byteLength
@@ -85,7 +84,7 @@ function Book({ book }) {
                 dispatch(setPercent(0))
                 
                 const audio = document.getElementById('audio')
-                if (store.getState().current) {
+                if (!store.getState().current.title || store.getState().current.title === book.title) {
                     if (forFuture) {
                         console.log('Book: Future Stream Complete')
                         let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
@@ -98,7 +97,7 @@ function Book({ book }) {
                         if (audio) audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
                         socket.emit('stream-done', {create: false, title, author, chapters, src})
                         console.log('Book: downloading future chapter: ', book.chapter + 1)
-                        socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, forFuture: true})
+                        socket.emit('download-chapter', {title, chapter: book.chapter + 1, torrentID: book.torrentID, forFuture: true})
                         axios.get(proxy + '/books/'+book._id)
                             .then(res => {
                                 dispatch(setLoading(false))

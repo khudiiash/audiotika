@@ -19,10 +19,6 @@ const Play = (props) => {
   const percent = useSelector(store => store.player.percent)
   const dispatch = useDispatch()
 
-
-  console.log(isLoading)
-  console.log('in player: ', percent)
-
   useEffect(()=> {
     if (percent) dispatch(setPercent(0))
   }, []) 
@@ -67,11 +63,11 @@ const Next = ({ current }) => {
         console.log('%c Found', 'color: green')
         audio.src = current.src
         audio.play()
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
+        socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1,torrentID: current.torrentID, forFuture: true })
       } else {
         console.log('%c Not Found', 'color: red')
         audio.pause()
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter, forFuture: false })
+        socket.emit('download-chapter', { title: current.title, chapter: current.chapter,torrentID: current.torrentID, forFuture: false })
         dispatch(setLoading(true))
       }
 
@@ -108,7 +104,7 @@ const Next = ({ current }) => {
             dispatch(setLoading(false))
            } else {
             socket.emit('stream-done', {create: true, title, author, chapters: chapters, src})
-            socket.emit('download-chapter', { title: current.title, chapter: chapter + 1, forFuture: true })
+            socket.emit('download-chapter', { title: current.title, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             audio.src = src
             if (!isSafari) audio.play()
@@ -119,7 +115,7 @@ const Next = ({ current }) => {
             console.log('%c OnNext: Stream', 'color: orange')
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', { create: false })
-            socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
+            socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
             audio.src = src
             if (!isSafari) audio.play()
             dispatch(setCurrentSrc(src))
@@ -236,16 +232,13 @@ const Seek = (props) => {
     setDuration(audio.duration)
     setCurrentTime(currentTime = props.currentTime)
 
-    if (currentTime) {
+    if (currentTime >= 0) {
       audio.currentTime = currentTime
+      console.log('%cSet Time '+ audio.currentTime, 'color: green')
     }
     if (props.src) {
       console.log('%cCurrentTime: '+ currentTime, "color: rose")
     }
-
-    console.log('Updating Seek, dispatch Loading to false')
-
-
 
 
     audio.addEventListener('timeupdate', () => {
@@ -314,8 +307,8 @@ function Player() {
       .staggerFrom(playerBoxRef.current.children, 1, { y: 25, opacity: 0 }, .5)
 
     window.addEventListener('unload', function (event) {
-      dispatch(unload())
-      dispatch(setCurrent({}))
+      // dispatch(unload())
+      // dispatch(setCurrent({}))
     });
 
 
@@ -323,7 +316,11 @@ function Player() {
   }, []);
 
   const onCanPlayThrough = (e) => {
-    if (current && current.time && e.target.currentTime !== current.time) e.target.currentTime = current.time
+    let current = store.getState().current
+    if (current.time >= 0 && e.target.currentTime !== current.time) {
+      e.target.currentTime = current.time
+    }
+  
 
   }
   const onPause = () => {
@@ -396,7 +393,7 @@ function Player() {
             console.log('%c OnEnded: Stream', 'color: orange')
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', {create: false, title, author, chapters: chapters, src})
-            socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
+            socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
             audio.src = src
             if (!isSafari) audio.play()
             dispatch(setCurrentSrc(src))

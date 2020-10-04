@@ -80,7 +80,6 @@ io.on('connection', function (socket) {
                     let {id, size, seeds} = t;
                     return {id, title: book_title, author: book_author, torrent: t.title, size, seeds}
                 })
-                console.log(searchResult.length)
                 socket.emit('search-result', {result: searchResult})
             })
     })
@@ -95,7 +94,7 @@ io.on('connection', function (socket) {
         author = "No Author";
         chapters = 0;
         console.log('downloading ', title, 'chapter: ', chapter, ' forFuture', forFuture)
-
+        console.log('TorrentID: ', data.torrentID)
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
 

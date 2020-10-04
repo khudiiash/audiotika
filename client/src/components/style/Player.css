@@ -43,11 +43,11 @@
   margin-top: -10%;
 }
 .player-title {
-  font-size: 20px;
-  margin: 0 10vw;
-  width: 80vw;
+  font-size: 22px;
+  margin: 0 5%;
+  width: 90%;
   position: relative;
-  top: -10px;
+
   text-align: center;
   font-weight: 600;
   color: #EB778E;
@@ -55,9 +55,8 @@
 }
 .player-author {
   margin-top: 10% ;
-  font-size: 14px;
+  font-size: 11px;
   position: relative;
-  top: -10px;
   letter-spacing: 3px;
   color: #c06174;
 
@@ -137,6 +136,8 @@
 
   }
   .player-title {
+    width: 80vw;
+    margin: 0 10vw;
     font-size: 17px;
   }
   .player-author {
