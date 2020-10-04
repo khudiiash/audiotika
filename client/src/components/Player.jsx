@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, createRef, memo } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
-import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying} from '../redux';
+import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying, unload, setPercent} from '../redux';
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import axios from "axios"
@@ -22,6 +22,10 @@ const Play = (props) => {
 
   console.log(isLoading)
   console.log('in player: ', percent)
+
+  useEffect(()=> {
+    if (percent) dispatch(setPercent(0))
+  }, []) 
 
   const onPlay = () => {
     const audio = document.getElementById('audio')
@@ -310,7 +314,7 @@ function Player() {
       .staggerFrom(playerBoxRef.current.children, 1, { y: 25, opacity: 0 }, .5)
 
     window.addEventListener('unload', function (event) {
-      console.log('UNLOAD')
+      dispatch(unload())
       dispatch(setCurrent({}))
     });
 

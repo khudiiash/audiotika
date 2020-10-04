@@ -67,12 +67,10 @@ io.on('connection', function (socket) {
         fs.readdir(audiodir, (err, files) => {
             if (err) throw err;
             for (const file of files) {
-                try {
+                if (fs.existsSync(path.join(audiodir, file))) {
                     fs.unlink(path.join(audiodir, file), err => {
                         if (err) throw err;
                       }); 
-                } catch(err) {
-                    console.log(err)
                 }
              
             }
