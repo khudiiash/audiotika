@@ -181,9 +181,10 @@ io.on('connection', function (socket) {
         fs.readdir(audiodir, (err, files) => {
             if (err) throw err;
             for (const file of files) {
-              fs.unlink(path.join(audiodir, file), err => {
+              try {fs.unlink(path.join(audiodir, file), err => {
                 if (err) throw err;
               });
+            } catch (err) {console.log(err)}
             }
           });
     })
