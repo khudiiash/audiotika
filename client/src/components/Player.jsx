@@ -12,6 +12,7 @@ import gsap from 'gsap'
 
 
 
+
 const Play = (props) => {
   const isLoading = useSelector(store => store.player.isLoading)
   const isPlaying = useSelector(store => store.player.isPlaying)
@@ -49,6 +50,7 @@ const Next = ({ current }) => {
   const onNext = () => {
     const audio = document.getElementById('audio');
     let isFutureLoaded = true;
+    let chunkSize = 0;
     if (current && current.chapter < current.chapters) {
 
       audio.currentTime = 0;
@@ -81,15 +83,18 @@ const Next = ({ current }) => {
         else console.log('Loaded')
         socket.emit('audio-ready', data);
       });
-      ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src}) {
+      ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
         if (forFuture) console.log('Stream Ready For Future') 
         else console.log('Stream Ready')
         let parts = [];
         stream.on('data', (chunk) => {
           parts.push(chunk);
+          dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
         });
         stream.on('end', function () {
           console.log('%c FOR FUTURE: '+forFuture, 'color: yellow')
+          chunkSize = 0;
+          dispatch(setPercent(0))
           if (forFuture) {
            if (store.getState().current.chapter !== chapter) {
             console.log('%c OnNext: Future', 'color: orange')
@@ -130,6 +135,7 @@ return (
 const Prev = ({ current }) => {
   const dispatch = useDispatch()
   const proxy = useSelector(state => state.proxy)
+  let chunkSize = 0;
 
   const onPrev = () => {
     const audio = document.getElementById('audio');
@@ -149,8 +155,6 @@ const Prev = ({ current }) => {
         axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
         axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
         dispatch(setCurrent(current))
-
-
 
       } else if (current) {
         dispatch(setLoading(true))
@@ -172,12 +176,15 @@ const Prev = ({ current }) => {
         socket.on('audio-loaded', function (data) {
           socket.emit('audio-ready', data);
         });
-        ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src}) {
+        ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
           let parts = [];
           stream.on('data', (chunk) => {
             parts.push(chunk);
+            dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
           });
           stream.on('end', function (data) {
+            chunkSize = 0;
+            dispatch(setPercent(0))
             if (forFuture) {
               const audio = document.getElementById('audio')
               console.log('Future Stream Complete')
@@ -324,6 +331,8 @@ function Player() {
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    let chunkSize = 0;
+
     dispatch(setPlaying(false))
 
     const audio = document.getElementById('audio');
@@ -359,12 +368,15 @@ function Player() {
       socket.on('audio-loaded', function (data) {
         socket.emit('audio-ready', data);
       });
-      ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src}) {
+      ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
         let parts = [];
         stream.on('data', (chunk) => {
           parts.push(chunk);
+          dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
         });
         stream.on('end', function () {
+          chunkSize = 0;
+          dispatch(setPercent(0))
           if (forFuture) {
            if (store.getState().current.chapter !== chapter) {
             console.log('%c OnEnded: Future', 'color: orange')

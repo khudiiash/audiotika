@@ -9,7 +9,6 @@ import "./style/Book.css";
 import gsap from "gsap";
 import { setCurrent, deleteBook } from "../redux";
 import { CloseIcon, ClockLoader } from '../assets/icons'
-import { reduce } from "lodash";
 
 function Book({ book }) {
     const bookRef = createRef();
@@ -84,6 +83,7 @@ function Book({ book }) {
             stream.on('end', function () {
                 chunkSize = 0;
                 dispatch(setPercent(0))
+                
                 const audio = document.getElementById('audio')
                 if (forFuture) {
                     console.log('Book: Future Stream Complete')
