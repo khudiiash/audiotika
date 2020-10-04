@@ -283,7 +283,6 @@ const Seek = (props) => {
 
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
-        if (audio.currentTime === 0 && current.time > 0) audio.setCurrent = current.time
         if (duration !== audio.duration) setDuration(duration = audio.duration)
         else setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
         axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime })
@@ -364,6 +363,9 @@ function Player() {
   const onPlay = () => {
     dispatch(setPlaying(true))
 
+  }
+  const onLoad = () => {
+    if (store.getState().current.time !== document.getElementById('audio').currentTime) document.getElementById('audio').currentTime = current.time
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -492,7 +494,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' onEnded={onEnded} onPlay={onPlay} onPause={onPause} onCanPlayThrough={onCanPlayThrough}>
+        <audio id='audio' onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlayThrough={onCanPlayThrough}>
           {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
       </div>
