@@ -41,9 +41,11 @@ if (process.env.NODE_ENV === 'production') {
 
 
 function getFileSize(filename) {
-    var stats = fs.statSync(filename)
-    var fileSizeInBytes = stats["size"]
-    return fileSizeInBytes
+    if (fs.existsSync(filename)) {
+        var stats = fs.statSync(filename)
+        var fileSizeInBytes = stats["size"]
+        return fileSizeInBytes
+    }
 }
 const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'))
 const io = require('socket.io').listen(server)
@@ -81,11 +83,13 @@ io.on('connection', function (socket) {
             .then(torrents => {
                 torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))
                 let searchResult = torrents.map(t => {
+                    console.log(t.title)
                     let book_title = findTitle(t.title)
                     let book_author = findAuthor(t.title)
                     let {id, size, seeds} = t;
                     return {id, title: book_title, author: book_author, torrent: t.title, size, seeds}
                 })
+                console.log(searchResult.length)
                 socket.emit('search-result', {result: searchResult})
             })
     })

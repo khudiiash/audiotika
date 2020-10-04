@@ -62,7 +62,9 @@
   width: 100%;
   z-index: 10;
   top: 8.5vh;
+  height: 90vh;
   right: 0;
+  overflow-y: scroll;
 
 }
 .search-result-list {
@@ -73,7 +75,6 @@
   margin-block-start: 0;
   padding-inline-start: 0;
   margin-block-end: 0;
-  overflow-y: scroll;
   background: transparent;
 
 }
@@ -128,6 +129,9 @@
   .search:not(.icon) {
   top: 0;
 
+  }
+  .search-result {
+    width: 100vw;
   }
   .search-result-list {
     width: 100vw;
