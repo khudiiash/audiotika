@@ -127,14 +127,16 @@
 
 @media screen and (max-width: 700px) {
   .search:not(.icon) {
-  top: 0;
+   top: 0;
 
   }
   .search-result {
     width: 100vw;
+    height: 80vh;
   }
   .search-result-list {
     width: 100vw;
+    overflow: hidden;
   }
   .search button {
     right: 3%;
