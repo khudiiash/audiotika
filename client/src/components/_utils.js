@@ -13,8 +13,8 @@ export function secToTime(d) {
     var mDisplay = m.toString()+':';
     var sDisplay = s.toString()
 
-  
-    return isHour ? hDisplay + (mDisplay < 10 || isHour ? "0"+mDisplay : mDisplay) + (sDisplay < 10 ? "0"+sDisplay : sDisplay) : isMinute ? (mDisplay < 10 ? "0"+mDisplay : mDisplay) + (sDisplay < 10 ? "0"+sDisplay : sDisplay) : "00:" + (sDisplay < 10 ? "0"+sDisplay : sDisplay);
+    
+    return isHour ? hDisplay + (m < 10 ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : isMinute ? (m < 10 ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : "00:" + (s < 10 ? "0"+sDisplay : sDisplay);
 }
 export function varify({username, email, password}) {
     let errors = {username: "", email: "", password: "", any: false}
