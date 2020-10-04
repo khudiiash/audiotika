@@ -161,8 +161,7 @@
     font-size: 14px;
   }
   .player-speed {
-    top: 20px;
-    left:10%;
+    bottom: 11px;
     
   }
 }
