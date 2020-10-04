@@ -283,6 +283,7 @@ const Seek = (props) => {
 
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
+        if (audio.currentTime === 0 && current.time > 0) audio.setCurrent = current.time
         if (duration !== audio.duration) setDuration(duration = audio.duration)
         else setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
         axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime })
