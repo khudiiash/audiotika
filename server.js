@@ -86,10 +86,8 @@ io.on('connection', function (socket) {
                     let {id, size, seeds} = t;
                     return {id, title: book_title, author: book_author, torrent: t.title, size, seeds}
                 })
-                console.log('search result', searchResult)
                 socket.emit('search-result', {result: searchResult})
             })
-        
     })
 
     socket.on('download-chapter', function (data) {
@@ -113,7 +111,6 @@ io.on('connection', function (socket) {
                 torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))
                 if (torrents.length) {
                     let torrent = torrents[0];
-                    let torrentSize = torrent.size;
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title);
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
@@ -141,8 +138,9 @@ io.on('connection', function (socket) {
                                         stream.on('end', () => {
                                             if (audio !== audioPath) {
                                                 chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
-                                                console.log("Sending back ", title, chapter)
+                                                console.log("Sending back ", title, author, chapter, chapters, forFuture)
                                                 socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture})
+                                                console.log('Audio Loaded Emitted')
                                                 audio = audioPath
                                                 }
                                         })

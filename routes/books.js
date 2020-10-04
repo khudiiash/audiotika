@@ -19,6 +19,7 @@ router.route('/:id').get((req,res) => {
 router.route('/add').post((req, res) => {
     let {userID, title, author, chapter, chapters, cover, time} = req.body
 
+
     const newBook = new Book({
         userID,
         title,
@@ -28,8 +29,10 @@ router.route('/add').post((req, res) => {
         cover,
         time
       });
+      console.log(newBook)
       newBook.save()
         .then(book => res.json({book}))
+        .catch(err => console.log(err))
 
 });
 router.route('/:id').delete((req, res) => {
@@ -43,8 +46,6 @@ router.route('/update-time/:id').post((req, res) => {
 
     Book.findById(req.params.id)
     .then(Book => {
-      // if (time - Book.time === 1) Book.timeLeft -= 1
-      // if (time > 0 && time < Book.time) Book.timeLeft += Book.time - time
       Book.time = time
       Book.save()
         .then(() => res.json('Book time updated!'))
@@ -60,6 +61,18 @@ router.route('/update-chapter/:id').post((req, res) => {
       Book.chapter = chapter
       Book.save()
         .then(() => res.json('Book chapter updated'))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+
+  });
+  router.route('/update-chapters/:id').post((req, res) => {
+    const {chapters} = req.body
+    Book.findById(req.params.id)
+    .then(Book => {
+      Book.chapters = chapters
+      Book.save()
+        .then(() => res.json('Book chapters updated'))
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(400).json('Error: ' + err));

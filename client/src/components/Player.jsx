@@ -226,7 +226,6 @@ const Seek = (props) => {
     setCurrentTime(currentTime = props.currentTime)
 
     if (currentTime) {
-      console.log('%cCurrentTime: '+ currentTime, "color: rose")
       audio.currentTime = currentTime
     }
     if (props.src) {

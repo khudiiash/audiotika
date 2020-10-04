@@ -19,7 +19,7 @@
   max-width: 95vw;
   height: 60vh;
   position: absolute;
-  background: #222;
+  background: transparent;
   box-shadow: 0 0 85px rgba(0,0,0,.3);
   display: flex;
   justify-content: center;
@@ -44,11 +44,11 @@
 }
 .player-title {
   font-size: 20px;
-  width: 80%;
+  margin: 0 10vw;
+  width: 80vw;
   position: relative;
   top: -10px;
   text-align: center;
-  padding: 0 10%;
   font-weight: 600;
   color: #EB778E;
 
@@ -140,7 +140,7 @@
     font-size: 17px;
   }
   .player-author {
-    font-size: 12px;
+    font-size: 10px;
     letter-spacing: 2px;
   }
   .player-controls-cts, .player-controls-ds {

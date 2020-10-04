@@ -29,7 +29,7 @@ const initialState = {
     current: {},
     player: {isLoading: false, isPlaying: false, isPaused: false, percent: 0},
     proxy: "",
-   //proxy: "http://localhost:5000",
+    //proxy: "http://localhost:5000",
 
 }
 function rootReducer(state = initialState, action) {
@@ -37,7 +37,7 @@ function rootReducer(state = initialState, action) {
         case SET_USER:
             return {...state, user: Object.assign({}, action.payload)}
         case ADD_BOOK:
-            return {...state, books: state.books.unshift(action.payload)}
+            return {...state, user: {...state.user, currentBookID: action.payload._id }, books: state.books.unshift(action.payload), current: Object.assign({}, action.payload)}
         case SET_BOOKS:
             return {...state, books: action.payload}
         case DELETE_BOOK:

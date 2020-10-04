@@ -9,11 +9,13 @@ import "./style/Book.css";
 import gsap from "gsap";
 import { setCurrent, deleteBook } from "../redux";
 import { CloseIcon, ClockLoader } from '../assets/icons'
+import { reduce } from "lodash";
 
 function Book({ book }) {
     const bookRef = createRef();
     const enterTL = useRef();
     const current = useSelector(state => state.current)
+    const store = useStore();
     let chunkSize = 0;
     const { _id } = book
 
@@ -27,13 +29,9 @@ function Book({ book }) {
     useEffect(() => {
         let bookHTML = bookRef.current
         dispatch(setNextSrc(""))
-        
-        if (book._id === user.currentBookID && !current.searched) {
-            console.log('play book')
+        if (book._id === user.currentBookID) {
             playBook()
-        } else {
-            dispatch(setSearched(false))
-        }
+        } 
        
 
         enterTL.current = gsap.timeline({delay: .5})
@@ -71,8 +69,8 @@ function Book({ book }) {
         console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, forFuture: false})
         socket.on('audio-loaded', function (data) {
-            console.log(data.fileSize+' Kb')
-        socket.emit('audio-ready', data);
+            console.log('Audio Loaded')
+            socket.emit('audio-ready', data);
         });
         ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize}) {
             let parts = [];
@@ -90,20 +88,21 @@ function Book({ book }) {
                 if (forFuture) {
                     console.log('Book: Future Stream Complete')
                     let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-                    socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
+                    socket.emit('stream-done', {create: false, title, author, nextsrc, src: current?.src})
                     axios.get(proxy + '/books/'+book._id)
-                    if (current.title === title) dispatch(setNextSrc(nextsrc))
+                    if (store.getState().current.title === title) dispatch(setNextSrc(nextsrc))
                     
                 } else {
                     console.log('Book: Stream Complete')
-                    audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
+                    if (audio) audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
                     socket.emit('stream-done', {create: false, title, author, chapters, src})
                     console.log('Book: downloading future chapter: ', book.chapter + 1)
                     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, forFuture: true})
                     axios.get(proxy + '/books/'+book._id)
                         .then(res => {
                             dispatch(setLoading(false))
-                            dispatch(setCurrent({...res.data, src: audio.src, duration}))
+                            dispatch(setCurrent({...res.data, chapters, src: audio?.src, duration}))
+                            if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                         })
                     
                 }

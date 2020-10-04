@@ -11,8 +11,8 @@
 .icon.controls {
   width: 4vh;
   height: 4vh;
-  stroke: #222;
-  fill: rgb(37, 37, 37);
+  stroke: #2d2d2d;
+  fill: #2d2d2d;
   -webkit-filter: drop-shadow(0 0 5px rgba(0,0,0,.2));
   filter: drop-shadow(0 0 5px rgba(0,0,0,.2));
   cursor: pointer;

@@ -75,61 +75,74 @@ const sizeToString = (bytes) => {
     const SearchResult = ({result, setSearching}) => {
 
         const onBookClick = (i) => {
-            let {id, title} = result[i]
-            socket.emit('download-chapter', {torrentID: id, title, chapter: 1, forFuture: false})
-            setSearchResult([])
-            setSearching(true)
+            let {id, title, author} = result[i]
 
-            socket.on('audio-loaded', function (data) {
-                socket.emit('audio-ready', data);
+            if (Array.isArray(books) && !books.filter(b => b.title === title).length) {
+                const book = {userID: user._id, title, author, chapter: 1, chapters: 0, cover: "", time: 0}
+                axios.post(proxy + '/books/add', {...book})
+                    .then(res => {
+                        let {book} = res.data 
+                        console.log('Book Added', book)   
+                        axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
+                            .then(() => {dispatch(addBook(book)); console.log('Book Dispatched')})
+                })
+                    .catch(err => {console.log('%cERROR','color:red');console.log(err)})
+                books.push(book)
+             }
+            //socket.emit('download-chapter', {torrentID: id, title, chapter: 1, forFuture: false})
+            setSearchResult([])
+            //setSearching(true)
+
+            // socket.on('audio-loaded', function (data) {
+            //     socket.emit('audio-ready', data);
                     
-            });
-            ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, chapters, src}) {
-                let parts = [];
-                stream.on('data', (chunk) => {
-                    parts.push(chunk);
-                });
-                stream.on('end', function () {
-                    const audio = document.getElementById('audio')
-                    if (forFuture) {
-                        console.log('Future Stream Complete')
-                        let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
-                        socket.emit('stream-done', {create: false, title, author, chapter, chapters, nextsrc, src: current.src})
-                    } else {
-                        console.log('Stream Complete')
-                        let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
-                        audio.src = src
-                        socket.emit('stream-done', {create: true, title, author, chapter, chapters, src})
-                        socket.emit('download-chapter', {title, chapter: 2, forFuture: true})
-                        setSearching(false)
+            // });
+            // ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, chapters, src}) {
+            //     let parts = [];
+            //     stream.on('data', (chunk) => {
+            //         parts.push(chunk);
+            //     });
+            //     stream.on('end', function () {
+            //         const audio = document.getElementById('audio')
+            //         if (forFuture) {
+            //             console.log('Future Stream Complete')
+            //             let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
+            //             socket.emit('stream-done', {create: false, title, author, chapter, chapters, nextsrc, src: current.src})
+            //         } else {
+            //             console.log('Stream Complete')
+            //             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
+            //             audio.src = src
+            //             socket.emit('stream-done', {create: true, title, author, chapter, chapters, src})
+            //             socket.emit('download-chapter', {title, chapter: 2, forFuture: true})
+            //             setSearching(false)
                         
-                    }
+            //         }
                 
-                });
-            });
-            socket.on('book-ready', ({create, title, author, chapters, src, nextsrc}) => {
-                lastTitle = title
-                console.log('Book Ready', create)
-                if (create) {
-                    if (Array.isArray(books) && !books.filter(b => b.title === lastTitle).length) {
-                        const book = {userID: user._id,title: lastTitle, author, chapter: 1, chapters, cover: "", src, time: 0}
-                        axios.post(proxy + '/books/add', {...book})
-                            .then(res => {
-                                let {book} = res.data    
-                                book.src = src
-                                book.searched = true;
-                                dispatch(addBook(book))
-                                dispatch(setCurrent(book))
-                                axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
-                        })
-                        books.push(book)
-                     }
-                } else {
-                    current.nextsrc = nextsrc
-                    if (current.title) dispatch(setCurrent(current))
-                }
+            //     });
+            // });
+            // socket.on('book-ready', ({create, title, author, chapters, src, nextsrc}) => {
+            //     lastTitle = title
+            //     console.log('Book Ready', create)
+            //     if (create) {
+            //         if (Array.isArray(books) && !books.filter(b => b.title === lastTitle).length) {
+            //             const book = {userID: user._id,title: lastTitle, author, chapter: 1, chapters, cover: "", src, time: 0}
+            //             axios.post(proxy + '/books/add', {...book})
+            //                 .then(res => {
+            //                     let {book} = res.data    
+            //                     book.src = src
+            //                     book.searched = true;
+            //                     dispatch(addBook(book))
+            //                     dispatch(setCurrent(book))
+            //                     axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
+            //             })
+            //             books.push(book)
+            //          }
+            //     } else {
+            //         current.nextsrc = nextsrc
+            //         if (current.title) dispatch(setCurrent(current))
+            //     }
                 
-            })
+            // })
         }
 
         return (
