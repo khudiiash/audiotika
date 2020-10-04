@@ -70,7 +70,7 @@ io.on('connection', function (socket) {
                 try {
                     fs.unlink(path.join(audiodir, file), err => {
                         if (err) throw err;
-                      });
+                      }); 
                 } catch(err) {
                     console.log(err)
                 }
