@@ -294,6 +294,7 @@ const Seek = (props) => {
 
 
   const onChange = ({ target: { value } }) => {
+    console.log(value)
     setCurrentTime(currentTime = parseInt(value));
     console.log(audio)
     if (audio) audio.currentTime = value;
@@ -308,7 +309,7 @@ const Seek = (props) => {
     <div className='player-controls-seek'>
       <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />
       <div className='player-controls-text'>
-        <div className="divlayer-controls-cts">{secToTime(audio.currentTime)}</div>
+        <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
       </div>
