@@ -338,6 +338,9 @@ function Player() {
 
   store.subscribe(() => {
     setCurrent(store.getState().current)
+    if (store.getState().current.title && store.getState().current.title !== document.title) {
+      document.title = store.getState().current.title
+    }
   })
 
   useEffect(() => {
