@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, createRef, memo } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
-import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying, unload, setPercent, setSpeed} from '../redux';
+import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying, unload, setPercent, setSpeed, isStreamingFuture} from '../redux';
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import axios from "axios"
@@ -21,7 +21,6 @@ const Speed = (props) => {
     let audio = document.getElementById('audio')
     audio.playbackRate = playSpeed
   }
-  console.log(playSpeed)
   return (
   <div className="player-speed" onClick={switchSpeed}>{playSpeed}x</div>
   )
@@ -100,15 +99,18 @@ const Next = ({ current }) => {
 
       const socket = io(proxy);
       if (isFutureLoaded) {
-        console.log('%c Found', 'color: green')
         audio.src = current.src
         audio.play()
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1,torrentID: current.torrentID, forFuture: true })
       } else {
-        console.log('%c Not Found', 'color: red')
-        audio.pause()
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter,torrentID: current.torrentID, forFuture: false })
-        dispatch(setLoading(true))
+        if (!store.getState().current.isStreamingFuture) {
+          audio.pause()
+          socket.emit('download-chapter', { title: current.title, chapter: current.chapter,torrentID: current.torrentID, forFuture: false })
+          dispatch(setLoading(true))
+        } else {
+          dispatch(setLoading(true))
+        }
+       
       }
 
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
@@ -119,25 +121,23 @@ const Next = ({ current }) => {
 
       // Get next chapter src
       socket.on('audio-loaded', function (data) {
-        if (data.forFuture) console.log('Loaded For Future') 
-        else console.log('Loaded')
         socket.emit('audio-ready', data);
       });
       ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
-        if (forFuture) console.log('Stream Ready For Future') 
-        else console.log('Stream Ready')
         let parts = [];
+        if (forFuture) dispatch(isStreamingFuture(true))
         stream.on('data', (chunk) => {
           parts.push(chunk);
-          dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
+          chunkSize += chunk.byteLength
+          if (!forFuture)
+              dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
         });
         stream.on('end', function () {
-          console.log('%c FOR FUTURE: '+forFuture, 'color: yellow')
           chunkSize = 0;
           dispatch(setPercent(0))
           if (forFuture) {
+            dispatch(isStreamingFuture(false))
            if (store.getState().current.chapter !== chapter) {
-            console.log('%c OnNext: Future', 'color: orange')
             let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
             dispatch(setNextSrc(nextsrc))
@@ -152,7 +152,6 @@ const Next = ({ current }) => {
             dispatch(setLoading(false))
            }
           } else {
-            console.log('%c OnNext: Stream', 'color: orange')
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', { create: false })
             socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
@@ -188,7 +187,7 @@ const Prev = ({ current }) => {
         current.time = 0
         current.chapter -= 1,
 
-          audio.currentTime = 0;
+        audio.currentTime = 0;
 
         audio.src = current.src
         audio.play()
@@ -218,22 +217,24 @@ const Prev = ({ current }) => {
         });
         ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
           let parts = [];
+          if (forFuture) dispatch(isStreamingFuture(true))
           stream.on('data', (chunk) => {
             parts.push(chunk);
-            dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
+            chunkSize += chunk.byteLength
+            if (!forFuture)
+                dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
           });
           stream.on('end', function (data) {
             chunkSize = 0;
             dispatch(setPercent(0))
             if (forFuture) {
+              dispatch(isStreamingFuture(false))
               const audio = document.getElementById('audio')
-              console.log('Future Stream Complete')
               let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
               socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
               dispatch(setNextSrc(nextsrc))
             } else {
               const audio = document.getElementById('audio')
-              console.log('Stream Complete')
               let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
               socket.emit('stream-done', {create: false, title, author, chapters, src})
               socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
@@ -276,7 +277,6 @@ const Seek = (props) => {
       setDuration(audio.duration)
       setCurrentTime(currentTime = props.currentTime)
       audio.currentTime = currentTime
-      console.log('%cSet Time '+ audio.currentTime, 'color: green')
     }
     
 
@@ -294,15 +294,13 @@ const Seek = (props) => {
 
 
   const onChange = ({ target: { value } }) => {
-    console.log(value)
     setCurrentTime(currentTime = parseInt(value));
-    console.log(audio)
     if (audio) audio.currentTime = value;
     
   }
   const Chapter = (props) => {
     let { chapter, chapters } = props
-    if (chapter) return <div className='player-chapter'>{chapter} / {chapters}</div>
+    if (chapter && chapters) return <div className='player-chapter'>{chapter} / {chapters}</div>
     else return <div className='player-chapter'></div>
   }
   return (
@@ -310,7 +308,9 @@ const Seek = (props) => {
       <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />
       <div className='player-controls-text'>
         <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
+        <div></div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
+        <Speed/>
         <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
       </div>
     </div>
@@ -389,7 +389,6 @@ function Player() {
         if (!isSafari) {audio.play();dispatch(setPlaying(true))}
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
       } else {
-        console.log('%c Not Found', 'color: red')
         audio.src = "";
         audio.pause();
         socket.emit('download-chapter', { title: current.title, chapter: current.chapter, forFuture: false })
@@ -408,16 +407,19 @@ function Player() {
       });
       ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
         let parts = [];
+        if (forFuture) dispatch(isStreamingFuture(true))
         stream.on('data', (chunk) => {
           parts.push(chunk);
-          dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
+          chunkSize += chunk.byteLength
+          if (!forFuture)
+              dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
         });
         stream.on('end', function () {
           chunkSize = 0;
           dispatch(setPercent(0))
           if (forFuture) {
+           dispatch(isStreamingFuture(false))
            if (store.getState().current.chapter !== chapter) {
-            console.log('%c OnEnded: Future', 'color: orange')
             let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
             dispatch(setNextSrc(nextsrc))
@@ -427,7 +429,6 @@ function Player() {
            }
           } 
           else {
-            console.log('%c OnEnded: Stream', 'color: orange')
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', {create: false, title, author, chapters: chapters, src})
             socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
@@ -439,9 +440,6 @@ function Player() {
         })
       });
     }
-
-
-
   }
 
  
@@ -484,7 +482,6 @@ function Player() {
     <div id='player' className="player" style={playerStyle} ref={playerRef}>
       <div className="player-hide" style={{ transform: isFullView ? "rotate(0)" : "rotate(180deg)" }} onClick={toggleView}><HideIcon /></div>
       <div className="player-box" style={playerBoxStyle} ref={playerBoxRef}>
-        {current && <Speed/>}
         {current && <PlayerText title={current.title} author={current.author} chapter={current.chapter} chapters={current.chapters} />}
         <div className="player-controls">
           <Prev current={current} />

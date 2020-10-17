@@ -46,12 +46,18 @@
 }
 .player-text {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin-top: -10%;
+  width: 100%;
 }
 .player-title {
   font-size: 22px;
   margin: 0 10%;
   width: 80%;
+  display: flex;
+  justify-content: center;
   position: relative;
   font-family: "Montserrat";
   text-align: center;
@@ -68,9 +74,7 @@
 
 }
 .player-chapter {
-  position: absolute;
-  left: 0;
-  width: 100%;
+  width: 20%;
   text-align: center;
   color: #555;
 
@@ -99,12 +103,11 @@
 }
 
 .player-controls-cts {
-  position: absolute;
-  left: 0;
+  width: 25%;
 }
 .player-controls-ds {
-  position: absolute;
-  right: 0;
+  width: 15%;
+  text-align: right;
   opacity: 1;
 }
 .player-hide {
@@ -135,24 +138,25 @@
 
 }
 .player-speed {
-  position: fixed;
-  bottom: 14px;
-  right: 30%;
-  color: #555;
-  z-index: 100;
+    width: 10%;
+    text-align: center;
 }
+
 @media screen and (max-width: 660px) {
   
   .player-box {
     width: 100%;
     height: 0vh;
     box-shadow: none;
-
+  }
+  .player {
+    border-radius: 0;
   }
   .player-title {
-    width: 80vw;
-    margin: 0 10vw;
+    width: 80%;
+    margin: 0 auto;
     font-size: 17px;
+    text-align: center;
   }
   .player-author {
     font-size: 10px;
@@ -161,11 +165,7 @@
   .player-controls-cts, .player-controls-ds {
     font-size: 13px;
   }
-  .player-speed {
-    font-size: 15px;
-    bottom: 13px;
-    
-  }
+
   .player-chapter {
     font-size: 13px;    
   }

@@ -1,9 +1,9 @@
 import { createStore, applyMiddleware } from "redux";
 import thunk from 'redux-thunk';
-import { composeWithDevTools } from 'redux-devtools-extension'; 
+import { composeWithDevTools } from 'redux-devtools-extension';
 import throttle from 'lodash.throttle';
 
-import {loadState, saveState} from "./localStorage"
+import { loadState, saveState } from "./localStorage"
 // Constants
 const ADD_BOOK = 'ADD_BOOK'
 const NEXT_CHAPTER = 'NEXT_CHAPTER'
@@ -19,6 +19,7 @@ const SET_LOADING = 'SET_LOADING'
 const SET_PLAYING = 'SET_PLAYING'
 const SET_PERCENT = 'SET_PERCENT'
 const SET_SPEED = 'SET_SPEED'
+const STREAMING_FUTURE = 'STREAMING_FUTURE'
 const UNLOAD = 'UNLOAD'
 
 
@@ -30,7 +31,7 @@ const initialState = {
     user: {},
     books: [],
     current: {},
-    player: {isLoading: false, isPlaying: false, isPaused: false, percent: 0, speed: 1},
+    player: { isLoading: false, isPlaying: false, isPaused: false, percent: 0, speed: 1 },
     proxy: "",
     //proxy: "http://localhost:5000",
 
@@ -38,36 +39,38 @@ const initialState = {
 function rootReducer(state = initialState, action) {
     switch (action.type) {
         case SET_USER:
-            return {...state, user: Object.assign({}, action.payload)}
+            return { ...state, user: Object.assign({}, action.payload) }
         case ADD_BOOK:
-            return {...state, user: {...state.user, currentBookID: action.payload._id }, books: state.books.unshift(action.payload), current: Object.assign({}, action.payload)}
+            return { ...state, user: { ...state.user, currentBookID: action.payload._id }, books: state.books.unshift(action.payload), current: Object.assign({}, action.payload) }
         case SET_BOOKS:
-            return {...state, books: action.payload}
+            return { ...state, books: action.payload }
         case DELETE_BOOK:
-            return {...state, books: state.books.filter(book => book._id !== action.payload._id), current: action.payload._id === state.current?._id ? "" : state.current, player: state.current._id === action.payload._id ? Object.assign({}, {isPlaying: false, isLoading: false, percent: 0}) : state.player}
+            return { ...state, books: state.books.filter(book => book._id !== action.payload._id), current: action.payload._id === state.current?._id ? "" : state.current, player: state.current._id === action.payload._id ? Object.assign({}, { isPlaying: false, isLoading: false, percent: 0 }) : state.player }
         case NEXT_CHAPTER:
-            return {...state, books: state.books.map(book => (book._id === action.payload._id) ? action.payload : book), current: action.payload}
+            return { ...state, books: state.books.map(book => (book._id === action.payload._id) ? action.payload : book), current: action.payload }
         case SET_CURRENT:
-            return {...state, user: {...state.user, currentBookID: action.payload._id }, current: Object.assign({}, action.payload)}
+            return { ...state, user: { ...state.user, currentBookID: action.payload._id }, current: Object.assign({}, action.payload) }
         case SET_NEXT_SRC:
-            return {...state, current: Object.assign({}, {...state.current,  nextsrc: action.payload})}
+            return { ...state, current: Object.assign({}, { ...state.current, nextsrc: action.payload }) }
         case SET_PREV_SRC:
-            return {...state, current: Object.assign({}, {...state.current,  prevsrc: action.payload})}
+            return { ...state, current: Object.assign({}, { ...state.current, prevsrc: action.payload }) }
         case SET_CURRENT_SRC:
-            return {...state, current: Object.assign({}, {...state.current,  src: action.payload})}
+            return { ...state, current: Object.assign({}, { ...state.current, src: action.payload }) }
         case SET_SEARCHED:
-            return {...state, current: Object.assign({}, {...state.current,  searched: action.payload})}
+            return { ...state, current: Object.assign({}, { ...state.current, searched: action.payload }) }
         case SET_LOADING:
-            return {...state, player: Object.assign({}, {...state.player, isLoading: action.payload})}
+            return { ...state, player: Object.assign({}, { ...state.player, isPlaying: state.player.isLoading ? false : state.player.isPlaying, isLoading: action.payload}) }
         case SET_PLAYING:
-            return {...state, player: Object.assign({}, {...state.player, isPlaying: action.payload})}
+            return { ...state, player: Object.assign({}, { ...state.player, isPlaying: action.payload }) }
         case SET_PERCENT:
-            return {...state, player: Object.assign({}, {...state.player, percent: action.payload})}
+            return { ...state, player: Object.assign({}, { ...state.player, percent: action.payload }) }
         case SET_SPEED:
-            return {...state, player: Object.assign({}, {...state.player, speed: action.payload})}
+            return { ...state, player: Object.assign({}, { ...state.player, speed: action.payload }) }
+        case STREAMING_FUTURE:
+            return { ...state, current: Object.assign({}, {...state.current, isStreamingFuture: action.payload})}
         case UNLOAD:
-            return {...state, player: {...state.player, isPlaying: false, percent: 0}, current: "", books: []}
-            
+            return { ...state, player: { ...state.player, isPlaying: false, percent: 0 }, current: "", books: [] }
+
     }
     return state;
 }
@@ -118,6 +121,9 @@ export function setPercent(payload) {
 export function setSpeed(payload) {
     return { type: SET_SPEED, payload };
 }
+export function isStreamingFuture(payload) {
+    return { type: STREAMING_FUTURE, payload };
+}
 export function unload() {
     return { type: UNLOAD };
 }
@@ -132,10 +138,14 @@ export const store = createStore(rootReducer, persistedState, composeWithDevTool
 window.store = store;
 store.subscribe(throttle(() => {
     saveState({
-      user: store.getState().user,
-      books: store.getState().books,
-      current: store.getState().current,
-      player: store.getState().player,
-      proxy: store.getState().proxy
+        user: store.getState().user,
+        books: store.getState().books,
+        current: store.getState().current,
+        player: store.getState().player,
+        proxy: store.getState().proxy
     });
-  }, 1000));
+}, 1000));
+
+
+
+

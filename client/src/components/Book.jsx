@@ -1,14 +1,14 @@
 import React, { useRef, useState, createRef, useEffect } from "react";
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import axios from 'axios'
-import {store, setNextSrc, setSearched, setLoading, setPercent} from '../redux'
+import {store, setNextSrc, setSearched, setLoading, setPercent, isStreamingFuture} from '../redux'
 import {secToTime} from './_utils'
 import io from "socket.io-client";
 import ss from "socket.io-stream";
 import "./style/Book.css";
 import gsap from "gsap";
 import { setCurrent, deleteBook } from "../redux";
-import { CloseIcon, ClockLoader } from '../assets/icons'
+import { CloseIcon, PlayerLoading } from '../assets/icons'
 
 function Book({ book }) {
     const bookRef = createRef();
@@ -43,8 +43,6 @@ function Book({ book }) {
                 else gsap.to(bookHTML, .5, {color: "#e8e8e8"})
         })
 
-        
-
     }, []);
 
     function onDelete (e) {
@@ -61,7 +59,6 @@ function Book({ book }) {
         gsap.to(bookRef.current, .5, {color: '#ff0000', opacity: 0})
     }
     function playBook() {
-        //gsap.to(bookRef.current, .5, {scale: 1.05, repeat: 1, yoyo: true})
         dispatch(setLoading(true))
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
@@ -73,16 +70,17 @@ function Book({ book }) {
         });
         ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize, torrentID}) {
             let parts = [];
+            if (forFuture) dispatch(isStreamingFuture(true))
             stream.on('data', (chunk) => {
                 parts.push(chunk);
                 chunkSize += chunk.byteLength
-                dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
-
+                if (!forFuture)
+                    dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
             });
             stream.on('end', function () {
                 chunkSize = 0;
                 dispatch(setPercent(0))
-                
+                if (forFuture) dispatch(isStreamingFuture(false))
                 const audio = document.getElementById('audio')
                 if (!store.getState().current.title || store.getState().current.title === book.title) {
                     if (forFuture) {
@@ -124,7 +122,7 @@ function Book({ book }) {
 
                     : <><div className="book-title">{book.title}</div>
                         <div className="book-author">{book.author}</div>
-                        {isLoading && isCurrent && <div className="book-loader"><ClockLoader/></div>}
+                        {isLoading && isCurrent && <div className="book-loader"><PlayerLoading/></div>}
                         
                         </>
             }
