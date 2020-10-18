@@ -210,7 +210,7 @@ const Prev = ({ current }) => {
 
         const socket = io(proxy);
 
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter, forFuture: false })
+        socket.emit('download-chapter', { title: current.title, torrentID: current.torrentID,chapter: current.chapter, forFuture: false })
 
         socket.on('audio-loaded', function (data) {
           socket.emit('audio-ready', data);
@@ -237,7 +237,7 @@ const Prev = ({ current }) => {
               const audio = document.getElementById('audio')
               let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
               socket.emit('stream-done', {create: false, title, author, chapters, src})
-              socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
+              socket.emit('download-chapter', { title: current.title, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
               audio.src = src
               audio.play()
               dispatch(setCurrentSrc(src))
@@ -368,7 +368,7 @@ function Player() {
 
   }
   const onLoad = () => {
-    if (store.getState().current.time !== document.getElementById('audio').currentTime) document.getElementById('audio').currentTime = current.time
+    if (store.getState().current.time !== document.getElementById('audio').currentTime && document.getElementById('audio').currentTime) document.getElementById('audio').currentTime = current.time
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -389,15 +389,15 @@ function Player() {
       if (isFutureLoaded) {
   
         audio.src = current.src
-        if (!isSafari) {audio.play();dispatch(setPlaying(true))}
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, forFuture: true })
+        if (!isSafari) {audio.play()}
+        console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
+        socket.emit('download-chapter', { title: current.title, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
       } else {
         audio.src = "";
         audio.pause();
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter, forFuture: false })
+        socket.emit('download-chapter', { title: current.title, chapter: current.chapter, torrentID: current.torrentID, forFuture: false })
         dispatch(setLoading(true))
       }
-
       dispatch(nextChapter(current))
 
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
@@ -421,6 +421,8 @@ function Player() {
           chunkSize = 0;
           dispatch(setPercent(0))
           if (forFuture) {
+          console.log(`%conEnded: Future Chatper ${chapter} Stream Ended`,'color: yellowgreen')
+
            dispatch(isStreamingFuture(false))
            if (store.getState().current.chapter !== chapter) {
             let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
@@ -432,6 +434,8 @@ function Player() {
            }
           } 
           else {
+            console.log(`%conEnded: Chatper ${chapter} Stream Ended`,'color: yellow')
+
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', {create: false, title, author, chapters: chapters, src})
             socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
