@@ -368,7 +368,7 @@ function Player() {
 
   }
   const onLoad = () => {
-    if (store.getState().current.time !== document.getElementById('audio').currentTime) document.getElementById('audio').currentTime = current.time
+    if (store.getState().current.time !== document.getElementById('audio').currentTime) document.getElementById('audio').currentTime = store.getState().current.time 
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
