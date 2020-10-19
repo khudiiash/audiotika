@@ -12,8 +12,6 @@ export function secToTime(d) {
         var hDisplay = h.toString()+':' ;
         var mDisplay = m.toString()+':';
         var sDisplay = s.toString()
-        console.log('Time Input:', d)
-        console.log('TIME: '+(isHour ? hDisplay + (m < 10 && isHour ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : isMinute ? mDisplay + (s < 10 ? "0"+sDisplay : sDisplay) : "00:" + (s < 10 ? "0"+sDisplay : sDisplay)))
         return isHour ? hDisplay + (m < 10 && isHour ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : isMinute ? mDisplay + (s < 10 ? "0"+sDisplay : sDisplay) : "00:" + (s < 10 ? "0"+sDisplay : sDisplay);
 
     } else return "00:00"
