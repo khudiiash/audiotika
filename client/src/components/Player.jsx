@@ -205,7 +205,6 @@ const Prev = ({ current }) => {
         axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
         axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
 
-
         audio.currentTime = 0;
 
         const socket = io(proxy);
@@ -264,30 +263,25 @@ const Seek = (props) => {
   const audio = document.getElementById('audio')
   let [currentTime, setCurrentTime] = useState(0)
   let [duration, setDuration] = useState(0)
+  
   const proxy = useSelector(state => state.proxy)
-  const input = React.createRef();
-  const dispatch = useDispatch()
 
   useEffect(() => {
     let cleanupFunction = false;
-    setDuration(audio.duration)
     setCurrentTime(currentTime = props.currentTime)
 
     if (props.currentTime >= 0 && audio) {
-      setDuration(audio.duration)
       setCurrentTime(currentTime = props.currentTime)
       audio.currentTime = currentTime
     }
-    
-
-
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
-        if (duration !== audio.duration) setDuration(duration = audio.duration)
-        else setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
+        setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
         axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime })
-
       }
+    })
+    audio.addEventListener('durationchange', () => {
+      setDuration(audio.duration)
     })
     return () => cleanupFunction = true;
   }, [props.src, props.currentTime])
@@ -303,15 +297,16 @@ const Seek = (props) => {
     if (chapter && chapters) return <div className='player-chapter'>{chapter} / {chapters}</div>
     else return <div className='player-chapter'></div>
   }
+ 
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime} min={0} max={isNaN(duration) ? 0 : duration} onChange={onChange} />
+      <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
         <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
         <div></div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
-        <div className="player-controls-ds">{current.duration >= 0 ? current.duration : "00:00"}</div>
+        <div className="player-controls-ds">{duration >= 0 ? secToTime(duration) : "00:00"}</div>
       </div>
     </div>
   )
@@ -371,7 +366,6 @@ function Player() {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
     if (current.time >= 0) audio.currentTime = current.time
-    if (audio.duration >= 0) current.duration = audio.duration
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
