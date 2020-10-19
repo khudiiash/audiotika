@@ -111,7 +111,6 @@ io.on('connection', function (socket) {
                     title = findTitle(torrent.title);
                     bookTitle = title;
                     bookAuthor = author;
-                    console.log("Server: Title: "+title+', Author: '+author)
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
                         .then(URI => {
                             var WebTorrent = require('webtorrent')
@@ -137,9 +136,8 @@ io.on('connection', function (socket) {
                                         stream.on('end', () => {
                                             if (audio !== audioPath) {
                                                 if (!title || !author) {
-                                                    author = findAuthor(torrent.name);
-                                                    title = findTitle(torrent.name);
-                                                   
+                                                    author = bookAuthor
+                                                    title = bookTitle
                                                     console.log("Server (Fixed): Title: "+title+', Author: '+author)
                                                 }
                                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
