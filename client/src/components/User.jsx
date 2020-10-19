@@ -2,7 +2,7 @@ import React from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import {UserIcon,QuitIcon} from '../assets/icons'
 import { useHistory } from "react-router-dom";
-import {setUser } from '../redux'
+import {unload} from '../redux'
 
 import "./style/User.css"
 
@@ -11,7 +11,7 @@ function User() {
     const history = useHistory()
     let user = useSelector(state => state.user)
     const quit = () => {
-        dispatch(setUser({}))
+        dispatch(unload())
         history.push('/')
     }
     return (

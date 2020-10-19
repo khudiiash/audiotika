@@ -69,7 +69,7 @@ function rootReducer(state = initialState, action) {
         case STREAMING_FUTURE:
             return { ...state, current: Object.assign({}, {...state.current, isStreamingFuture: action.payload})}
         case UNLOAD:
-            return { ...state, player: { ...state.player, isPlaying: false, percent: 0 }, current: "", books: [] }
+            return { ...state, user: {}, player: { ...state.player, isPlaying: false, percent: 0 }, current: "", books: [] }
 
     }
     return state;
