@@ -106,7 +106,7 @@ io.on('connection', function (socket) {
                     let torrent = torrents[0];
                     console.log('Server: Torrent Title: '+torrent.title)
                     author = findAuthor(torrent.title);
-                    title = findTitle(torrent.title) || title;
+                    title = findTitle(torrent.title);
                     console.log("Server: Title: "+title+', Author: '+author)
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
                         .then(URI => {
@@ -133,6 +133,11 @@ io.on('connection', function (socket) {
                                         stream.on('end', () => {
                                             if (audio !== audioPath) {
                                                 console.log("Server (Sending): Title: "+title+', Author: '+author)
+                                                if (!title || !author) {
+                                                    author = findAuthor(torrent.title);
+                                                    title = findTitle(torrent.title);
+                                                    console.log("Server (Fixed): Title: "+title+', Author: '+author)
+                                                }
                                                 chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
                                                 console.log("Sending back ", title, author, chapter, chapters, forFuture)
                                                 socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture})
