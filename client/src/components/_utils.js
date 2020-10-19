@@ -1,20 +1,21 @@
 
 export function secToTime(d) {
-    let isHour = Math.floor(d / 3600)
-    let isMinute = Math.floor(d % 3600 / 60)
-
-
-    d = Number(d);
-    var h = Math.floor(d / 3600);
-    var m = Math.floor(d % 3600 / 60);
-    var s = Math.floor(d % 3600 % 60);
-
-    var hDisplay = h.toString()+':' ;
-    var mDisplay = m.toString()+':';
-    var sDisplay = s.toString()
-
+    if (d >= 0) {
+        let isHour = Math.floor(d / 3600)
+        let isMinute = Math.floor(d % 3600 / 60)
     
-    return isHour ? hDisplay + (m < 10 && isHour ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : isMinute ? mDisplay + (s < 10 ? "0"+sDisplay : sDisplay) : "00:" + (s < 10 ? "0"+sDisplay : sDisplay);
+        d = Number(d);
+        var h = Math.floor(d / 3600);
+        var m = Math.floor(d % 3600 / 60);
+        var s = Math.floor(d % 3600 % 60);
+    
+        var hDisplay = h.toString()+':' ;
+        var mDisplay = m.toString()+':';
+        var sDisplay = s.toString()
+        return isHour ? hDisplay + (m < 10 && isHour ? "0"+mDisplay : mDisplay) + (s < 10 ? "0"+sDisplay : sDisplay) : isMinute ? mDisplay + (s < 10 ? "0"+sDisplay : sDisplay) : "00:" + (s < 10 ? "0"+sDisplay : sDisplay);
+
+    } else return "00:00"
+   
 }
 
 export function varify({username, email, password}) {
