@@ -1,6 +1,6 @@
 
 export function secToTime(d) {
-    if (d >= 0) {
+    if (d >= 0 && isFinite(d)) {
         let isHour = Math.floor(d / 3600)
         let isMinute = Math.floor(d % 3600 / 60)
     
