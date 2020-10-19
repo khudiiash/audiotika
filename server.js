@@ -89,6 +89,7 @@ io.on('connection', function (socket) {
         let torrentID = data.torrentID
         let forFuture = data.forFuture
         let bookTitle = data.title
+        let bookAuthor;
         playing = false;
         audio = "";
         author = "No Author";
@@ -109,6 +110,7 @@ io.on('connection', function (socket) {
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title);
                     bookTitle = title;
+                    bookAuthor = author;
                     console.log("Server: Title: "+title+', Author: '+author)
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
                         .then(URI => {
@@ -137,7 +139,7 @@ io.on('connection', function (socket) {
                                                 if (!title || !author) {
                                                     author = findAuthor(torrent.name);
                                                     title = findTitle(torrent.name);
-                                                    console.log("BookTitle: ", bookTitle)
+                                                   
                                                     console.log("Server (Fixed): Title: "+title+', Author: '+author)
                                                 }
                                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
