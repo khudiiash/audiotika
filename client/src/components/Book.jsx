@@ -62,7 +62,7 @@ function Book({ book }) {
         dispatch(setLoading(true))
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
-        console.log('Book: downloading current chapter: ', book.chapter)
+        console.log('Book: downloading current chapter: ', book.chapter, ' for '+book.title)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, torrentID: book.torrentID, forFuture: false})
         socket.on('audio-loaded', function (data) {
             console.log('Audio Loaded')
