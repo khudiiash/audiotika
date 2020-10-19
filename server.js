@@ -105,8 +105,10 @@ io.on('connection', function (socket) {
                 torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))
                 if (torrents.length) {
                     let torrent = torrents[0];
+                    console.log('Server: Torrent Title: '+torrent.title)
+                    console.log('Server: Torrent Name: '+torrent.name)
                     author = findAuthor(torrent.title);
-                    title = findTitle(torrent.title);
+                    title = findTitle(torrent.title) || title;
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
                         .then(URI => {
                             var WebTorrent = require('webtorrent')
