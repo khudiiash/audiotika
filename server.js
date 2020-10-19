@@ -85,7 +85,6 @@ io.on('connection', function (socket) {
     })
 
     socket.on('download-chapter', function (data) {
-        title = data.title
         chapter = data.chapter
         let torrentID = data.torrentID
         let forFuture = data.forFuture
@@ -93,7 +92,7 @@ io.on('connection', function (socket) {
         audio = "";
         author = "No Author";
         chapters = 0;
-        console.log('downloading ', title, 'chapter: ', chapter, ' forFuture', forFuture)
+        console.log('downloading ', data.title, 'chapter: ', chapter, ' forFuture', forFuture)
         console.log('TorrentID: ', data.torrentID)
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
@@ -106,9 +105,9 @@ io.on('connection', function (socket) {
                 if (torrents.length) {
                     let torrent = torrents[0];
                     console.log('Server: Torrent Title: '+torrent.title)
-                    console.log('Server: Torrent Name: '+torrent.name)
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title) || title;
+                    console.log("Server: Title: "+title+', Author: '+author)
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
                         .then(URI => {
                             var WebTorrent = require('webtorrent')
@@ -133,6 +132,7 @@ io.on('connection', function (socket) {
                                         });
                                         stream.on('end', () => {
                                             if (audio !== audioPath) {
+                                                console.log("Server (Sending): Title: "+title+', Author: '+author)
                                                 chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
                                                 console.log("Sending back ", title, author, chapter, chapters, forFuture)
                                                 socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture})
