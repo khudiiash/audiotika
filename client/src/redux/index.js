@@ -30,11 +30,10 @@ const UNLOAD = 'UNLOAD'
 const initialState = {
     user: {},
     books: [],
-    current: {},
+    current: "",
     player: { isLoading: false, isPlaying: false, isPaused: false, percent: 0, speed: 1 },
     proxy: "",
     //proxy: "http://localhost:5000",
-
 }
 function rootReducer(state = initialState, action) {
     switch (action.type) {
@@ -69,7 +68,7 @@ function rootReducer(state = initialState, action) {
         case STREAMING_FUTURE:
             return { ...state, current: Object.assign({}, {...state.current, isStreamingFuture: action.payload})}
         case UNLOAD:
-            return { ...state, user: {}, player: { ...state.player, isPlaying: false, percent: 0 }, current: "", books: [] }
+            return Object.assign({}, initialState)
 
     }
     return state;
