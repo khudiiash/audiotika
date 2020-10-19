@@ -311,7 +311,7 @@ const Seek = (props) => {
         <div></div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
-        <div className="player-controls-ds">{duration ? secToTime(duration) : "00:00"}</div>
+        <div className="player-controls-ds">{current.duration >= 0 ? current.duration : "00:00"}</div>
       </div>
     </div>
   )
@@ -368,7 +368,10 @@ function Player() {
 
   }
   const onLoad = () => {
-    if (store.getState().current.time >= 0 && store.getState().current.time !== document.getElementById('audio').currentTime) document.getElementById('audio').currentTime = store.getState().current.time 
+    let audio =  document.getElementById('audio')
+    let current = store.getState().current
+    if (current.time >= 0) audio.currentTime = current.time
+    if (audio.duration >= 0) current.duration = audio.duration
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
