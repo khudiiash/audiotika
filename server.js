@@ -88,6 +88,7 @@ io.on('connection', function (socket) {
         chapter = data.chapter
         let torrentID = data.torrentID
         let forFuture = data.forFuture
+        let bookTitle = data.title
         playing = false;
         audio = "";
         author = "No Author";
@@ -107,6 +108,7 @@ io.on('connection', function (socket) {
                     console.log('Server: Torrent Title: '+torrent.title)
                     author = findAuthor(torrent.title);
                     title = findTitle(torrent.title);
+                    bookTitle = title;
                     console.log("Server: Title: "+title+', Author: '+author)
                     rutracker.getMagnetLink(torrentID ? torrentID : torrent.id)
                         .then(URI => {
@@ -114,7 +116,7 @@ io.on('connection', function (socket) {
                             var client = new WebTorrent()
                             client.add(URI, function (torrent) {
                                 let torrentFiles = torrent.files.filter((f, i) => {
-                                    if (/.mp3|\.aac|\.wav/.test(f.name)) return f
+                                    if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
                                 }
                                 )
                                 var customSort = function (a, b) {
@@ -135,9 +137,10 @@ io.on('connection', function (socket) {
                                                 if (!title || !author) {
                                                     author = findAuthor(torrent.name);
                                                     title = findTitle(torrent.name);
+                                                    console.log("BookTitle: ", bookTitle)
                                                     console.log("Server (Fixed): Title: "+title+', Author: '+author)
                                                 }
-                                                chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
+                                                chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                                                 console.log("Sending back ", title, author, chapter, chapters, forFuture)
                                                 socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture})
                                                 console.log('Audio Loaded Emitted')
