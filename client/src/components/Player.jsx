@@ -272,6 +272,7 @@ const Seek = (props) => {
 
     if (props.currentTime >= 0 && audio) {
       setCurrentTime(currentTime = props.currentTime)
+      if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration)}
       audio.currentTime = currentTime
     }
     audio.addEventListener('timeupdate', () => {
@@ -283,7 +284,7 @@ const Seek = (props) => {
     })
     audio.addEventListener('durationchange', () => {
       console.log('Duration Change', audio.duration)
-      setDuration(audio.duration)
+      if (isFinite(audio.duration)) setDuration(audio.duration)
     })
     return () => cleanupFunction = true;
   }, [props.src, props.currentTime])
