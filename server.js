@@ -134,9 +134,12 @@ io.on('connection', function (socket) {
                                             if (audio !== audioPath) {
                                                 console.log("Server (Sending): Title: "+title+', Author: '+author)
                                                 if (!title || !author) {
-                                                    author = findAuthor(torrent.title);
-                                                    title = findTitle(torrent.title);
-                                                    console.log("Server (Fixed): Title: "+title+', Author: '+author)
+                                                    console.log('Server: Torrent Title: '+torrent.title)
+                                                    console.log('Server: Torrent Name: '+torrent.name)
+
+                                                    // author = findAuthor(torrent.title);
+                                                    // title = findTitle(torrent.title);
+                                                    //console.log("Server (Fixed): Title: "+title+', Author: '+author)
                                                 }
                                                 chapters = torrent.files.filter(f => /.mp3|\.aac|\.wav/.test(f.name)).length
                                                 console.log("Sending back ", title, author, chapter, chapters, forFuture)
