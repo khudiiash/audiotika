@@ -121,8 +121,8 @@ io.on('connection', function (socket) {
                         if (index === data.chapter - 1) {
                             if (fs.existsSync(path.join(audiodir, file.name))) {
                                 console.log('File Exits, Sending')
-
-                                console.log("Sending back because it exists", title, author, chapter, chapters, forFuture)
+                                chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                                console.log("Sending back because it exists", bookTitle, bookAuthor, chapter, chapters, forFuture)
                                 socket.emit('audio-loaded', {fileName: file.name, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
                                 console.log('Audio Loaded Emitted')
 
@@ -138,7 +138,7 @@ io.on('connection', function (socket) {
                                 stream.on('end', () => {
 
                                         chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                        console.log("Sending", title, bookTitle, bookAuthor, chapter, chapters, forFuture)
+                                        console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
                                         socket.emit('audio-loaded', {fileName: file.name, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
                                     
                                 })
