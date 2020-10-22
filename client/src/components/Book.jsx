@@ -67,6 +67,7 @@ function Book({ book }) {
         socket.on('audio-loaded', function ({audioPath, title, author, chapter, chapters, forFuture}) {
             
             let src = 'https://audiotika.herokuapp.com'+audioPath
+            document.getElementById('audio').src = src
             dispatch(setCurrent({src, title, author, chapter, chapters}))
             dispatch(setLoading(false))
         });

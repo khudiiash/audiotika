@@ -345,8 +345,6 @@ function Player() {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
 
-    let newAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')
-
 
     mountedTL.current = gsap.timeline()
       .from(playerBoxRef.current, 1, { y: 25, opacity: 0 }, '-=.5')
