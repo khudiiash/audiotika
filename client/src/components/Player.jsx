@@ -505,7 +505,9 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        {current && current.src && <audio id='audio' onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlayThrough={onCanPlayThrough}/>}
+        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlayThrough={onCanPlayThrough}>
+          {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
+        </audio>
       </div>
     </div>
   );
