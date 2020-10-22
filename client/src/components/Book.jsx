@@ -68,7 +68,7 @@ function Book({ book }) {
             console.log('Audio Loaded: ',data.audio)
             //socket.emit('audio-ready', data);
 
-            axios.get('https://audiotika.herokuapp.com'+data.audio)
+            axios.get(data.audio)
                 .then(res => console.log(res.data))
                 .catch(err => console.log(err))
             //dispatch(setCurrent({...store.getState().current, src: data.audio}))
