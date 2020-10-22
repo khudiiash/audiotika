@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
-app.use('/audio', express.static(__dirname+'/audio'))
+app.use(express.static(__dirname+'/audio'))
 
 const uri = "mongodb+srv://Dmytro:149600earthsun@cluster0-mwooj.mongodb.net/audioteka?retryWrites=true&w=majority";
 mongoose.connect(process.env.MONGODB_URI || uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
@@ -143,6 +143,7 @@ io.on('connection', function (socket) {
                                                     title = bookTitle
                                                     console.log("Server (Fixed): Title: "+title+', Author: '+author)
                                                 }
+                                                
                                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                                                 console.log("Sending back ", title, author, chapter, chapters, forFuture)
                                                 socket.emit('audio-loaded', {audioPath, title, author, chapter, chapters, forFuture})
