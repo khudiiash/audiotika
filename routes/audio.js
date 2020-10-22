@@ -12,7 +12,7 @@ router.route('/audio/*').get((req, res) => {
     if (fs.existsSync(reqURL)) {
 
         console.log('File Found, Sending')
-        res.sendFile(reqURL)
+        res.sendFile(path.resolve(reqURL))
 
     } else {
         console.log('File Not Found')
