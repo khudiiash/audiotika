@@ -64,9 +64,9 @@ function Book({ book }) {
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, torrentID: book.torrentID, forFuture: false})
-        socket.on('audio-loaded', function ({audioPath, title, author, chapter, chapters, forFuture}) {
+        socket.on('audio-loaded', function ({fileName, title, author, chapter, chapters, forFuture}) {
             
-            let src = 'https://audiotika.herokuapp.com'+audioPath
+            let src = 'https://audiotika.herokuapp.com/'+audioPath
             document.getElementById('audio').src = src
             dispatch(setCurrent({src, title, author, chapter, chapters}))
             dispatch(setLoading(false))

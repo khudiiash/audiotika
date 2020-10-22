@@ -148,14 +148,9 @@ io.on('connection', function (socket) {
                                                 
                                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
 
-                                                fs.readdir(audiodir, (err, files) => {
-                                                   console.log(files)
-                                                })
-                                                if (fs.existsSync(audioPath)) console.log(audioPath + ' exists')
-                                                else console.log(audioPath + ' does not exist')
-
+                                               
                                                 console.log("Sending back ", title, author, chapter, chapters, forFuture)
-                                                socket.emit('audio-loaded', {audioPath, title, author, chapter, chapters, forFuture})
+                                                socket.emit('audio-loaded', {fileName: file.name, title, author, chapter, chapters, forFuture})
                                                 console.log('Audio Loaded Emitted')
                                                 audio = audioPath
                                                 }
