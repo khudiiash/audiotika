@@ -1,14 +1,23 @@
 const router = require('express').Router();
 const path = require('path')
+const fs = require('fs')
 
 
 
 
 router.route('/audio/*').get((req, res) => {
-    let reqURL = req.originalUrl
+    let reqURL = '..'+req.originalUrl
     console.log(reqURL)
-    console.log(path.join(__dirname, '../audio', reqURL))
-    //res.sendFile(path.join(__dirname, '../audio', reqURL))
+
+    if (fs.existsSync(reqURL)) {
+
+        console.log('File Found, Sending')
+        res.sendFile(reqURL)
+
+    } else {
+        console.log('File Not Found')
+    }
+
 
 });
 router.route('/:id').get((req,res) => {
