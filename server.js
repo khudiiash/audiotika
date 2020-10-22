@@ -26,6 +26,8 @@ connection.once('open', () => {
     console.log("MongoDB connected");
 })
 
+app.use('/app', require('./routes/audio'));
+
 app.use('/books', require('./routes/books'));
 app.use('/user', require('./routes/user'));
 
@@ -99,6 +101,8 @@ io.on('connection', function (socket) {
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
 
+        
+
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
             .then(() => rutracker.search({ query: data.title, sort: 'seeds' }))
             .then(torrents => {
@@ -142,7 +146,7 @@ io.on('connection', function (socket) {
                                                 }
                                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                                                 console.log("Sending back ", audioPath, title, author, chapter, chapters, forFuture)
-                                                socket.emit('audio-loaded', {audio: audioPath, title, author, chapter, chapters, forFuture})
+                                                socket.emit('audio-loaded', {audio: 'https://audiotika.heroku.com'+audioPath, title, author, chapter, chapters, forFuture})
                                                 console.log('Audio Loaded Emitted')
                                                 audio = audioPath
                                                 }
