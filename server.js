@@ -152,21 +152,21 @@ io.on('connection', function (socket) {
             }).catch(err => console.log("Magnet Link Error", err))
         })    
     })
-    socket.on('audio-ready', function (data) {
-        let fileSize = getFileSize(audio)
-        var stream = ss.createStream();
-        var filename = audio;
-        ss(socket).emit('audio-stream', stream, { ...data, name: filename, fileSize});
-        fs.createReadStream(filename).pipe(stream);
+    // socket.on('audio-ready', function (data) {
+    //     let fileSize = getFileSize(audio)
+    //     var stream = ss.createStream();
+    //     var filename = audio;
+    //     ss(socket).emit('audio-stream', stream, { ...data, name: filename, fileSize});
+    //     fs.createReadStream(filename).pipe(stream);
     
-    });
-    socket.on('cover-ready', function (data) {
-        fs.readFile(cover, function (err, data) {
-            socket.emit('got-cover', { image: true, buffer: data, title, author, chapters });
-        });
-    });
-    socket.on('stream-done', function ({create, title, author, chapters, src, nextsrc}) {
-        socket.emit('book-ready', { create, title, author, chapters, src, nextsrc })
+    // });
+    // socket.on('cover-ready', function (data) {
+    //     fs.readFile(cover, function (err, data) {
+    //         socket.emit('got-cover', { image: true, buffer: data, title, author, chapters });
+    //     });
+    // });
+    // socket.on('stream-done', function ({create, title, author, chapters, src, nextsrc}) {
+    //     socket.emit('book-ready', { create, title, author, chapters, src, nextsrc })
         // fs.readdir(audiodir, (err, files) => {
         //     if (err) throw err;
         //     for (const file of files) {
@@ -177,7 +177,7 @@ io.on('connection', function (socket) {
         //         }
         //     }
         //   });
-    })
+    // })
 });
 
 

@@ -263,7 +263,7 @@ const Seek = (props) => {
   const audio = document.getElementById('audio')
   let [currentTime, setCurrentTime] = useState(0)
   let [duration, setDuration] = useState(0)  
-  
+
   const proxy = useSelector(state => state.proxy)
 
   useEffect(() => {
@@ -394,11 +394,11 @@ function Player() {
         audio.src = current.src
         if (!isSafari) {audio.play()}
         console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
-        socket.emit('download-chapter', { title: current.title, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
+        socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
       } else {
         audio.src = "";
         audio.pause();
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter, torrentID: current.torrentID, forFuture: false })
+        socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter, torrentID: current.torrentID, forFuture: false })
         dispatch(setLoading(true))
       }
       dispatch(nextChapter(current))
