@@ -132,29 +132,43 @@ io.on('connection', function (socket) {
                                 chapter = data.chapter
                                 torrentFiles.forEach(function (file, index) {
                                     if (index === data.chapter - 1) {
-                                        const stream = file.createReadStream();
-                                        const audioPath = path.join(audiodir, file.name)
-                                        const writer = fs.createWriteStream(audioPath);
-                                        stream.on('data', function (data) {
-                                            writer.write(data);
-                                        });
-                                        stream.on('end', () => {
-                                            if (audio !== audioPath) {
-                                                if (!title || !author) {
-                                                    author = bookAuthor
-                                                    title = bookTitle
-                                                    console.log("Server (Fixed): Title: "+title+', Author: '+author)
-                                                }
-                                                
-                                                chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
 
-                                               
-                                                console.log("Sending back ", title, author, chapter, chapters, forFuture)
-                                                socket.emit('audio-loaded', {fileName: file.name, title, author, chapter, chapters, forFuture})
-                                                console.log('Audio Loaded Emitted')
-                                                audio = audioPath
-                                                }
-                                        })
+                                        if (fs.existsSync(path.join(audiodir, file.name))) {
+                                            if (!title || !author) {
+                                                author = bookAuthor
+                                                title = bookTitle
+                                                console.log("Server (Fixed): Title: "+title+', Author: '+author)
+                                            }
+                                            console.log("Sending back because it exists", title, author, chapter, chapters, forFuture)
+                                            socket.emit('audio-loaded', {fileName: file.name, title, author, chapter, chapters, forFuture})
+                                            console.log('Audio Loaded Emitted')
+
+                                        } else {
+                                            const stream = file.createReadStream();
+                                            const audioPath = path.join(audiodir, file.name)
+                                            const writer = fs.createWriteStream(audioPath);
+                                            stream.on('data', function (data) {
+                                                writer.write(data);
+                                            });
+                                            stream.on('end', () => {
+                                                if (audio !== audioPath) {
+                                                    if (!title || !author) {
+                                                        author = bookAuthor
+                                                        title = bookTitle
+                                                        console.log("Server (Fixed): Title: "+title+', Author: '+author)
+                                                    }
+                                                    
+                                                    chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+    
+                                                   
+                                                    console.log("Sending back ", title, author, chapter, chapters, forFuture)
+                                                    socket.emit('audio-loaded', {fileName: file.name, title, author, chapter, chapters, forFuture})
+                                                    console.log('Audio Loaded Emitted')
+                                                    audio = audioPath
+                                                    }
+                                            })
+                                        }
+                                        
                                     }
                                 })
 
