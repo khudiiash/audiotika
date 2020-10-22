@@ -64,6 +64,9 @@ const Play = (props) => {
 
   const onPlay = () => {
     const audio = document.getElementById('audio')
+    const superAudio = document.getElementById('super-audio')
+    if (superAudio.paused) superAudio.play()
+    else superAudio.pause()
     if (audio.src && !isPlaying) {
       audio.play()
       dispatch(setPlaying(true))
@@ -508,6 +511,7 @@ function Player() {
         <audio id='audio' onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlayThrough={onCanPlayThrough}>
           {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
+        <audio id='super-audio' src="https://audiotika.herokuapp.com/app/audio/27.mp3"></audio>
       </div>
     </div>
   );
