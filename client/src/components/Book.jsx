@@ -66,7 +66,7 @@ function Book({ book }) {
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, torrentID: book.torrentID, forFuture: false})
         socket.on('audio-loaded', function ({fileName, title, author, chapter, chapters, forFuture}) {
             
-            let src = 'https://audiotika.herokuapp.com/'+audioPath
+            let src = 'https://audiotika.herokuapp.com/'+fileName
             document.getElementById('audio').src = src
             dispatch(setCurrent({src, title, author, chapter, chapters}))
             dispatch(setLoading(false))
