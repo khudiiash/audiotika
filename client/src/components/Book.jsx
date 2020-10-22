@@ -38,7 +38,6 @@ function Book({ book }) {
             .staggerFrom(bookHTML.children, .5, {y: 10, opacity: 0}, .15)
             
         store.subscribe(() => {
-                
                 if (store.getState().current?._id === book._id) gsap.timeline().to(bookHTML, 1, {color: '#EB768E'}) 
                 else gsap.to(bookHTML, .5, {color: "#e8e8e8"})
         })
@@ -68,8 +67,12 @@ function Book({ book }) {
             
             let src = 'https://audiotika.herokuapp.com/'+fileName
             document.getElementById('audio').src = src
-            dispatch(setCurrent({src, title, author, chapter, chapters}))
-            dispatch(setLoading(false))
+            axios.get(proxy + '/books/'+book._id)
+            .then(res => {
+                dispatch(setLoading(false))
+                dispatch(setCurrent({...res.data, src}))
+                if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
+            })
         });
         ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize, torrentID}) {
             let parts = [];
