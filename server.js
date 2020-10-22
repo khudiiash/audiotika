@@ -97,7 +97,6 @@ io.on('connection', function (socket) {
         let bookAuthor = data.author;
         playing = false;
         audio = "";
-        author = "No Author";
         chapters = 0;
         console.log('downloading ', data.title, 'chapter: ', chapter, ' forFuture', forFuture)
         console.log('TorrentID: ', data.torrentID)
@@ -110,7 +109,6 @@ io.on('connection', function (socket) {
                 var WebTorrent = require('webtorrent')
                 var client = new WebTorrent()
                 client.add(URI, function (torrent) {
-                    title = 
                     let torrentFiles = torrent.files.filter((f, i) => {
                         if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
                     })
@@ -123,13 +121,9 @@ io.on('connection', function (socket) {
                         if (index === data.chapter - 1) {
                             if (fs.existsSync(path.join(audiodir, file.name))) {
                                 console.log('File Exits, Sending')
-                                if (!title || !author) {
-                                    author = bookAuthor
-                                    title = bookTitle
-                                    console.log("Server (Fixed): Title: "+title+', Author: '+author)
-                                }
+
                                 console.log("Sending back because it exists", title, author, chapter, chapters, forFuture)
-                                socket.emit('audio-loaded', {fileName: file.name, title, author, chapter, chapters, forFuture})
+                                socket.emit('audio-loaded', {fileName: file.name, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
                                 console.log('Audio Loaded Emitted')
 
                             } else {
@@ -143,17 +137,9 @@ io.on('connection', function (socket) {
                                 });
                                 stream.on('end', () => {
 
-                                        if (!title || !author) {
-                                            author = bookAuthor
-                                            title = bookTitle
-                                            console.log("Server (Fixed): Title: "+title+', Author: '+author)
-                                        }
-                                        
                                         chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-
-                                        
-                                        console.log("Sending ", title, author, chapter, chapters, forFuture)
-                                        socket.emit('audio-loaded', {fileName: file.name, title, author, chapter, chapters, forFuture})
+                                        console.log("Sending", title, bookTitle, bookAuthor, chapter, chapters, forFuture)
+                                        socket.emit('audio-loaded', {fileName: file.name, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
                                     
                                 })
                             }
