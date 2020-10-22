@@ -410,47 +410,53 @@ function Player() {
   
 
       // Get next chapter src
-      socket.on('audio-loaded', function (data) {
-        socket.emit('audio-ready', data);
-      });
-      ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
-        let parts = [];
-        if (forFuture) dispatch(isStreamingFuture(true))
-        stream.on('data', (chunk) => {
-          parts.push(chunk);
-          chunkSize += chunk.byteLength
-          if (!forFuture)
-              dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
-        });
-        stream.on('end', function () {
-          chunkSize = 0;
-          dispatch(setPercent(0))
-          if (forFuture) {
-          console.log(`%conEnded: Future Chatper ${chapter} Stream Ended`,'color: yellowgreen')
+      socket.on('audio-loaded', function ({fileName, title, author, chapter, chapters, forFuture}) {
+        let src = 'https://audiotika.herokuapp.com/'+fileName
+        document.getElementById('audio').src = src
+        if (!isSafari) audio.play()
+        dispatch(setCurrentSrc(src))
+        dispatch(setLoading(false))
 
-           dispatch(isStreamingFuture(false))
-           if (store.getState().current.chapter !== chapter) {
-            let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-            socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
-            dispatch(setNextSrc(nextsrc))
-            dispatch(setLoading(false))
-           } else {
-            socket.emit('stream-done', { create: false })
-           }
-          } 
-          else {
-            console.log(`%conEnded: Chatper ${chapter} Stream Ended`,'color: yellow')
-
-            let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-            socket.emit('stream-done', {create: false, title, author, chapters: chapters, src})
-            socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
-            audio.src = src
-            if (!isSafari) audio.play()
-            dispatch(setCurrentSrc(src))
-            dispatch(setLoading(false))
-          }
-        })
+           
       });
+      // ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
+      //   let parts = [];
+      //   if (forFuture) dispatch(isStreamingFuture(true))
+      //   stream.on('data', (chunk) => {
+      //     parts.push(chunk);
+      //     chunkSize += chunk.byteLength
+      //     if (!forFuture)
+      //         dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
+      //   });
+      //   stream.on('end', function () {
+      //     chunkSize = 0;
+      //     dispatch(setPercent(0))
+      //     if (forFuture) {
+      //     console.log(`%conEnded: Future Chatper ${chapter} Stream Ended`,'color: yellowgreen')
+
+      //      dispatch(isStreamingFuture(false))
+      //      if (store.getState().current.chapter !== chapter) {
+      //       let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
+      //       socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
+      //       dispatch(setNextSrc(nextsrc))
+      //       dispatch(setLoading(false))
+      //      } else {
+      //       socket.emit('stream-done', { create: false })
+      //      }
+      //     } 
+      //     else {
+      //       console.log(`%conEnded: Chatper ${chapter} Stream Ended`,'color: yellow')
+
+      //       let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
+      //       socket.emit('stream-done', {create: false, title, author, chapters: chapters, src})
+      //       socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
+      //       audio.src = src
+      //       if (!isSafari) audio.play()
+      //       dispatch(setCurrentSrc(src))
+      //       dispatch(setLoading(false))
+      //     }
+      //   })
+      // });
     }
   }
 
