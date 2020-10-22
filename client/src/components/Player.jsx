@@ -263,6 +263,7 @@ const Seek = (props) => {
   const audio = document.getElementById('audio')
   let [currentTime, setCurrentTime] = useState(0)
   let [duration, setDuration] = useState(0)
+  const dispatch = useDispatch()
   
   const proxy = useSelector(state => state.proxy)
 
