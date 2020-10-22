@@ -67,7 +67,8 @@ function Book({ book }) {
         socket.on('audio-loaded', function (data) {
             console.log('Audio Loaded: ',data.audio)
             //socket.emit('audio-ready', data);
-
+            console.log(__dirname)
+            console.log(data.audio)
             axios.get(data.audio)
                 .then(res => console.log(res.data))
                 .catch(err => console.log(err))
