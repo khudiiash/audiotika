@@ -68,8 +68,9 @@ function Book({ book }) {
             console.log('Audio Loaded: ',data.audio)
             //socket.emit('audio-ready', data);
             console.log(__dirname)
-            console.log(data.audio)
-            axios.get(data.audio)
+            let getURL = data.audio.replace(/^.*(?=\/app\/)/, '')
+            console.log(getURL)
+            axios.get(getURL)
                 .then(res => console.log(res.data))
                 .catch(err => console.log(err))
             //dispatch(setCurrent({...store.getState().current, src: data.audio}))
