@@ -345,6 +345,9 @@ function Player() {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
 
+    let newAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')
+
+
     mountedTL.current = gsap.timeline()
       .from(playerBoxRef.current, 1, { y: 25, opacity: 0 }, '-=.5')
       .staggerFrom(playerBoxRef.current.children, 1, { y: 25, opacity: 0 }, .5)
@@ -399,6 +402,8 @@ function Player() {
         dispatch(setLoading(true))
       }
       dispatch(nextChapter(current))
+
+      
 
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
@@ -483,7 +488,11 @@ function Player() {
   let playerStyle = {
     top: isFullView ? (isMobile ? "-30vh" : "-22vh") : (isMobile ? "-5vh" : '-5vh')
   }
-
+  const playImmediatelly = () => {
+    let audio = document.getElementById('immediateAudio')
+    if (!audio.paused) audio.pause()
+    else audio.play()
+  }
 
   return (
     <div id='player' className="player" style={playerStyle} ref={playerRef}>

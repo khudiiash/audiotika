@@ -141,8 +141,8 @@ io.on('connection', function (socket) {
                                                     console.log("Server (Fixed): Title: "+title+', Author: '+author)
                                                 }
                                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                                console.log("Sending back ", title, author, chapter, chapters, forFuture)
-                                                socket.emit('audio-loaded', {title, author, chapter, chapters, forFuture})
+                                                console.log("Sending back ", audioPath, title, author, chapter, chapters, forFuture)
+                                                socket.emit('audio-loaded', {audio: audioPath, title, author, chapter, chapters, forFuture})
                                                 console.log('Audio Loaded Emitted')
                                                 audio = audioPath
                                                 }
@@ -158,11 +158,13 @@ io.on('connection', function (socket) {
             )
     })
     socket.on('audio-ready', function (data) {
-        let fileSize = getFileSize(audio)
-        var stream = ss.createStream();
+        //let fileSize = getFileSize(audio)
+        //var stream = ss.createStream();
         var filename = audio;
-        ss(socket).emit('audio-stream', stream, { ...data, name: filename, fileSize});
-        fs.createReadStream(filename).pipe(stream);
+        console.log(filename)
+    
+        //ss(socket).emit('audio-stream', stream, { ...data, name: filename, fileSize});
+        //fs.createReadStream(filename).pipe(stream);
     
     });
     socket.on('cover-ready', function (data) {
@@ -172,16 +174,16 @@ io.on('connection', function (socket) {
     });
     socket.on('stream-done', function ({create, title, author, chapters, src, nextsrc}) {
         socket.emit('book-ready', { create, title, author, chapters, src, nextsrc })
-        fs.readdir(audiodir, (err, files) => {
-            if (err) throw err;
-            for (const file of files) {
-                if (fs.existsSync(path.join(audiodir, file))) {
-                    fs.unlink(path.join(audiodir, file), err => {
-                        if (err) throw err;
-                      });
-                }
-            }
-          });
+        // fs.readdir(audiodir, (err, files) => {
+        //     if (err) throw err;
+        //     for (const file of files) {
+        //         if (fs.existsSync(path.join(audiodir, file))) {
+        //             fs.unlink(path.join(audiodir, file), err => {
+        //                 if (err) throw err;
+        //               });
+        //         }
+        //     }
+        //   });
     })
 });
 

@@ -65,8 +65,10 @@ function Book({ book }) {
         console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, torrentID: book.torrentID, forFuture: false})
         socket.on('audio-loaded', function (data) {
-            console.log('Audio Loaded')
-            socket.emit('audio-ready', data);
+            console.log('Audio Loaded: ',data.audio)
+            //socket.emit('audio-ready', data);
+            dispatch(setCurrent({...store.getState().current, src: data.audio}))
+            dispatch(setLoading(false))
         });
         ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize, torrentID}) {
             let parts = [];
