@@ -262,8 +262,7 @@ const Prev = ({ current }) => {
 const Seek = (props) => {
   const audio = document.getElementById('audio')
   let [currentTime, setCurrentTime] = useState(0)
-  let [duration, setDuration] = useState(0)
-  const dispatch = useDispatch()
+  let [duration, setDuration] = useState(0)  
   
   const proxy = useSelector(state => state.proxy)
 
@@ -281,7 +280,6 @@ const Seek = (props) => {
         if (audio.duration !== duration) setDuration(audio.duration)
         setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
         axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime })
-        dispatch(setCurrent({...store.getState().current, time: currentTime }))
       }
     })
     audio.addEventListener('durationchange', () => {
@@ -346,6 +344,8 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
+
+
 
 
     mountedTL.current = gsap.timeline()

@@ -28,9 +28,9 @@ function Book({ book }) {
     useEffect(() => {
         let bookHTML = bookRef.current
         dispatch(setNextSrc(""))
-        if (book._id === user.currentBookID && !current.src) {
+        if (book._id === user.currentBookID) {
             playBook()
-        } 
+        }
        
 
         enterTL.current = gsap.timeline({delay: .5})
