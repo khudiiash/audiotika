@@ -64,9 +64,6 @@ const Play = (props) => {
 
   const onPlay = () => {
     const audio = document.getElementById('audio')
-    const superAudio = document.getElementById('super-audio')
-    if (superAudio.paused) superAudio.play()
-    else superAudio.pause()
     if (audio.src && !isPlaying) {
       audio.play()
       dispatch(setPlaying(true))
@@ -104,11 +101,11 @@ const Next = ({ current }) => {
       if (isFutureLoaded) {
         audio.src = current.src
         audio.play()
-        socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1,torrentID: current.torrentID, forFuture: true })
+        socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1,torrentID: current.torrentID, forFuture: true })
       } else {
         if (!store.getState().current.isStreamingFuture) {
           audio.pause()
-          socket.emit('download-chapter', { title: current.title, chapter: current.chapter,torrentID: current.torrentID, forFuture: false })
+          socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter,torrentID: current.torrentID, forFuture: false })
           dispatch(setLoading(true))
         } else {
           dispatch(setLoading(true))
@@ -147,7 +144,7 @@ const Next = ({ current }) => {
             dispatch(setLoading(false))
            } else {
             socket.emit('stream-done', {create: true, title, author, chapters: chapters, src})
-            socket.emit('download-chapter', { title: current.title, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
+            socket.emit('download-chapter', { title: current.title, author: current.author, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             audio.src = src
             if (!isSafari) audio.play()
@@ -157,7 +154,7 @@ const Next = ({ current }) => {
           } else {
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', { create: false })
-            socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
+            socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
             audio.src = src
             if (!isSafari) audio.play()
             dispatch(setCurrentSrc(src))
@@ -212,7 +209,7 @@ const Prev = ({ current }) => {
 
         const socket = io(proxy);
 
-        socket.emit('download-chapter', { title: current.title, torrentID: current.torrentID,chapter: current.chapter, forFuture: false })
+        socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID,chapter: current.chapter, forFuture: false })
 
         socket.on('audio-loaded', function (data) {
           socket.emit('audio-ready', data);
@@ -239,7 +236,7 @@ const Prev = ({ current }) => {
               const audio = document.getElementById('audio')
               let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
               socket.emit('stream-done', {create: false, title, author, chapters, src})
-              socket.emit('download-chapter', { title: current.title, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
+              socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
               audio.src = src
               audio.play()
               dispatch(setCurrentSrc(src))
@@ -511,7 +508,6 @@ function Player() {
         <audio id='audio' onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlayThrough={onCanPlayThrough}>
           {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
-        <audio id='super-audio' src="https://audiotika.herokuapp.com/app/audio/27.mp3"></audio>
       </div>
     </div>
   );

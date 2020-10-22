@@ -94,7 +94,7 @@ io.on('connection', function (socket) {
         let torrentID = data.torrentID
         let forFuture = data.forFuture
         let bookTitle = data.title
-        let bookAuthor;
+        let bookAuthor = data.author;
         playing = false;
         audio = "";
         author = "No Author";
@@ -110,10 +110,10 @@ io.on('connection', function (socket) {
                 var WebTorrent = require('webtorrent')
                 var client = new WebTorrent()
                 client.add(URI, function (torrent) {
+                    title = 
                     let torrentFiles = torrent.files.filter((f, i) => {
                         if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
-                    }
-                    )
+                    })
                     var customSort = function (a, b) {
                         return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
                     }
