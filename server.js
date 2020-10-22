@@ -20,7 +20,6 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use(express.static(path.join(__dirname, "audio")))
 
-console.log("Static: ",path.join(__dirname, "audio"))
 
 const uri = "mongodb+srv://Dmytro:149600earthsun@cluster0-mwooj.mongodb.net/audioteka?retryWrites=true&w=majority";
 mongoose.connect(process.env.MONGODB_URI || uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
@@ -30,9 +29,13 @@ connection.once('open', () => {
     console.log("MongoDB connected");
 })
 
+
+if (!fs.existsSync("audio")){
+    fs.mkdirSync("audio");
+}
+
 app.use('/books', require('./routes/books'));
 app.use('/user', require('./routes/user'));
-
 
 
 if (process.env.NODE_ENV === 'production') {
@@ -65,10 +68,7 @@ io.on('connection', function (socket) {
     audiodir = path.join(__dirname, "audio")
 
 
-    if (!fs.existsSync(audiodir)){
-        fs.mkdirSync(audiodir);
-        console.log('Creating Audio Directory')
-    }
+
 
     socket.on('search-book', function(data) {
         const RutrackerApi = require('rutracker-api');
