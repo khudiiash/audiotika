@@ -28,7 +28,7 @@ function Book({ book }) {
     useEffect(() => {
         let bookHTML = bookRef.current
         dispatch(setNextSrc(""))
-        if (book._id === user.currentBookID) {
+        if (book._id === user.currentBookID && !current.src) {
             playBook()
         } 
        
@@ -63,6 +63,7 @@ function Book({ book }) {
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, torrentID: book.torrentID, forFuture: false})
+        
         socket.on('audio-loaded', function ({fileName, title, author, chapter, chapters, forFuture}) {
             
             let src = 'https://audiotika.herokuapp.com/'+fileName
@@ -74,47 +75,47 @@ function Book({ book }) {
                 if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
             })
         });
-        ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize, torrentID}) {
-            let parts = [];
-            if (forFuture) dispatch(isStreamingFuture(true))
-            stream.on('data', (chunk) => {
-                parts.push(chunk);
-                chunkSize += chunk.byteLength
-                if (!forFuture)
-                    dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
-            });
-            stream.on('end', function () {
-                chunkSize = 0;
-                dispatch(setPercent(0))
-                if (forFuture) dispatch(isStreamingFuture(false))
-                const audio = document.getElementById('audio')
-                if (!store.getState().current.title || store.getState().current.title === book.title) {
-                    if (forFuture) {
-                        console.log('Book: Future Stream Complete')
-                        let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-                        socket.emit('stream-done', {create: false, title, author, nextsrc, src: current?.src})
-                        axios.get(proxy + '/books/'+book._id)
-                        if (store.getState().current.title === title) dispatch(setNextSrc(nextsrc))
+        // ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize, torrentID}) {
+        //     let parts = [];
+        //     if (forFuture) dispatch(isStreamingFuture(true))
+        //     stream.on('data', (chunk) => {
+        //         parts.push(chunk);
+        //         chunkSize += chunk.byteLength
+        //         if (!forFuture)
+        //             dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
+        //     });
+        //     stream.on('end', function () {
+        //         chunkSize = 0;
+        //         dispatch(setPercent(0))
+        //         if (forFuture) dispatch(isStreamingFuture(false))
+        //         const audio = document.getElementById('audio')
+        //         if (!store.getState().current.title || store.getState().current.title === book.title) {
+        //             if (forFuture) {
+        //                 console.log('Book: Future Stream Complete')
+        //                 let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
+        //                 socket.emit('stream-done', {create: false, title, author, nextsrc, src: current?.src})
+        //                 axios.get(proxy + '/books/'+book._id)
+        //                 if (store.getState().current.title === title) dispatch(setNextSrc(nextsrc))
                         
-                    } else {
-                        console.log('Book: Stream Complete')
-                        if (audio) audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
-                        socket.emit('stream-done', {create: false, title, author, chapters, src})
-                        console.log('Book: downloading future chapter: ', book.chapter + 1)
-                        socket.emit('download-chapter', {title, chapter: book.chapter + 1, author: book.author, torrentID: book.torrentID, forFuture: true})
-                        axios.get(proxy + '/books/'+book._id)
-                            .then(res => {
-                                dispatch(setLoading(false))
-                                dispatch(setCurrent({...res.data, chapters, src: audio?.src, duration}))
-                                if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
-                            })
+        //             } else {
+        //                 console.log('Book: Stream Complete')
+        //                 if (audio) audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts,  { type: 'audio/mpeg' }))
+        //                 socket.emit('stream-done', {create: false, title, author, chapters, src})
+        //                 console.log('Book: downloading future chapter: ', book.chapter + 1)
+        //                 socket.emit('download-chapter', {title, chapter: book.chapter + 1, author: book.author, torrentID: book.torrentID, forFuture: true})
+        //                 axios.get(proxy + '/books/'+book._id)
+        //                     .then(res => {
+        //                         dispatch(setLoading(false))
+        //                         dispatch(setCurrent({...res.data, chapters, src: audio?.src, duration}))
+        //                         if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
+        //                     })
                         
-                    }
+        //             }
 
-                }
+        //         }
                 
-            });
-        });
+        //     });
+        // });
     
     }
   
