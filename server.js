@@ -65,6 +65,7 @@ io.on('connection', function (socket) {
 
     if (!fs.existsSync(audiodir)){
         fs.mkdirSync(audiodir);
+        console.log('Creating Audio Directory')
     }
 
     socket.on('search-book', function(data) {
