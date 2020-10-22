@@ -65,9 +65,9 @@ function Book({ book }) {
         console.log('Book: downloading current chapter: ', book.chapter)
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, torrentID: book.torrentID, forFuture: false})
         socket.on('audio-loaded', function (data) {
-            // socket.emit('audio-ready', data);
-            console.log(data.audioPath)
-            dispatch(setCurrent({...store.getState().current, src: data.audioPath}))
+            
+            let audioPath = 'https://audiotika.herokuapp.com'+data.audioPath
+            dispatch(setCurrent({...store.getState().current, src: audioPath}))
             dispatch(setLoading(false))
         });
         ss(socket).on('audio-stream', function(stream, {forFuture, title, author, chapter, duration, chapters, src, fileSize, torrentID}) {
