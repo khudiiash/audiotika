@@ -18,6 +18,8 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
+app.use('/audio', express.static(__dirname+'/audio'))
+
 const uri = "mongodb+srv://Dmytro:149600earthsun@cluster0-mwooj.mongodb.net/audioteka?retryWrites=true&w=majority";
 mongoose.connect(process.env.MONGODB_URI || uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true });
 
@@ -25,8 +27,6 @@ const connection = mongoose.connection;
 connection.once('open', () => {
     console.log("MongoDB connected");
 })
-
-app.use('/app', require('./routes/audio'));
 
 app.use('/books', require('./routes/books'));
 app.use('/user', require('./routes/user'));
@@ -101,8 +101,6 @@ io.on('connection', function (socket) {
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
 
-        
-
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
             .then(() => rutracker.search({ query: data.title, sort: 'seeds' }))
             .then(torrents => {
@@ -145,8 +143,8 @@ io.on('connection', function (socket) {
                                                     console.log("Server (Fixed): Title: "+title+', Author: '+author)
                                                 }
                                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                                console.log("Sending back ", audioPath, title, author, chapter, chapters, forFuture)
-                                                socket.emit('audio-loaded', {audio: 'https://audiotika.heroku.com'+audioPath, title, author, chapter, chapters, forFuture})
+                                                console.log("Sending back ", title, author, chapter, chapters, forFuture)
+                                                socket.emit('audio-loaded', {audioPath, title, author, chapter, chapters, forFuture})
                                                 console.log('Audio Loaded Emitted')
                                                 audio = audioPath
                                                 }
@@ -162,13 +160,11 @@ io.on('connection', function (socket) {
             )
     })
     socket.on('audio-ready', function (data) {
-        //let fileSize = getFileSize(audio)
-        //var stream = ss.createStream();
+        let fileSize = getFileSize(audio)
+        var stream = ss.createStream();
         var filename = audio;
-        console.log(filename)
-    
-        //ss(socket).emit('audio-stream', stream, { ...data, name: filename, fileSize});
-        //fs.createReadStream(filename).pipe(stream);
+        ss(socket).emit('audio-stream', stream, { ...data, name: filename, fileSize});
+        fs.createReadStream(filename).pipe(stream);
     
     });
     socket.on('cover-ready', function (data) {
