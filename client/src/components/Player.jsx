@@ -288,8 +288,8 @@ const Seek = (props) => {
       }
     })
     audio.addEventListener('durationchange', () => {
-      console.log('Duration Change', audio.duration)
       if (isFinite(audio.duration)) setDuration(audio.duration)
+      if (props.currentTime) setCurrentTime(props.currentTime)
     })
     return () => cleanupFunction = true;
   }, [props.src, props.currentTime])
@@ -446,8 +446,8 @@ function Player() {
 
  
   const onCanPlay = () => {
-    console.log('canPlay')
     dispatch(setLoading(false))
+    audio.currentTime = current.time
   }
   const toggleView = () => {
     setFullView(!isFullView)
