@@ -122,14 +122,18 @@ io.on('connection', function (socket) {
                             if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                                 console.log('File Exits, Sending')
                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                console.log("Sending back because it exists", bookTitle, bookAuthor, chapter, chapters, forFuture)
+                                console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
                                 socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
                             } else {
                                 console.log('File Does Not Exist, Writing')
-                                if (!fs.existsSync(path.join(audiodir, torrentID))) fs.mkdirSync(path.join(audiodir, torrentID))
+                                if (!fs.existsSync(path.join(audiodir, torrentID))) {
+                                    console.log("creating folder "+path.join(audiodir, torrentID))
+                                    fs.mkdirSync(path.join(audiodir, torrentID))
+                                }
                                 const stream = file.createReadStream();
                                 const audioPath = path.join(audiodir, torrentID, file.name)
                                 const writer = fs.createWriteStream(audioPath);
+                                console.log('Start Writing')
                                 stream.on('data', function (data) {
                                     writer.write(data);
                                 });
