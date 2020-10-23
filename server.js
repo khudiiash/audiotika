@@ -98,17 +98,20 @@ io.on('connection', function (socket) {
         playing = false;
         audio = "";
         chapters = 0;
-        console.log('downloading ', data.title, 'chapter: ', chapter, ' forFuture', forFuture)
-        console.log('TorrentID: ', data.torrentID)
+        console.log('downloading', data.title, 'chapter:', chapter, 'forFuture', forFuture)
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
         .then(() => {
+            console.log('Getting Magnet URI')
             rutracker.getMagnetLink(torrentID)
             .then(URI => {
                 var WebTorrent = require('webtorrent')
                 var client = new WebTorrent()
+                console.log('Adding URI to CLIENT')
                 client.add(URI, function (torrent) {
+                    console.log('Got Torrent')
+
                     let torrentFiles = torrent.files.filter((f, i) => {
                         if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
                     })
@@ -117,6 +120,7 @@ io.on('connection', function (socket) {
                     }
                     torrentFiles = torrentFiles.sort(customSort);
                     chapter = data.chapter
+                    console.log('Torrent Files: ',torrentFiles.length)
                     torrentFiles.forEach(function (file, index) {
                         if (index === data.chapter - 1) {
                             if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
