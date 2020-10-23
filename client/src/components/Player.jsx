@@ -430,7 +430,6 @@ function Player() {
           audio.src = src
           audio.load()
           dispatch(setCurrentSrc(src))
-          dispatch(setLoading(false))
           if (chapter < chapters) {
               console.log('onEnded: Downloading Future ', chapter + 1)
               socket.emit('download-chapter', {title: current.title, chapter: current.chapter + 1, author: current.author, torrentID: current.torrentID, forFuture: true})
@@ -447,8 +446,7 @@ function Player() {
 
  
   const onCanPlay = () => {
-    console.log('%cCanPlay','color: yellowgreen')
-    
+    dispatch(setLoading(false))
   }
   const toggleView = () => {
     setFullView(!isFullView)
