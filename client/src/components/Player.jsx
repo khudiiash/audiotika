@@ -390,7 +390,7 @@ function Player() {
     if (current.time >= 0) audio.currentTime = current.time
   }
   const onEnded = () => {
-    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 
     dispatch(setPlaying(false))
 
@@ -406,7 +406,6 @@ function Player() {
       const socket = io(proxy);
       if (isFutureLoaded) {
         audio.src = current.src
-        if (!isSafari) {audio.play()}
         console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
         socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
         socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
@@ -446,6 +445,8 @@ function Player() {
  
   const onCanPlay = () => {
     dispatch(setLoading(false))
+    let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (!isSafari) {audio.play()}
   }
   const toggleView = () => {
     setFullView(!isFullView)
