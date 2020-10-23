@@ -144,11 +144,37 @@ io.on('connection', function (socket) {
                                 stream.on('end', () => {
                                         chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                                         console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
+                                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: false})
                                     
                                 })
                             }
                             
+                        }
+                        // future
+                        if (index === data.chapter) {
+
+                            if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
+                                console.log('Future File Exits, Sending')
+                                chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                                console.log("Sending Future", bookTitle, bookAuthor, chapter, chapters, forFuture)
+                                socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: false})
+                            } else {
+                                console.log('Future File Does Not Exist, Writing')
+                                const stream = file.createReadStream();
+                                const audioPath = path.join(audiodir, torrentID, file.name)
+                                const writer = fs.createWriteStream(audioPath);
+                                console.log('Start Writing')
+                                stream.on('data', function (data) {
+                                    writer.write(data);
+                                });
+                                stream.on('end', () => {
+                                        chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                                        console.log("Sending Future", bookTitle, bookAuthor, chapter, chapters, forFuture)
+                                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: true})
+                                    
+                                })
+                            }
+
                         }
                     })
 
