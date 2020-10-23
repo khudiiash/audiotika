@@ -28,8 +28,7 @@ input[type=range] {
     border-radius: 0; /* iOS */
   }
   input[type=range][value=0]::-webkit-slider-thumb {
-    box-shadow: 0;
-    
+    box-shadow: none;
   }
   input[type=range]:focus::-webkit-slider-runnable-track {
     background: #2d2d2d;
