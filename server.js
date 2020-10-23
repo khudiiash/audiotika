@@ -140,7 +140,7 @@ io.on('connection', function (socket) {
             .then(URI => {
                 var WebTorrent = require('webtorrent')
                 var client = new WebTorrent()
-                if (client.torrent.filter(t => t.id === torrentID).length > 0) {
+                if (client.torrents.filter(t => t.id === torrentID).length > 0) {
                     console.log('Getting Torrent in CLIENT')
                     handleTorrent(client.get(torrentID), bookTitle, bookAuthor, forFuture)
                 } else {
