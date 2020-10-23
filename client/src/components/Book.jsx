@@ -2,9 +2,7 @@ import React, { useRef, useState, createRef, useEffect } from "react";
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import axios from 'axios'
 import {store, setNextSrc, setSearched, setLoading, setPercent, isStreamingFuture} from '../redux'
-import {secToTime} from './_utils'
 import io from "socket.io-client";
-import ss from "socket.io-stream";
 import "./style/Book.css";
 import gsap from "gsap";
 import { setCurrent, deleteBook } from "../redux";

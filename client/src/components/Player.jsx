@@ -387,6 +387,7 @@ function Player() {
   const onLoad = () => {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
+    console.log('On Load')
     if (current.time >= 0) audio.currentTime = current.time
   }
   const onEnded = () => {
@@ -445,7 +446,7 @@ function Player() {
   }
 
  
-  const onCanPlay = () => {
+  const onCanPlayThrough = () => {
     console.log('%cCan Play', 'color: springgreen')
     dispatch(setLoading(false))
   }
@@ -496,7 +497,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlay={onCanPlay} onLoadedMetadata={onCanPlay}>
+        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlayThrough={onCanPlayThrough} >
           {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
       </div>
