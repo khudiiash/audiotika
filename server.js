@@ -9,6 +9,7 @@ const findAuthor = require('./utils/findAuthor')
 const findTitle = require('./utils/findTitle')
 
 
+const audiodir = path.join(__dirname, "audio")
 
 const mongoose = require('mongoose');
 
@@ -46,17 +47,9 @@ if (process.env.NODE_ENV === 'production') {
 
 }
 
-
-function getFileSize(filename) {
-    if (fs.existsSync(filename)) {
-        var stats = fs.statSync(filename)
-        var fileSizeInBytes = stats["size"]
-        return fileSizeInBytes
-    }
-}
 const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'))
+
 const io = require('socket.io').listen(server)
-let audiodir;
 
 io.on('connection', function (socket) {
     audio = "";
@@ -65,10 +58,49 @@ io.on('connection', function (socket) {
     author = "";
     chapters = 0;
     chapter = 0;
-    audiodir = path.join(__dirname, "audio")
 
 
-
+    function handleTorrent(torrent, title, author, forFuture) {
+        let torrentFiles = torrent.files.filter((f, i) => {
+            if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
+        })
+        var customSort = function (a, b) {
+            return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
+        }
+        torrentFiles = torrentFiles.sort(customSort);
+        chapter = data.chapter
+        console.log('Torrent Files: ',torrentFiles.length)
+        torrentFiles.forEach(function (file, index) {
+            if (index === data.chapter - 1) {
+                if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
+                    console.log('File Exits, Sending')
+                    chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                    console.log("Sending", title, author, chapter, chapters, forFuture)
+                    socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
+                } else {
+                    console.log('File Does Not Exist, Writing')
+                    if (!fs.existsSync(path.join(audiodir, torrentID))) {
+                        console.log("creating folder "+path.join(audiodir, torrentID))
+                        fs.mkdirSync(path.join(audiodir, torrentID))
+                    }
+                    const stream = file.createReadStream();
+                    const audioPath = path.join(audiodir, torrentID, file.name)
+                    const writer = fs.createWriteStream(audioPath);
+                    console.log('Start Writing')
+                    stream.on('data', function (data) {
+                        writer.write(data);
+                    });
+                    stream.on('end', () => {
+                            chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                            console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
+                            socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
+                        
+                    })
+                }
+                
+            }
+        })
+    }
 
     socket.on('search-book', function(data) {
         const RutrackerApi = require('rutracker-api');
@@ -108,78 +140,15 @@ io.on('connection', function (socket) {
             .then(URI => {
                 var WebTorrent = require('webtorrent')
                 var client = new WebTorrent()
-                console.log('Adding URI to CLIENT')
-                client.add(URI, function (torrent) {
-                    console.log('Got Torrent')
-
-                    let torrentFiles = torrent.files.filter((f, i) => {
-                        if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
+                if (client.torrent.filter(t => t.id === torrentID).length > 0) {
+                    console.log('Getting Torrent in CLIENT')
+                    handleTorrent(client.get(torrentID), bookTitle, bookAuthor, forFuture)
+                } else {
+                    console.log('Adding URI to CLIENT')
+                    client.add(URI, function (torrent) {
+                        handleTorrent(torrent, bookTitle, bookAuthor, forFuture)
                     })
-                    var customSort = function (a, b) {
-                        return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
-                    }
-                    torrentFiles = torrentFiles.sort(customSort);
-                    chapter = data.chapter
-                    console.log('Torrent Files: ',torrentFiles.length)
-                    torrentFiles.forEach(function (file, index) {
-                        if (index === data.chapter - 1) {
-                            if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
-                                console.log('File Exits, Sending')
-                                chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                                socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: false})
-                            } else {
-                                console.log('File Does Not Exist, Writing')
-                                if (!fs.existsSync(path.join(audiodir, torrentID))) {
-                                    console.log("creating folder "+path.join(audiodir, torrentID))
-                                    fs.mkdirSync(path.join(audiodir, torrentID))
-                                }
-                                const stream = file.createReadStream();
-                                const audioPath = path.join(audiodir, torrentID, file.name)
-                                const writer = fs.createWriteStream(audioPath);
-                                console.log('Start Writing')
-                                stream.on('data', function (data) {
-                                    writer.write(data);
-                                });
-                                stream.on('end', () => {
-                                        chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                        console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: false})
-                                    
-                                })
-                            }
-                            
-                        }
-                        // futureß
-                        if (index === data.chapter) {
-
-                            if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
-                                console.log('Future File Exits, Sending')
-                                chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                console.log("Sending Future", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                                socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: true})
-                            } else {
-                                console.log('Future File Does Not Exist, Writing')
-                                const stream = file.createReadStream();
-                                const audioPath = path.join(audiodir, torrentID, file.name)
-                                const writer = fs.createWriteStream(audioPath);
-                                console.log('Start Writing')
-                                stream.on('data', function (data) {
-                                    writer.write(data);
-                                });
-                                stream.on('end', () => {
-                                        chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                                        console.log("Sending Future", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: true})
-                                    
-                                })
-                            }
-
-                        }
-                    })
-
-
-                })
+                }
             }).catch(err => console.log("Magnet Link Error", err))
         })    
     })
@@ -199,32 +168,6 @@ io.on('connection', function (socket) {
            })
        }
     })
-    // socket.on('audio-ready', function (data) {
-    //     let fileSize = getFileSize(audio)
-    //     var stream = ss.createStream();
-    //     var filename = audio;
-    //     ss(socket).emit('audio-stream', stream, { ...data, name: filename, fileSize});
-    //     fs.createReadStream(filename).pipe(stream);
-    
-    // });
-    // socket.on('cover-ready', function (data) {
-    //     fs.readFile(cover, function (err, data) {
-    //         socket.emit('got-cover', { image: true, buffer: data, title, author, chapters });
-    //     });
-    // });
-    // socket.on('stream-done', function ({create, title, author, chapters, src, nextsrc}) {
-    //     socket.emit('book-ready', { create, title, author, chapters, src, nextsrc })
-        // fs.readdir(audiodir, (err, files) => {
-        //     if (err) throw err;
-        //     for (const file of files) {
-        //         if (fs.existsSync(path.join(audiodir, file))) {
-        //             fs.unlink(path.join(audiodir, file), err => {
-        //                 if (err) throw err;
-        //               });
-        //         }
-        //     }
-        //   });
-    // })
 });
 
 
