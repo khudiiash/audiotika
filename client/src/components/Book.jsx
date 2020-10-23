@@ -97,7 +97,6 @@ function Book({ book }) {
                     : <><div className="book-title">{book.title}</div>
                         <div className="book-author">{book.author}</div>
                         {isLoading && isCurrent && <div className="book-loader"><PlayerLoading/></div>}
-                        
                         </>
             }
         </div>

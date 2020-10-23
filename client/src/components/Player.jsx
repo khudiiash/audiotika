@@ -409,7 +409,7 @@ function Player() {
         if (!isSafari) {audio.play()}
         console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
         socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
-        socket.emit('delete-file', {filePath: '/audio/'+current.torrentID+'/'+current.fileName})
+        socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
       } else {
         audio.src = "";
         audio.pause();

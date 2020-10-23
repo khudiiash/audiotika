@@ -62,17 +62,12 @@ io.on('connection', function (socket) {
             return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
         }
         torrentFiles = torrentFiles.sort(customSort);
-        console.log('Torrent Files: ',torrentFiles.length)
-        console.log(chapter, forFuture)
         torrentFiles.forEach(function (file, index) {
             if (index === chapter - 1) {
-                console.log(audiodir, torrentID, file.name)
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
-                    console.log('File Exits, Sending')
                     chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                     socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                 } else {
-                    console.log('File Does Not Exist, Writing')
                     if (!fs.existsSync(path.join(audiodir, torrentID))) {
                         fs.mkdirSync(path.join(audiodir, torrentID))
                     }
@@ -83,9 +78,8 @@ io.on('connection', function (socket) {
                         writer.write(data);
                     });
                     stream.on('end', () => {
-                            chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                            console.log("Sending", title, author, chapter, chapters, forFuture)
-                            socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
+                        chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                         
                     })
                 }
@@ -131,21 +125,30 @@ io.on('connection', function (socket) {
                 var WebTorrent = require('webtorrent')
                 var client = new WebTorrent()
                 if (client.torrents.filter(t => t.id === torrentID).length > 0) {
-                    console.log('Getting Torrent in CLIENT')
+                    console.log('Getting Torrent')
                     handleTorrent({torrent: client.get(torrentID), torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                 } else {
-                    console.log('Adding URI to CLIENT')
+                    console.log('Adding Torrent')
                     client.add(URI, function (torrent) {
-
                         handleTorrent({torrent: torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                     })
                 }
             }).catch(err => console.log("Magnet Link Error", err))
         })    
     })
-     socket.on('delete-file', function ({filePath}) {
+     socket.on('delete-file', function ({torrentID, fileName}) {
        try {
-           fs.unlinkSync(filePath)
+           fs.readdir(path.join(audiodir,torrentID), (err, files) => {
+                if (!err) {
+                    files.forEach(file => {
+                        if (file === fileName) {
+                            fs.unlink(path.join(audiodir,torrentID,fileName))
+                            console.log("File Deleted")
+                        }
+                    })
+                }
+
+           })
            console.log(filePath, 'successfuly deleted')
        } catch (err) {
            console.log(err)
