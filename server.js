@@ -127,7 +127,7 @@ io.on('connection', function (socket) {
                                 console.log('File Exits, Sending')
                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                                 console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                                socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
+                                socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: false})
                             } else {
                                 console.log('File Does Not Exist, Writing')
                                 if (!fs.existsSync(path.join(audiodir, torrentID))) {
@@ -150,14 +150,14 @@ io.on('connection', function (socket) {
                             }
                             
                         }
-                        // future
+                        // futureß
                         if (index === data.chapter) {
 
                             if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                                 console.log('Future File Exits, Sending')
                                 chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                                 console.log("Sending Future", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                                socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: false})
+                                socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture: true})
                             } else {
                                 console.log('Future File Does Not Exist, Writing')
                                 const stream = file.createReadStream();
