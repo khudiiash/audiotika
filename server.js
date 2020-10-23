@@ -8,6 +8,9 @@ const path = require('path')
 const findAuthor = require('./utils/findAuthor')
 const findTitle = require('./utils/findTitle')
 
+let WebTorrent = require('webtorrent')
+let client = new WebTorrent()
+
 
 const audiodir = path.join(__dirname, "audio")
 
@@ -52,6 +55,8 @@ const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Ru
 const io = require('socket.io').listen(server)
 
 io.on('connection', function (socket) {
+
+    
 
     function handleTorrent({torrent, torrentID, title, author, chapter, forFuture}) {
 
@@ -122,8 +127,7 @@ io.on('connection', function (socket) {
             console.log('Getting Magnet URI')
             rutracker.getMagnetLink(torrentID)
             .then(URI => {
-                var WebTorrent = require('webtorrent')
-                var client = new WebTorrent()
+                console.log()
                 if (client.torrents.filter(t => t.id === torrentID).length > 0) {
                     console.log('Getting Torrent')
                     handleTorrent({torrent: client.get(torrentID), torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
