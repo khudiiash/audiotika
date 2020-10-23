@@ -74,14 +74,14 @@
 
 }
 .player-chapter-pie {
-  width: 20%;
+  width: 30%;
   text-align: center;
   color: #555;
   font-size: 10px;
 
 }
 .player-chapter-text {
-  width: 20%;
+  width: 15%;
   text-align: center;
   color: #555;
 }
@@ -144,12 +144,12 @@
 
 }
 .player-speed {
-    width: 20%;
+    width: 15%;
     text-align: center;
 }
 
 .CircularProgressbar {
-  width: 30% !important;
+  width: 23% !important;
 }
 
 @media screen and (max-width: 660px) {
