@@ -432,6 +432,7 @@ function Player() {
         document.getElementById('audio').src = src
         if (!isSafari) audio.play()
         dispatch(setCurrentSrc(src))
+        dispatch(setLoading(false))
       });
       
     }
@@ -439,7 +440,7 @@ function Player() {
 
  
   const onCanPlay = () => {
-    dispatch(setLoading(false))
+    
   }
   const toggleView = () => {
     setFullView(!isFullView)
@@ -472,11 +473,6 @@ function Player() {
 
   let playerStyle = {
     top: isFullView ? (isMobile ? "-30vh" : "-22vh") : (isMobile ? "-5vh" : '-5vh')
-  }
-  const playImmediatelly = () => {
-    let audio = document.getElementById('immediateAudio')
-    if (!audio.paused) audio.pause()
-    else audio.play()
   }
 
   return (
