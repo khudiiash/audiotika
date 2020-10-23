@@ -28,7 +28,7 @@ const Speed = (props) => {
     audio.playbackRate = playSpeed
   }
   return (
-  <div className="player-speed" onClick={switchSpeed}>{playSpeed}x</div>
+  <div className="player-speed" onClick={switchSpeed}>{playSpeed}X</div>
   )
 }
 const Back15 = (props) => {
@@ -410,7 +410,7 @@ function Player() {
         if (!isSafari) {audio.play()}
         console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
         socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
-        socket.emit('delete-file', {path: '/audio/'+current.torrentID+'/'+current.fileName})
+        socket.emit('delete-file', {filePath: '/audio/'+current.torrentID+'/'+current.fileName})
       } else {
         audio.src = "";
         audio.pause();

@@ -149,10 +149,10 @@ io.on('connection', function (socket) {
             }).catch(err => console.log("Magnet Link Error", err))
         })    
     })
-     socket.on('delete-file', function ({path}) {
+     socket.on('delete-file', function ({filePath}) {
        try {
-           fs.unlinkSync(path.join(__dirname, path))
-           console.log(path, 'successfuly deleted')
+           fs.unlinkSync(path.join(__dirname, filePath))
+           console.log(filePath, 'successfuly deleted')
        } catch (err) {
            console.log(err)
        }
