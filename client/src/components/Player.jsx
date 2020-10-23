@@ -438,13 +438,6 @@ function Player() {
     }
   }
 
- const onLoadStart = () => {
-   dispatch(setLoading(true))
- }
-  const onCanPlay = () => {
-    console.log('%cCan Play', 'color: yellowgreen')
-    dispatch(setLoading(false))
-  }
   const toggleView = () => {
     setFullView(!isFullView)
   }
@@ -492,7 +485,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onLoadStart={onLoadStart} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlay}>
+        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad}>
         </audio>
       </div>
     </div>
