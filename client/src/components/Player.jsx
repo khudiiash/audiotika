@@ -104,18 +104,15 @@ const Next = ({ current }) => {
 
       const socket = io(proxy);
       if (isFutureLoaded) {
+        console.log('Future Loaded')
         audio.src = current.src
-        audio.play()
+        audio.load()
         socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1,torrentID: current.torrentID, forFuture: true })
       } else {
-        if (!store.getState().current.isStreamingFuture) {
+          console.log('Future Not Loaded')
           audio.pause()
           socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter,torrentID: current.torrentID, forFuture: false })
           dispatch(setLoading(true))
-        } else {
-          dispatch(setLoading(true))
-        }
-       
       }
 
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
@@ -146,7 +143,6 @@ const Next = ({ current }) => {
             let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
             socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
             dispatch(setNextSrc(nextsrc))
-            dispatch(setLoading(false))
            } else {
             socket.emit('stream-done', {create: true, title, author, chapters: chapters, src})
             socket.emit('download-chapter', { title: current.title, author: current.author, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
@@ -154,7 +150,6 @@ const Next = ({ current }) => {
             audio.src = src
             if (!isSafari) audio.play()
             dispatch(setCurrentSrc(src))
-            dispatch(setLoading(false))
            }
           } else {
             let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
@@ -387,8 +382,6 @@ function Player() {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
     if (current.time >= 0) audio.currentTime = current.time
-    dispatch(setLoading(false))
-
   }
   const onEnded = () => {
 
@@ -408,15 +401,15 @@ function Player() {
       if (isFutureLoaded) {
         audio.src = current.src
         audio.load()
+        console.log('Future Loaded')
         console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
         socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
         socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
-        dispatch(setLoading(true))
       } else {
+        console.log('Future Not Loaded')
         audio.src = "";
         audio.pause();
         socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter, torrentID: current.torrentID, forFuture: false })
-        dispatch(setLoading(true))
       }
       dispatch(nextChapter(current))
 
@@ -445,7 +438,9 @@ function Player() {
     }
   }
 
- 
+ const onLoadStart = () => {
+   dispatch(setLoading(true))
+ }
   const onCanPlay = () => {
     console.log('%cCan Play', 'color: yellowgreen')
     dispatch(setLoading(false))
@@ -497,8 +492,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlay={onCanPlay} >
-          {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
+        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onLoadStart={onLoadStart} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlay}>
         </audio>
       </div>
     </div>
