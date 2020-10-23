@@ -387,8 +387,9 @@ function Player() {
   const onLoad = () => {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
-    console.log('On Load')
     if (current.time >= 0) audio.currentTime = current.time
+    dispatch(setLoading(false))
+
   }
   const onEnded = () => {
 
@@ -447,8 +448,6 @@ function Player() {
 
  
   const onCanPlayThrough = () => {
-    console.log('%cCan Play', 'color: springgreen')
-    dispatch(setLoading(false))
   }
   const toggleView = () => {
     setFullView(!isFullView)
