@@ -30,8 +30,6 @@ function Book({ book }) {
         if (book._id === user.currentBookID) {
             playBook()
         }
-       
-
         enterTL.current = gsap.timeline({delay: .5})
             .from(bookHTML, .5, {scale: .8, autoAlpha: 0, y: -25})
             .staggerFrom(bookHTML.children, .5, {y: 10, opacity: 0}, .15)

@@ -446,8 +446,8 @@ function Player() {
 
  
   const onCanPlay = () => {
+    console.log('%cCan Play', 'color: springgreen')
     dispatch(setLoading(false))
-    audio.currentTime = current.time
   }
   const toggleView = () => {
     setFullView(!isFullView)
