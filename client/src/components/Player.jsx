@@ -406,9 +406,11 @@ function Player() {
       const socket = io(proxy);
       if (isFutureLoaded) {
         audio.src = current.src
+        audio.load()
         console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
         socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
         socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
+        dispatch(setLoading(true))
       } else {
         audio.src = "";
         audio.pause();
@@ -423,7 +425,7 @@ function Player() {
 
       // Get next chapter src
       socket.on('audio-loaded', function ({fileName, torrentID, chapter, chapters, forFuture}) {
-        if (!forFuture) {
+      if (!forFuture) {
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
           audio.src = src
           audio.load()
@@ -445,8 +447,6 @@ function Player() {
  
   const onCanPlay = () => {
     dispatch(setLoading(false))
-    let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (!isSafari) {audio.play()}
   }
   const toggleView = () => {
     setFullView(!isFullView)
