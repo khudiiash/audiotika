@@ -135,10 +135,15 @@ io.on('connection', function (socket) {
                     handleTorrent({torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                 } else {
                     console.log('Adding Torrent')
-                    client.add(URI, function (torrent) {
-                        torrent.id = torrentID
-                        handleTorrent({torrent: torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
-                    })
+                    try {
+                        client.add(URI, function (torrent) {
+                            torrent.id = torrentID
+                            handleTorrent({torrent: torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
+                        })
+                    } catch (err) {
+                        console.log(err)
+                    }
+                    
                 }
             }).catch(err => console.log("Magnet Link Error", err))
         })    
