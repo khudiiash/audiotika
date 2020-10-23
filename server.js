@@ -143,8 +143,9 @@ io.on('connection', function (socket) {
                 if (!err) {
                     files.forEach(file => {
                         if (file === fileName) {
-                            fs.unlink(path.join(audiodir,torrentID,fileName))
-                            console.log("File Deleted")
+                            fs.unlink(path.join(audiodir,torrentID,fileName), function(err) {
+                                if (!err) console.log('File Deleted')
+                            })
                         } else {
                             console.log(file)
                         }
