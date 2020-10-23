@@ -155,10 +155,13 @@ io.on('connection', function (socket) {
     })
      socket.on('delete-file', function ({filePath}) {
        try {
-           fs.unlinkSync(path.join(__dirname, filePath))
+           fs.unlinkSync(filePath)
            console.log(filePath, 'successfuly deleted')
        } catch (err) {
            console.log(err)
+           fs.readdir(audiodir, function(err, files) {
+               if (!err) console.log(files)
+           })
        }
     })
     // socket.on('audio-ready', function (data) {
