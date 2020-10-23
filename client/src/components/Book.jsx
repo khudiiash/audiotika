@@ -13,7 +13,6 @@ import { CloseIcon, PlayerLoading } from '../assets/icons'
 function Book({ book }) {
     const bookRef = createRef();
     const enterTL = useRef();
-    const current = useSelector(state => state.current)
     const store = useStore();
     let chunkSize = 0;
     const { _id } = book
@@ -28,7 +27,7 @@ function Book({ book }) {
     useEffect(() => {
         let bookHTML = bookRef.current
         dispatch(setNextSrc(""))
-        if (book._id === user.currentBookID && !current.src) {
+        if (book._id === user.currentBookID) {
             playBook()
         }
        

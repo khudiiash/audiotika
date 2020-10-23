@@ -32,7 +32,7 @@ router.route('/login').post((req, res) => {
         });
         newUser.save()
           .then((user) => res.json(user))
-          .catch((err) => {console.log('failed to create use',newUser, err);res.status(500).send('Wrong User Info')})
+          .catch((err) => {console.log('failed to create user',newUser, err);res.status(500).send('Wrong User Info')})
       }
   }
 })

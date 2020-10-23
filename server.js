@@ -104,7 +104,6 @@ io.on('connection', function (socket) {
             .then(torrents => {
                 torrents = torrents.filter(t => /Аудио/.test(t.category) && / -| –/.test(t.title))
                 let searchResult = torrents.map(t => {
-                    console.log(t.title)
                     let book_title = findTitle(t.title)
                     let book_author = findAuthor(t.title)
                     let {id, size, seeds} = t;

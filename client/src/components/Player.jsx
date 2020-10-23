@@ -458,6 +458,7 @@ function Player() {
 
     useEffect(() => {
       audio.playbackRate = store.getState().player.speed
+      
       if (!mounted)
         newBookTL.current = gsap.timeline()
           .staggerFrom(playerTextRef.current.children, 1, { y: 25, opacity: 0 }, .4)
