@@ -161,6 +161,11 @@ io.on('connection', function (socket) {
            console.log(err)
            fs.readdir(audiodir, function(err, files) {
                if (!err) console.log(files)
+               files.forEach(f => {
+                   fs.readdir(f, (err, audios) => {
+                        console.log(audios)
+                   })
+               })
            })
        }
     })
