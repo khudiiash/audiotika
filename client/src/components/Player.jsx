@@ -9,6 +9,12 @@ import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading, Back1
 import { secToTime } from './_utils'
 import './style/Inputs.css'
 import gsap from 'gsap'
+import {
+  CircularProgressbar,
+  CircularProgressbarWithChildren,
+  buildStyles
+} from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 
 const Speed = (props) => {
@@ -297,8 +303,19 @@ const Seek = (props) => {
   }
   const Chapter = (props) => {
     let { chapter, chapters } = props
-    if (chapter && chapters) return <div className='player-chapter'>{chapter} / {chapters}</div>
-    else return <div className='player-chapter'></div>
+    if (chapter && chapters) return <div className='player-chapter-pie'>
+      <CircularProgressbar
+      value={14/90 * 100}
+      strokeWidth={50}
+      styles={buildStyles({
+        pathColor: "#c06174",
+        trailColor: "#2d2d2d",
+        strokeLinecap: "butt"
+
+      })}
+      />
+    </div>
+    else return <div className='player-chapter-pie'></div>
   }
  
   return (
@@ -306,7 +323,7 @@ const Seek = (props) => {
       <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
         <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
-        <div></div>
+        <div className='player-chapter-text'>{props.chapter}/{props.chapters}</div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
         <div className="player-controls-ds">{duration >= 0 ? secToTime(duration) : "00:00"}</div>

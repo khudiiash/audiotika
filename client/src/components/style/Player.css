@@ -73,11 +73,17 @@
   color: #c06174;
 
 }
-.player-chapter {
+.player-chapter-pie {
   width: 20%;
   text-align: center;
   color: #555;
+  font-size: 10px;
 
+}
+.player-chapter-text {
+  width: 20%;
+  text-align: center;
+  color: #555;
 }
 .player-controls-text {
   width: 100%;
@@ -103,10 +109,10 @@
 }
 
 .player-controls-cts {
-  width: 25%;
+  width: 20%;
 }
 .player-controls-ds {
-  width: 15%;
+  width: 20%;
   text-align: right;
   opacity: 1;
 }
@@ -138,8 +144,12 @@
 
 }
 .player-speed {
-    width: 10%;
+    width: 20%;
     text-align: center;
+}
+
+.CircularProgressbar {
+  width: 30% !important;
 }
 
 @media screen and (max-width: 660px) {
@@ -166,7 +176,7 @@
     font-size: 13px;
   }
 
-  .player-chapter {
+  .player-chapter-text {
     font-size: 13px;    
   }
 }
