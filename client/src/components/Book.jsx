@@ -26,7 +26,6 @@ function Book({ book }) {
 
     useEffect(() => {
         let bookHTML = bookRef.current
-        dispatch(setNextSrc(""))
         if (book._id === user.currentBookID) {
             playBook()
         }
@@ -38,6 +37,7 @@ function Book({ book }) {
                 if (store.getState().current?._id === book._id) gsap.timeline().to(bookHTML, 1, {color: '#EB768E'}) 
                 else gsap.to(bookHTML, .5, {color: "#e8e8e8"})
         })
+        dispatch(setNextSrc(""))
 
     }, []);
 
