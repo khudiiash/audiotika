@@ -432,53 +432,18 @@ function Player() {
         document.getElementById('audio').src = src
         if (!isSafari) audio.play()
         dispatch(setCurrentSrc(src))
-        dispatch(setLoading(false))
-
-           
       });
-      // ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
-      //   let parts = [];
-      //   if (forFuture) dispatch(isStreamingFuture(true))
-      //   stream.on('data', (chunk) => {
-      //     parts.push(chunk);
-      //     chunkSize += chunk.byteLength
-      //     if (!forFuture)
-      //         dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
-      //   });
-      //   stream.on('end', function () {
-      //     chunkSize = 0;
-      //     dispatch(setPercent(0))
-      //     if (forFuture) {
-      //     console.log(`%conEnded: Future Chatper ${chapter} Stream Ended`,'color: yellowgreen')
-
-      //      dispatch(isStreamingFuture(false))
-      //      if (store.getState().current.chapter !== chapter) {
-      //       let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-      //       socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
-      //       dispatch(setNextSrc(nextsrc))
-      //       dispatch(setLoading(false))
-      //      } else {
-      //       socket.emit('stream-done', { create: false })
-      //      }
-      //     } 
-      //     else {
-      //       console.log(`%conEnded: Chatper ${chapter} Stream Ended`,'color: yellow')
-
-      //       let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-      //       socket.emit('stream-done', {create: false, title, author, chapters: chapters, src})
-      //       socket.emit('download-chapter', { title: current.title, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
-      //       audio.src = src
-      //       if (!isSafari) audio.play()
-      //       dispatch(setCurrentSrc(src))
-      //       dispatch(setLoading(false))
-      //     }
-      //   })
-      // });
+      
     }
   }
 
  
-  const onCanPlayThrough = () => {}
+  const onCanPlay = () => {
+    let dispatch = useDispatch()
+    dispatch(setLoading(false))
+
+
+  }
   const toggleView = () => {
     setFullView(!isFullView)
   }
@@ -530,7 +495,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlayThrough={onCanPlayThrough}>
+        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlay={onCanPlay}>
           {current && current.src && <source src={current.src} type="audio/mpeg"></source>}
         </audio>
       </div>

@@ -70,7 +70,6 @@ function Book({ book }) {
             document.getElementById('audio').src = src
             axios.get(proxy + '/books/'+book._id)
             .then(res => {
-                dispatch(setLoading(false))
                 dispatch(setCurrent({...res.data, chapters, src}))
                 if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
             })
