@@ -32,7 +32,7 @@ connection.once('open', () => {
 
 
 if (!fs.existsSync("audio")){
-    fs.mkdirSync("audio");
+    fs.mkdirSync(path.join(__dirname, 'audio'));
 }
 
 app.use('/books', require('./routes/books'));
@@ -137,6 +137,7 @@ io.on('connection', function (socket) {
         })    
     })
      socket.on('delete-file', function ({torrentID, fileName}) {
+       console.log('Checking PATH:',path.join(audiodir,torrentID))
        try {
            fs.readdir(path.join(audiodir,torrentID), (err, files) => {
                 if (!err) {
@@ -144,22 +145,16 @@ io.on('connection', function (socket) {
                         if (file === fileName) {
                             fs.unlink(path.join(audiodir,torrentID,fileName))
                             console.log("File Deleted")
+                        } else {
+                            console.log(file)
                         }
                     })
+                } else {
+                    console.log(path.join(audiodir,torrentID), " does not exist")
                 }
-
            })
-           console.log(filePath, 'successfuly deleted')
        } catch (err) {
            console.log(err)
-           fs.readdir(audiodir, function(err, files) {
-               if (!err) console.log(files)
-               files.forEach(f => {
-                   fs.readdir(f, (err, audios) => {
-                        console.log(audios)
-                   })
-               })
-           })
        }
     })
 });
