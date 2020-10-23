@@ -124,7 +124,10 @@ function Auth() {
                 setError(errors)
              } 
          })
-         .catch(err => console.log(err))
+         .catch(err => {
+            errors.login = "Wrong username or password"
+            setError(errors)
+         })
      }
     
    }

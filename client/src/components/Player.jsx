@@ -392,7 +392,6 @@ function Player() {
   }
   const onEnded = () => {
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    let chunkSize = 0;
 
     dispatch(setPlaying(false))
 
@@ -407,11 +406,11 @@ function Player() {
 
       const socket = io(proxy);
       if (isFutureLoaded) {
-  
         audio.src = current.src
         if (!isSafari) {audio.play()}
         console.log('%cFuture Loaded, Downloading Next One: ' + (current.chapter + 1), 'color: pink')
         socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
+        socket.emit('delete-file', {path: '/audio/'+current.torrentID+'/'+current.fileName})
       } else {
         audio.src = "";
         audio.pause();
@@ -420,19 +419,27 @@ function Player() {
       }
       dispatch(nextChapter(current))
 
-      
-
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
   
 
       // Get next chapter src
-      socket.on('audio-loaded', function ({fileName, title, author, chapter, chapters, forFuture}) {
-        let src = 'https://audiotika.herokuapp.com/'+fileName
-        document.getElementById('audio').src = src
-        if (!isSafari) audio.play()
-        dispatch(setCurrentSrc(src))
-        dispatch(setLoading(false))
+      socket.on('audio-loaded', function ({fileName, torrentID, chapter, chapters, forFuture}) {
+        if (!forFuture) {
+          let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+          audio.src = src
+          audio.load()
+          dispatch(setCurrentSrc(src))
+          dispatch(setLoading(false))
+          if (chapter < chapters) {
+              console.log('onEnded: Downloading Future ', chapter + 1)
+              socket.emit('download-chapter', {title: current.title, chapter: current.chapter + 1, author: current.author, torrentID: current.torrentID, forFuture: true})
+          }
+      }
+      else {
+          let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+          dispatch(setNextSrc(src))
+      }
       });
       
     }
@@ -440,6 +447,7 @@ function Player() {
 
  
   const onCanPlay = () => {
+    console.log('%cCanPlay','color: yellowgreen')
     
   }
   const toggleView = () => {

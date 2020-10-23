@@ -8,12 +8,11 @@ router.route('/login').post((req, res) => {
   
   let { user: {username, email, password}, isSignIn, isSignUp } = req.body
   if (isSignIn) {
-    User.find()
-      .then(users => console.log(users))
 
-    User.findOne({ username: username })
+    User.findOne({ username: username, password: password })
       .then(user => {
-        res.json(user)
+        if (user) res.json(user)
+        else res.status(500).send('Wrong username of password')
       })
       .catch((err) => console.log(err))
   }

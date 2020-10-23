@@ -24,7 +24,6 @@ function BookList() {
         axios.get(proxy + '/books')
            .then(res => {
               if (res.data.length !== books.length) {
-                  console.log('Setting Books')
                   dispatch(setBooks(res.data.filter(book => {
                       if (book._id === user.currentBookID) {book.isCurrent = true; return book}
                       else if (book.userID === user._id) return book
