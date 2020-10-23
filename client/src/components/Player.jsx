@@ -439,10 +439,7 @@ function Player() {
 
  
   const onCanPlay = () => {
-    let dispatch = useDispatch()
     dispatch(setLoading(false))
-
-
   }
   const toggleView = () => {
     setFullView(!isFullView)
