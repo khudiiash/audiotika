@@ -382,12 +382,12 @@ function Player() {
   }
   const onPlay = () => {
     dispatch(setPlaying(true))
-
   }
   const onLoad = () => {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
     if (current.time >= 0) audio.currentTime = current.time
+    dispatch(setLoading(false))
 
   }
   const onEnded = () => {
@@ -447,7 +447,7 @@ function Player() {
 
  
   const onCanPlay = () => {
-    console.log('%cCan Play', '')
+    console.log('%cCan Play', 'color: yellowgreen')
     dispatch(setLoading(false))
   }
   const toggleView = () => {

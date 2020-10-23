@@ -19,17 +19,13 @@ input[type=range] {
     border-radius: 25px;
     border: 0px solid #000101;
   }
-  input[type=range]::-webkit-slider-thumb {
-    box-shadow: -580px 0 0 580px #EB778E;
-    border: 0px solid #000000;
-    height: 2vh;
+  ::-webkit-slider-thumb {
+   -webkit-appearance: none;
+    box-shadow: -100vw 0 0 100vw #EB778E;
     width: 0px;
-
-    border-radius: 7px;
-    background: #EB778E;
     cursor: pointer;
-    -webkit-appearance: none;
     margin-top: -7.6px;
+    border-radius: 0; /* iOS */
   }
   input[type=range]:focus::-webkit-slider-runnable-track {
     background: #2d2d2d;
