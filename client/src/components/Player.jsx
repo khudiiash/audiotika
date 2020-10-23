@@ -446,6 +446,7 @@ function Player() {
 
  
   const onCanPlay = () => {
+    console.log('canPlay')
     dispatch(setLoading(false))
   }
   const toggleView = () => {
