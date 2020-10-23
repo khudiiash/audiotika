@@ -305,7 +305,7 @@ const Seek = (props) => {
     let { chapter, chapters } = props
     if (chapter && chapters) return <div className='player-chapter-pie'>
       <CircularProgressbar
-      value={14/90 * 100}
+      value={chapter/chapters * 100}
       strokeWidth={50}
       styles={buildStyles({
         pathColor: "#c06174",
