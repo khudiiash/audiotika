@@ -11,7 +11,6 @@ import './style/Inputs.css'
 import gsap from 'gsap'
 import {
   CircularProgressbar,
-  CircularProgressbarWithChildren,
   buildStyles
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -21,8 +20,8 @@ const Speed = (props) => {
   let playSpeed = useSelector(state => state.player.speed)
   const dispatch = useDispatch()
   const switchSpeed = () => {
-    if (playSpeed < 2.5) playSpeed += .25
-    else playSpeed = .5
+    if (playSpeed < 2) playSpeed += .25
+    else playSpeed = .75
     dispatch(setSpeed(playSpeed))
     let audio = document.getElementById('audio')
     audio.playbackRate = playSpeed

@@ -28,7 +28,7 @@ function Book({ book }) {
     useEffect(() => {
         let bookHTML = bookRef.current
         dispatch(setNextSrc(""))
-        if (book._id === user.currentBookID) {
+        if (book._id === user.currentBookID && !current.src) {
             playBook()
         }
        
