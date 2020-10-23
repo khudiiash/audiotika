@@ -21,15 +21,17 @@ input[type=range] {
   }
   ::-webkit-slider-thumb {
    -webkit-appearance: none;
-    box-shadow: -100vw 0 0 100vw #EB778E;
+    box-shadow: -1000px 0 0 1000px #EB778E;
     width: 0px;
     cursor: pointer;
     margin-top: -7.6px;
     border-radius: 0; /* iOS */
   }
-  input[type=range][value=0]::-webkit-slider-thumb {
-    box-shadow: none;
-  }
+
+input[type=range][value='0']::-webkit-slider-thumb {
+  box-shadow: none;
+
+}
   input[type=range]:focus::-webkit-slider-runnable-track {
     background: #2d2d2d;
   }
