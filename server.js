@@ -52,15 +52,9 @@ const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Ru
 const io = require('socket.io').listen(server)
 
 io.on('connection', function (socket) {
-    audio = "";
-    title = "";
-    cover = "";
-    author = "";
-    chapters = 0;
-    chapter = 0;
 
+    function handleTorrent({torrent, torrentID, title, author, chapter, forFuture}) {
 
-    function handleTorrent(torrent, title, author, forFuture) {
         let torrentFiles = torrent.files.filter((f, i) => {
             if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
         })
@@ -68,36 +62,33 @@ io.on('connection', function (socket) {
             return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
         }
         torrentFiles = torrentFiles.sort(customSort);
-        chapter = data.chapter
         console.log('Torrent Files: ',torrentFiles.length)
+        console.log(chapter, forFuture)
         torrentFiles.forEach(function (file, index) {
-            if (index === data.chapter - 1) {
+            if (index === chapter - 1) {
+                console.log(audiodir, torrentID, file.name)
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                     console.log('File Exits, Sending')
                     chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                    console.log("Sending", title, author, chapter, chapters, forFuture)
                     socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                 } else {
                     console.log('File Does Not Exist, Writing')
                     if (!fs.existsSync(path.join(audiodir, torrentID))) {
-                        console.log("creating folder "+path.join(audiodir, torrentID))
                         fs.mkdirSync(path.join(audiodir, torrentID))
                     }
                     const stream = file.createReadStream();
                     const audioPath = path.join(audiodir, torrentID, file.name)
                     const writer = fs.createWriteStream(audioPath);
-                    console.log('Start Writing')
                     stream.on('data', function (data) {
                         writer.write(data);
                     });
                     stream.on('end', () => {
                             chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
-                            console.log("Sending", bookTitle, bookAuthor, chapter, chapters, forFuture)
-                            socket.emit('audio-loaded', {fileName: file.name, torrentID, title: bookTitle, author: bookAuthor, chapter, chapters, forFuture})
+                            console.log("Sending", title, author, chapter, chapters, forFuture)
+                            socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                         
                     })
                 }
-                
             }
         })
     }
@@ -122,14 +113,13 @@ io.on('connection', function (socket) {
     })
 
     socket.on('download-chapter', function (data) {
-        chapter = data.chapter
+        let chapter = data.chapter
         let torrentID = data.torrentID
         let forFuture = data.forFuture
         let bookTitle = data.title
         let bookAuthor = data.author;
         playing = false;
         audio = "";
-        chapters = 0;
         console.log('downloading', data.title, 'chapter:', chapter, 'forFuture', forFuture)
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
@@ -142,11 +132,12 @@ io.on('connection', function (socket) {
                 var client = new WebTorrent()
                 if (client.torrents.filter(t => t.id === torrentID).length > 0) {
                     console.log('Getting Torrent in CLIENT')
-                    handleTorrent(client.get(torrentID), bookTitle, bookAuthor, forFuture)
+                    handleTorrent({torrent: client.get(torrentID), torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                 } else {
                     console.log('Adding URI to CLIENT')
                     client.add(URI, function (torrent) {
-                        handleTorrent(torrent, bookTitle, bookAuthor, forFuture)
+
+                        handleTorrent({torrent: torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                     })
                 }
             }).catch(err => console.log("Magnet Link Error", err))

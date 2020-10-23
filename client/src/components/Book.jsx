@@ -65,8 +65,8 @@ function Book({ book }) {
 
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
 
-        
         socket.on('audio-loaded', function ({fileName, torrentID, chapters, forFuture}) {
+            console.log('Audio Loaded')
             if (!forFuture) {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
                 audio.src = src
@@ -76,10 +76,10 @@ function Book({ book }) {
                     dispatch(setCurrent({...res.data, fileName, chapters, src}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
-                // if (book.chapter < book.chapters) {
-                //     console.log('Book: Downloading Future ', book.chapter + 1)
-                //     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, author: book.author, torrentID: book.torrentID, forFuture: true})
-                // }
+                if (book.chapter < book.chapters) {
+                    console.log('Book: Downloading Future ', book.chapter + 1)
+                    socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, author: book.author, torrentID: book.torrentID, forFuture: true})
+                }
             }
             else {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
@@ -87,8 +87,6 @@ function Book({ book }) {
             }
         })
     }
-  
-
     return (
         <div className="book" ref={bookRef} onClick={playBook}>
             <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
@@ -102,8 +100,6 @@ function Book({ book }) {
                         
                         </>
             }
-
-
         </div>
     );
 }
