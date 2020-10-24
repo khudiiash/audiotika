@@ -350,7 +350,6 @@ function Player() {
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(nextChapter(current))   
     }
-    dispatch(setLoading(true))
     // if (current.chapter < current.chapters) {
     //   audio.currentTime = 0;
     //   if (audio.src === current.nextsrc || !current.nextsrc) isFutureLoaded = false
