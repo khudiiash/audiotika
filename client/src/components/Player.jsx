@@ -104,6 +104,7 @@ const Next = ({ current }) => {
       audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
+      dispatch(setCurrent(current))
       audio.play()
     }
   }
@@ -277,7 +278,6 @@ function Player() {
   const playerBoxRef = createRef();
   const proxy = useSelector(state => state.proxy)
 
-
   const mountedTL = useRef();
   const newBookTL = useRef();
   const dispatch = useDispatch()
@@ -300,8 +300,6 @@ function Player() {
     setTimeout(() => setFullView(!isFullView), 1500)
 
 
-
-
     mountedTL.current = gsap.timeline()
       .from(playerBoxRef.current, 1, { y: 25, opacity: 0 }, '-=.5')
       .staggerFrom(playerBoxRef.current.children, 1, { y: 25, opacity: 0 }, .5)
@@ -310,8 +308,6 @@ function Player() {
       // dispatch(unload())
       // dispatch(setCurrent({}))
     });
-
-
 
   }, []);
 
@@ -338,6 +334,7 @@ function Player() {
     const audio = document.getElementById('audio');
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     if (current.chapter < current.chapters) {
+      audio.pause()
       audio.currentTime = 0;
       current.prevsrc = audio.src
       audio.src = current.nextsrc
@@ -348,6 +345,7 @@ function Player() {
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       if (!isSafari) audio.play()
+      dispatch(setCurrent(current))
     }
     // if (current.chapter < current.chapters) {
     //   audio.currentTime = 0;
