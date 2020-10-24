@@ -92,21 +92,21 @@ const Next = ({ current }) => {
 
   const onNext = () => {
     dispatch(setPlaying(false))
-    const currAudio =  document.getElementById('audio')
-    const nextAudio = document.getElementById('audio-2')
+    const audio = document.getElementById('audio')
     const socket = io(proxy);
-    currAudio.pause()
+    audio.pause()
     if (current.chapter < current.chapters) {
-      currAudio.currentTime = 0;
-      current.prevsrc = currAudio.src
+      audio.currentTime = 0;
+      current.prevsrc = audio.src
       let prevFileName = current.fileName
       current.fileName = current.nextFileName
       current.nextFileName = undefined
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       dispatch(setCurrent(current))
-      console.log(nextAudio.id)
-      nextAudio.play()
+      audio.load()
+      document.getElementById('play-button').click()
+      
     }
   }
 
@@ -317,14 +317,11 @@ function Player() {
   }
   const onPlay = (e) => {
     const socket = io(proxy);
-    const nextAudio = e.target.id === 'audio' ? document.getElementById('audio-2') : document.getElementById('audio')
+    const audio = e.target.id === 'audio' ? document.getElementById('audio-2') : document.getElementById('audio')
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       dispatch(setNextSrc({src, nextFileName: fileName}))
-      nextAudio.src = src
-      nextAudio.load()
-      console.log('Future Loaded')
     })
     dispatch(setPlaying(true))
   }
@@ -332,6 +329,11 @@ function Player() {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
     if (current.time >= 0) audio.currentTime = current.time
+    try {
+      audio.play()
+    } catch (err) {
+      console.log(err)
+    }
   }
   const onEnded = () => {
     dispatch(setPlaying(false))
@@ -446,7 +448,6 @@ function Player() {
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
         <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad}>
         </audio>
-        <audio id='audio-2' src={current?.nextsrc} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad}></audio>
       </div>
     </div>
   );
