@@ -316,7 +316,7 @@ function Player() {
   }
   const onPlay = () => {
     const socket = io(proxy);
-    if (current.torrentID) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter, torrentID: current.torrentID, forFuture: true })
+    if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       dispatch(setNextSrc({src, nextFileName: fileName}))
