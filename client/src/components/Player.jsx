@@ -92,8 +92,8 @@ const Next = ({ current }) => {
 
   const onNext = () => {
     dispatch(setPlaying(false))
-    const currAudio =  document.getElementById('audio').paused ? document.getElementById('audio-2') : document.getElementById('audio')
-    const nextAudio = document.getElementById('audio').paused ? document.getElementById('audio') : document.getElementById('audio-2')
+    const currAudio =  document.getElementById('audio')
+    const nextAudio = document.getElementById('audio-2')
     const socket = io(proxy);
     currAudio.pause()
     if (current.chapter < current.chapters) {
