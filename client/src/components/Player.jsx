@@ -106,6 +106,7 @@ const Next = ({ current }) => {
       dispatch(setCurrent(current))
       audio.load()
       document.getElementById('play-button').click()
+      dispatch(setLoading(true))
       
     }
   }
@@ -323,6 +324,7 @@ function Player() {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       dispatch(setNextSrc({src, nextFileName: fileName}))
     })
+    dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
   const onLoad = () => {
