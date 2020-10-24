@@ -104,7 +104,13 @@ const Next = ({ current }) => {
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       dispatch(setCurrent(current))
-      audio.play()
+      audio.load()
+      try {
+        audio.play()
+      } catch (err){
+        console.log("Can't Play So Fast")
+        console.log(err)
+      }
     }
   }
 
@@ -343,8 +349,9 @@ function Player() {
       audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
-      if (!isSafari) audio.play()
       dispatch(setCurrent(current))
+      
+
     }
     // if (current.chapter < current.chapters) {
     //   audio.currentTime = 0;
