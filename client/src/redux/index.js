@@ -49,11 +49,11 @@ function rootReducer(state = initialState, action) {
         case SET_CURRENT:
             return { ...state, user: { ...state.user, currentBookID: action.payload._id }, current: Object.assign({}, action.payload) }
         case SET_NEXT_SRC:
-            return { ...state, current: Object.assign({}, { ...state.current, nextsrc: action.payload }) }
+            return { ...state, current: Object.assign({}, { ...state.current, nextsrc: action.payload.src, nextFileName: action.payload.nextFileName }) }
         case SET_PREV_SRC:
             return { ...state, current: Object.assign({}, { ...state.current, prevsrc: action.payload }) }
         case SET_CURRENT_SRC:
-            return { ...state, current: Object.assign({}, { ...state.current, src: action.payload }) }
+            return { ...state, current: Object.assign({}, { ...state.current, src: action.payload.src, nextFileName: action.payload.fileName }) }
         case SET_SEARCHED:
             return { ...state, current: Object.assign({}, { ...state.current, searched: action.payload }) }
         case SET_LOADING:

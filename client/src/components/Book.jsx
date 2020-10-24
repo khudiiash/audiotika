@@ -72,15 +72,15 @@ function Book({ book }) {
                     dispatch(setLoading(false))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
-                if (book.chapter < book.chapters) {
-                    console.log('Book: Downloading Future ', book.chapter + 1)
-                    socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, author: book.author, torrentID: book.torrentID, forFuture: true})
-                }
+                // if (book.chapter < book.chapters) {
+                //     console.log('Book: Downloading Future ', book.chapter + 1)
+                //     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, author: book.author, torrentID: book.torrentID, forFuture: true})
+                // }
             }
-            else {
-                let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-                dispatch(setNextSrc(src))
-            }
+            // else {
+            //     let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+            //     dispatch(setNextSrc({src, nextFileName: fileName}))
+            // }
         })
     }
     return (
