@@ -345,15 +345,10 @@ function Player() {
       audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}      
-
-      document.getElementById('play-button').click()
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(setCurrent(current))   
       dispatch(setLoading(true))
-    
-      
-
     }
     // if (current.chapter < current.chapters) {
     //   audio.currentTime = 0;
@@ -401,6 +396,7 @@ function Player() {
   }
   const onCanPlay = () => {
     console.log('%cCanPlay', 'color: orange')
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) disppatch(setLoading(true))
   }
 
   const onCanPlayThrough = () => {
