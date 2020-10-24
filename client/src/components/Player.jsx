@@ -104,8 +104,6 @@ const Next = ({ current }) => {
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       audio.load()
-      document.getElementById('play-button').click()
-
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(setCurrent(current))   
@@ -406,13 +404,18 @@ function Player() {
     // }
   }
   const onCanPlay = () => {
+    const audio = document.getElementById('audio')
     console.log('%cCanPlay','color: orange')
     dispatch(setLoading(false))
+    if (!audio.playing) document.getElementById('play-button').click()
   }
 
   const onCanPlayThrough = () => {
-    console.log('%cCanPlayThrough','color: yellowgreen')
+    const audio = document.getElementById('audio')
+    console.log('%cCanPlayThrough','color: green')
     dispatch(setLoading(false))
+    if (!audio.playing) document.getElementById('play-button').click()
+    
 
   }
   const toggleView = () => {
