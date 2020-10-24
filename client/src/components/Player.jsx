@@ -396,7 +396,7 @@ function Player() {
   }
   const onCanPlay = () => {
     console.log('%cCanPlay', 'color: orange')
-    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) disppatch(setLoading(true))
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
   }
 
   const onCanPlayThrough = () => {
