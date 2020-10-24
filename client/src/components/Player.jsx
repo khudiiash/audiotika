@@ -69,8 +69,6 @@ const Play = (props) => {
 
   const onPlay = () => {
     const audio = document.getElementById('audio')
-
-
     if (audio.src && !isPlaying) {
       audio.play()
       dispatch(setPlaying(true))
@@ -317,9 +315,8 @@ function Player() {
   const onPause = () => {
     dispatch(setPlaying(false))
   }
-  const onPlay = (e) => {
+  const onPlay = () => {
     const socket = io(proxy);
-    const audio = e.target.id === 'audio' ? document.getElementById('audio-2') : document.getElementById('audio')
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
@@ -338,7 +335,6 @@ function Player() {
   const onEnded = () => {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     if (current.chapter < current.chapters) {
       audio.pause()
       audio.currentTime = 0;
@@ -356,7 +352,7 @@ function Player() {
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(setCurrent(current))   
       dispatch(setLoading(true))
-      
+    
       
 
     }
@@ -406,12 +402,12 @@ function Player() {
   }
   const onCanPlay = () => {
     dispatch(setLoading(false))
+    console.log('%cCanPlay', 'color: orange')
   }
 
   const onCanPlayThrough = () => {
-    const audio = document.getElementById('audio')
     dispatch(setLoading(false))    
-
+    console.log('%cCanPlayThrough', 'color: yellowgreen')
   }
   const toggleView = () => {
     setFullView(!isFullView)
