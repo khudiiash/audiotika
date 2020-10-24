@@ -101,7 +101,6 @@ const Next = ({ current }) => {
       let prevFileName = current.fileName
       current.fileName = current.nextFileName
       current.nextFileName = undefined
-      audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       dispatch(setCurrent(current))
