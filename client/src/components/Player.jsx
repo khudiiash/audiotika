@@ -92,8 +92,8 @@ const Next = ({ current }) => {
 
   const onNext = () => {
     dispatch(setPlaying(false))
-    const currAudio =  document.getElementById('audio').paused ? document.getElementById('audio-2') : document.getElementById('audio')
-    const nextAudio = document.getElementById('audio').paused ? document.getElementById('audio') : document.getElementById('audio-2')
+    const currAudio =  document.getElementById('audio').paused ? document.getElementById('audio') : document.getElementById('audio-2')
+    const nextAudio = document.getElementById('audio').paused ? document.getElementById('audio-2') : document.getElementById('audio')
     const socket = io(proxy);
     currAudio.pause()
     if (current.chapter < current.chapters) {
@@ -105,6 +105,7 @@ const Next = ({ current }) => {
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       dispatch(setCurrent(current))
+      console.log(nextAudio.id)
       nextAudio.play()
     }
   }
