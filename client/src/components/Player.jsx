@@ -314,9 +314,9 @@ function Player() {
   const onPause = () => {
     dispatch(setPlaying(false))
   }
-  const onPlay = () => {
+  const onPlay = (e) => {
     const socket = io(proxy);
-    const nextAudio = document.getElementById('audio').paused ? document.getElementById('audio') : document.getElementById('audio-2')
+    const nextAudio = e.target.id === 'audio' ? document.getElementById('audio-2') : document.getElementById('audio')
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
