@@ -93,6 +93,7 @@ const Next = ({ current }) => {
   const onNext = () => {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
+    const socket = io(proxy);
     if (current.chapter < current.chapters) {
       audio.currentTime = 0;
       current.prevsrc = audio.src
@@ -323,6 +324,7 @@ function Player() {
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       dispatch(setNextSrc({src, nextFileName: fileName}))
+      console.log('Future Loaded')
     })
     dispatch(setPlaying(true))
   }
