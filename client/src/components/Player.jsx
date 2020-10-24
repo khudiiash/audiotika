@@ -407,9 +407,13 @@ function Player() {
   }
   const onCanPlay = () => {
     console.log('%cCanPlay','color: orange')
+    dispatch(setLoading(false))
   }
+
   const onCanPlayThrough = () => {
-    console.log('%cCanPlayThrough','color: goldenrod')
+    console.log('%cCanPlayThrough','color: yellowgreen')
+    dispatch(setLoading(false))
+
   }
   const toggleView = () => {
     setFullView(!isFullView)
