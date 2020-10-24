@@ -92,21 +92,20 @@ const Next = ({ current }) => {
 
   const onNext = () => {
     dispatch(setPlaying(false))
-    const audio = document.getElementById('audio');
+    const currAudio =  document.getElementById('audio').paused ? document.getElementById('audio-2') : document.getElementById('audio')
+    const nextAudio = document.getElementById('audio').paused ? document.getElementById('audio') : document.getElementById('audio-2')
     const socket = io(proxy);
-    audio.pause()
+    currAudio.pause()
     if (current.chapter < current.chapters) {
-      audio.currentTime = 0;
-      current.prevsrc = audio.src
-      audio.src = current.nextsrc
+      currAudio.currentTime = 0;
+      current.prevsrc = currAudio.src
       let prevFileName = current.fileName
       current.fileName = current.nextFileName
       current.nextFileName = undefined
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       dispatch(setCurrent(current))
-      audio.load()
-      audio.play()
+      nextAudio.play()
     }
   }
 
@@ -317,10 +316,13 @@ function Player() {
   }
   const onPlay = () => {
     const socket = io(proxy);
+    const nextAudio = document.getElementById('audio').paused ? document.getElementById('audio') : document.getElementById('audio-2')
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       dispatch(setNextSrc({src, nextFileName: fileName}))
+      nextAudio.src = src
+      nextAudio.load()
       console.log('Future Loaded')
     })
     dispatch(setPlaying(true))
@@ -443,6 +445,7 @@ function Player() {
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
         <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad}>
         </audio>
+        <audio id='audio-2' src={current?.nextsrc} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad}></audio>
       </div>
     </div>
   );
