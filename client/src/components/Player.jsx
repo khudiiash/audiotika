@@ -94,6 +94,7 @@ const Next = ({ current }) => {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
     const socket = io(proxy);
+    audio.pause()
     if (current.chapter < current.chapters) {
       audio.currentTime = 0;
       current.prevsrc = audio.src
@@ -105,12 +106,7 @@ const Next = ({ current }) => {
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       dispatch(setCurrent(current))
       audio.load()
-      try {
-        audio.play()
-      } catch (err){
-        console.log("Can't Play So Fast")
-        console.log(err)
-      }
+      audio.play()
     }
   }
 
