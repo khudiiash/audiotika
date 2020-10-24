@@ -333,11 +333,8 @@ function Player() {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
     if (current.time >= 0) audio.currentTime = current.time
-    try {
-      audio.play()
-    } catch (err) {
-      console.log(err)
-    }
+    console.log('%cLoad','color: yellow')
+
   }
   const onEnded = () => {
     dispatch(setPlaying(false))
@@ -353,8 +350,14 @@ function Player() {
       current.nextFileName = undefined
       audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
-      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
-      dispatch(setCurrent(current))
+      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}      
+
+      document.getElementById('play-button').click()
+      axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
+      axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
+      dispatch(setCurrent(current))   
+      dispatch(setLoading(true))
+      
       
 
     }
@@ -402,7 +405,12 @@ function Player() {
       
     // }
   }
-
+  const onCanPlay = () => {
+    console.log('%cCanPlay','color: orange')
+  }
+  const onCanPlayThrough = () => {
+    console.log('%cCanPlayThrough','color: goldenrod')
+  }
   const toggleView = () => {
     setFullView(!isFullView)
   }
@@ -450,7 +458,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad}>
+        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlayThrough}>
         </audio>
       </div>
     </div>
