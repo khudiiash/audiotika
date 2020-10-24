@@ -334,6 +334,7 @@ function Player() {
   const onEnded = () => {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
+    const socket = io(proxy)
     if (current.chapter < current.chapters) {
       audio.pause()
       audio.currentTime = 0;
