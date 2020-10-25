@@ -130,7 +130,8 @@ const Prev = ({ current }) => {
         audio.src = ''
         current.src = ''
         current.fileName = ''
-        socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID,chapter: current.chapter-1, forFuture: false })
+        current.chapter -= 1
+        socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID,chapter: current.chapter, forFuture: false })
         socket.on('audio-loaded', function ({fileName, torrentID}) {
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
           current.src = src
