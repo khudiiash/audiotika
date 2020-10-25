@@ -3,7 +3,6 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
 import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying, unload, setPercent, setSpeed, isStreamingFuture} from '../redux';
 import io from "socket.io-client";
-import ss from "socket.io-stream";
 import axios from "axios"
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading, Back15Icon, Forw15Icon } from '../assets/icons'
 import { secToTime } from './_utils'
@@ -117,81 +116,26 @@ return (
 }
 const Prev = ({ current }) => {
   const dispatch = useDispatch()
-  const proxy = useSelector(state => state.proxy)
-  let chunkSize = 0;
-
   const onPrev = () => {
     const audio = document.getElementById('audio');
-
+    const proxy = useSelector(state => state.proxy)
+    const socket = io(proxy);
     if (current && current.chapter > 1) {
-      if (current.prevsrc) {
-        current.nextsrc = current.src
-        current.src = current.prevsrc
-        current.prevsrc = undefined
-        current.time = 0
-        current.chapter -= 1,
-
-        audio.currentTime = 0;
-
-        audio.src = current.src
-        audio.play()
-        axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
-        axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-        dispatch(setCurrent(current))
-
-      } else if (current) {
         dispatch(setLoading(true))
-        current.time = 0
-        audio.pause()
-        current.chapter -= 1,
-
-        dispatch(nextChapter(current))
-        axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
-        axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-
-        audio.currentTime = 0;
-
-        const socket = io(proxy);
-
-        socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID,chapter: current.chapter, forFuture: false })
-
-        socket.on('audio-loaded', function (data) {
-          socket.emit('audio-ready', data);
+        if (audio.src) {
+          current.nextsrc = audio.src
+          current.nextFileName = current.fileName
+        }
+        audio.src = ''
+        current.src = ''
+        current.fileName = ''
+        socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID,chapter: current.chapter-1, forFuture: false })
+        socket.on('audio-loaded', function ({fileName, torrentID}) {
+          let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+          current.src = src
+          current.fileName = fileName
+          dispatch(setCurrent(current))
         });
-        ss(socket).on('audio-stream', function (stream, {forFuture, title, author, chapter, chapters, src, fileSize}) {
-          let parts = [];
-          if (forFuture) dispatch(isStreamingFuture(true))
-          stream.on('data', (chunk) => {
-            parts.push(chunk);
-            chunkSize += chunk.byteLength
-            if (!forFuture)
-                dispatch(setPercent(Math.floor((chunkSize / fileSize) * 100)))
-          });
-          stream.on('end', function (data) {
-            chunkSize = 0;
-            dispatch(setPercent(0))
-            if (forFuture) {
-              dispatch(isStreamingFuture(false))
-              const audio = document.getElementById('audio')
-              let nextsrc = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-              socket.emit('stream-done', {create: false, title, author, nextsrc, src: current.src})
-              dispatch(setNextSrc(nextsrc))
-            } else {
-              const audio = document.getElementById('audio')
-              let src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts, { type: 'audio/mpeg' }))
-              socket.emit('stream-done', {create: false, title, author, chapters, src})
-              socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
-              audio.src = src
-              audio.play()
-              dispatch(setCurrentSrc(src))
-              dispatch(setLoading(false))
-
-            }
-
-          })
-
-        });
-      }
     } else {
       audio.currentTime = 0;
     }
@@ -350,49 +294,6 @@ function Player() {
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(nextChapter(current))   
     }
-    // if (current.chapter < current.chapters) {
-    //   audio.currentTime = 0;
-    //   if (audio.src === current.nextsrc || !current.nextsrc) isFutureLoaded = false
-    //   current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc, prevsrc: current.src }
-    //   const socket = io(proxy);
-    //   if (isFutureLoaded) {
-    //     audio.src = current.src
-    //     audio.load()
-    //     console.log('Future Loaded')
-    //     socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID, chapter: current.chapter + 1, forFuture: true })
-    //     socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
-    //   } else {
-    //     console.log('Future Not Loaded')
-    //     audio.src = "";
-    //     audio.pause();
-    //     socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter, torrentID: current.torrentID, forFuture: false })
-    //     socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
-    //   }
-    //   dispatch(nextChapter(current))
-
-    //   axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
-    //   axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-  
-
-    //   // Get next chapter src
-    //   socket.on('audio-loaded', function ({fileName, torrentID, chapter, chapters, forFuture}) {
-    //   if (!forFuture) {
-    //       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-    //       audio.src = src
-    //       audio.load()
-    //       dispatch(setCurrentSrc({src, fileName}))
-    //       if (chapter < chapters) {
-    //           console.log('onEnded: Downloading Future ', chapter + 1)
-    //           socket.emit('download-chapter', {title: current.title, chapter: current.chapter + 1, author: current.author, torrentID: current.torrentID, forFuture: true})
-    //       }
-    //   }
-    //   else {
-    //       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-    //       dispatch(setNextSrc({src, nextFileName: fileName}))
-    //   }
-    //   });
-      
-    // }
   }
   const onCanPlay = () => {
     console.log('%cCanPlay', 'color: orange')
