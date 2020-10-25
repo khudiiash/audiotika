@@ -86,13 +86,14 @@ const Play = (props) => {
 const Next = ({ current }) => {
   const proxy = useSelector(state => state.proxy)
   const dispatch = useDispatch()
+  const store = useStore()
 
   const onNext = () => {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio')
     const socket = io(proxy);
     audio.pause()
-    if (current.chapter < current.chapters) {
+    if (current.chapter < current.chapters && !store.getState().player.isLoading) {
       audio.currentTime = 0;
       current.prevsrc = audio.src
       let prevFileName = current.fileName
@@ -117,11 +118,12 @@ return (
 const Prev = ({ current }) => {
   const dispatch = useDispatch()
   const proxy = useSelector(state => state.proxy)
+  const store = useStore()
   const onPrev = () => {
     const audio = document.getElementById('audio');
     const socket = io(proxy);
     audio.currentTime = 0;
-    if (current && current.chapter > 1) {
+    if (current && current.chapter > 1 && !store.getState().player.isLoading) {
         dispatch(setLoading(true))
         if (audio.src) {
           current.nextsrc = audio.src
