@@ -136,7 +136,10 @@ const Prev = ({ current }) => {
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
           current.src = src
           current.fileName = fileName
-          dispatch(setCurrent(current))
+          axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
+          axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
+          dispatch(setCurrent(current))   
+          dispatch(setLoading(true))
         });
     }
 
