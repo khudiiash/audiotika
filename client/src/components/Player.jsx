@@ -120,6 +120,7 @@ const Prev = ({ current }) => {
   const onPrev = () => {
     const audio = document.getElementById('audio');
     const socket = io(proxy);
+    audio.currentTime= 0;
     if (current && current.chapter > 1) {
         dispatch(setLoading(true))
         if (audio.src) {
@@ -136,8 +137,6 @@ const Prev = ({ current }) => {
           current.fileName = fileName
           dispatch(setCurrent(current))
         });
-    } else {
-      audio.currentTime = 0;
     }
 
   }
