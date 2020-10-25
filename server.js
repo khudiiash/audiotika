@@ -69,6 +69,7 @@ io.on('connection', function (socket) {
         torrentFiles = torrentFiles.sort(customSort);
         torrentFiles.forEach(function (file, index) {
             if (index === chapter - 1) {
+                console.log(file)
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                     chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                     console.log('Sending Existing')

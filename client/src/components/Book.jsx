@@ -41,13 +41,17 @@ function Book({ book }) {
 
     function onDelete (e) {
         const audio = document.getElementById('audio')
-
+        let socket = io(proxy);
         e.stopPropagation()
         axios.delete(proxy + '/books/'+_id)
+        if (current.fileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
+        if (current.nextFileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.nextFileName})
         dispatch(deleteBook(book))
         if (audio && !audio.paused && book._id === user.currentBookID) {
             audio.pause()
-            dispatch(setCurrent({}))
+            audio.currentTime = 0;
+            audio.src = '';
+            dispatch(setCurrent(''))
         }
 
         gsap.to(bookRef.current, .5, {color: '#ff0000', opacity: 0})
@@ -57,9 +61,7 @@ function Book({ book }) {
         dispatch(setLoading(true))
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
-
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
-
         socket.on('audio-loaded', function ({fileName, torrentID, chapters, forFuture}) {
             console.log('Audio Loaded')
             if (!forFuture) {
@@ -71,15 +73,7 @@ function Book({ book }) {
                     dispatch(setCurrent({...res.data, fileName, chapters, src}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
-                // if (book.chapter < book.chapters) {
-                //     console.log('Book: Downloading Future ', book.chapter + 1)
-                //     socket.emit('download-chapter', {title: book.title, chapter: book.chapter + 1, author: book.author, torrentID: book.torrentID, forFuture: true})
-                // }
             }
-            // else {
-            //     let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-            //     dispatch(setNextSrc({src, nextFileName: fileName}))
-            // }
         })
     }
     return (
