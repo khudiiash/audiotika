@@ -120,7 +120,7 @@ const Prev = ({ current }) => {
   const onPrev = () => {
     const audio = document.getElementById('audio');
     const socket = io(proxy);
-    audio.currentTime= 0;
+    audio.currentTime = 0;
     if (current && current.chapter > 1) {
         dispatch(setLoading(true))
         if (audio.src) {
@@ -128,9 +128,7 @@ const Prev = ({ current }) => {
           current.nextFileName = current.fileName
         }
         audio.src = ''
-        current.src = ''
-        current.fileName = ''
-        current.chapter -= 1
+        current = {...current,  src: '', fileName: '', chapter: chapter-1, time: 0}
         socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID,chapter: current.chapter, forFuture: false })
         socket.on('audio-loaded', function ({fileName, torrentID}) {
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
