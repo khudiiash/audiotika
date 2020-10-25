@@ -116,9 +116,9 @@ return (
 }
 const Prev = ({ current }) => {
   const dispatch = useDispatch()
+  const proxy = useSelector(state => state.proxy)
   const onPrev = () => {
     const audio = document.getElementById('audio');
-    const proxy = useSelector(state => state.proxy)
     const socket = io(proxy);
     if (current && current.chapter > 1) {
         dispatch(setLoading(true))
