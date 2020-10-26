@@ -248,9 +248,9 @@ const Seek = (props) => {
  
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
+      <input type="range" value={audio.currentTime === 0 && props.currentTime > 0 ? props.currentTime : audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
-        <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
+        <div className="player-controls-cts">{audio.currentTime === 0 && props.currentTime ? secToTime(props.currentTime) : secToTime(audio.currentTime)}</div>
         <div className='player-chapter-text'>{props.chapter}/{props.chapters}</div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
@@ -269,12 +269,9 @@ function Player() {
   const proxy = useSelector(state => state.proxy)
 
   const mountedTL = useRef();
-  const newBookTL = useRef();
   const dispatch = useDispatch()
 
   let [current, setCurrent] = useState("")
-  let [mounted, setMounted] = useState(false)
-
   let [isFullView, setFullView] = useState(true)
   let isMobile = window.innerWidth < window.innerHeight
 
@@ -284,21 +281,9 @@ function Player() {
       document.title = store.getState().current.title
     }
   })
-
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
-
-
-    mountedTL.current = gsap.timeline()
-      .from(playerBoxRef.current, 1, { y: 25, opacity: 0 }, '-=.5')
-      .staggerFrom(playerBoxRef.current.children, 1, { y: 25, opacity: 0 }, .5)
-
-    window.addEventListener('unload', function (event) {
-      // dispatch(unload())
-      // dispatch(setCurrent({}))
-    });
-
   }, []);
 
   const onPause = () => {
@@ -353,9 +338,7 @@ function Player() {
   const toggleView = () => {
     setFullView(!isFullView)
   }
-
   const getInfo = () => {
-
     const socket = io(proxy)
     if (document.getElementsByClassName('player-book-info').length) {
       gsap.timeline()
@@ -368,12 +351,7 @@ function Player() {
         dispatch(setCurrent({...current, info}))
       })
     }
-    
-
   }
-
-
-
   let playerBoxStyle = {
     top: isFullView ? (isMobile ? '5vh' : '15vh') : (isMobile ? '0vh' : '10vh'),
     height: isFullView ? (isMobile ? "80vh" : "60vh") : (isMobile ? "60vh" : "55vh")
