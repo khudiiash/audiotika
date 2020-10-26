@@ -105,7 +105,7 @@
 .player-controls-seek input {
   width: 100%;
   position: relative;
-  bottom: 45px;
+  bottom: 40px;
 }
 
 .player-controls-cts {
@@ -211,10 +211,10 @@
 
 @media screen and (max-width: 660px) {
   .player-controls {
-    width: 100%;
+    width: 97%;
   }
   .player-controls-seek {
-    width: 90%;
+    width: 85%;
   }
   
   .player-box {
@@ -228,7 +228,7 @@
 
 
   .player-title {
-    width: 90%;
+    width: 88%;
     margin: 0 auto;
     font-size: 17px;
     text-align: center;

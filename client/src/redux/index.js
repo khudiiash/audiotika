@@ -21,6 +21,7 @@ const SET_PERCENT = 'SET_PERCENT'
 const SET_SPEED = 'SET_SPEED'
 const STREAMING_FUTURE = 'STREAMING_FUTURE'
 const UNLOAD = 'UNLOAD'
+const SET_BOOK_INFO = 'SET_BOOK_INFO'
 
 //cd client && npm run build && cd .. && git add . && git commit -m "init" && git push heroku master 
 
@@ -64,6 +65,8 @@ function rootReducer(state = initialState, action) {
             return { ...state, player: Object.assign({}, { ...state.player, percent: action.payload }) }
         case SET_SPEED:
             return { ...state, player: Object.assign({}, { ...state.player, speed: action.payload }) }
+        case SET_BOOK_INFO:
+            return { ...state, current: Object.assign({}, { ...state.current, info: action.payload }) }
         case STREAMING_FUTURE:
             return { ...state, current: Object.assign({}, {...state.current, isStreamingFuture: action.payload})}
         case UNLOAD:
@@ -82,9 +85,6 @@ export function nextChapter(payload) {
 }
 export function setCurrent(payload) {
     return { type: SET_CURRENT, payload };
-}
-export function setCurrentAsync(payload) {
-    return { type: SET_CURRENT_ASYNC, payload };
 }
 export function setUser(payload) {
     return { type: SET_USER, payload };
@@ -122,9 +122,14 @@ export function setSpeed(payload) {
 export function isStreamingFuture(payload) {
     return { type: STREAMING_FUTURE, payload };
 }
+export function setBookInfo(payload) {
+    return {type: SET_BOOK_INFO, payload}
+}
 export function unload() {
     return { type: UNLOAD };
 }
+
+
 
 
 

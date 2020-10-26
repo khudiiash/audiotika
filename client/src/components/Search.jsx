@@ -73,7 +73,6 @@ const sizeToString = (bytes) => {
 
 
     const SearchResult = ({result, setSearching}) => {
-        result.forEach(p => console.log(p))
 
         const onBookClick = (i) => {
             let {id, title, author} = result[i]

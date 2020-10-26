@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, createRef, memo } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
-import { nextChapter, setCurrent, setNextSrc, setCurrentSrc, setLoading, setPlaying, unload, setPercent, setSpeed, isStreamingFuture} from '../redux';
+import { nextChapter, setCurrent, setNextSrc, setBookInfo, setCurrentSrc, setLoading, setPlaying, unload, setPercent, setSpeed, isStreamingFuture} from '../redux';
 import io from "socket.io-client";
 import axios from "axios"
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading, Back15Icon, Forw15Icon } from '../assets/icons'
@@ -80,16 +80,11 @@ const Forw15 = (props) => {
 const PlayerText = (props) => {
 
   let { title, author } = props
-
-
   useEffect(() => {
     audio.playbackRate = store.getState().player.speed
     console.log('%cPlayer Text Effect', 'color: orange')
-    let title = document.getElementsByClassName('player-text')[0]
-    let author = document.getElementsByClassName('player-author')[0]
     gsap.timeline()
       .staggerFromTo('.player-text div', .7, {y: 25, opacity: 0},{y: 0, opacity: 1}, .2)
-
   }, [props.title])
 
 
@@ -100,15 +95,12 @@ const PlayerText = (props) => {
 }
 
 
-const Play = (props) => {
+const Play = () => {
   const isLoading = useSelector(store => store.player.isLoading)
   const isPlaying = useSelector(store => store.player.isPlaying)
   const percent = useSelector(store => store.player.percent)
   const dispatch = useDispatch()
 
-  useEffect(()=> {
-    if (percent) dispatch(setPercent(0))
-  }, []) 
 
   const onPlay = () => {
     const audio = document.getElementById('audio')
@@ -281,6 +273,8 @@ function Player() {
       document.title = store.getState().current.title
     }
   })
+
+  console.log(current)
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
@@ -344,11 +338,11 @@ function Player() {
       gsap.timeline()
       .staggerTo('.player-book-info-raw', .5, {y: -25, opacity: 0}, .05)
       .staggerFromTo('.player-text div', .6, {y: 25, opacity: 0}, {y: 0, opacity: 1}, .2)
-      .call(() => dispatch(setCurrent({...current, info: ""})))
+      .call(() => dispatch(setBookInfo("")))
     } else {
       socket.emit('get-book-info', {torrentID: current.torrentID})
       socket.on('book-info-ready', info => {
-        dispatch(setCurrent({...current, info}))
+        dispatch(setBookInfo(info))
       })
     }
   }
@@ -360,7 +354,6 @@ function Player() {
   let playerStyle = {
     top: isFullView ? (isMobile ? "-30vh" : "-22vh") : (isMobile ? "-5vh" : '-5vh')
   }
-
   return (
     <div id='player' className="player" style={playerStyle} ref={playerRef}>
       <div className="player-hide" style={{ transform: isFullView ? "rotate(0)" : "rotate(180deg)" }} onClick={toggleView}><HideIcon /></div>
