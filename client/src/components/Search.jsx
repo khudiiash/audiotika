@@ -73,6 +73,7 @@ const sizeToString = (bytes) => {
 
 
     const SearchResult = ({result, setSearching}) => {
+        result.forEach(p => console.log(p))
 
         const onBookClick = (i) => {
             let {id, title, author} = result[i]
@@ -97,6 +98,7 @@ const sizeToString = (bytes) => {
             <div className='search-result' style={{height: result.length > 0 ? '80vh' : 0}}>
                 <ul className='search-result-list'>
                     {result.length > 0 && result.map((t,i) => {
+                        console.log(i)
                         return <li key={i} onClick={() => onBookClick(i)} className="search-result-list-item">
                                 <div className='search-result-list-item-top'>{t.title}</div>
                                 <div className='search-result-list-item-middle'>{t.author}</div>

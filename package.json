@@ -12,10 +12,13 @@
   "dependencies": {
     "@ryanknutson/rkgis": "^1.1.4",
     "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
+    "iconv-lite": "^0.6.2",
     "mongoose": "^5.10.3",
+    "request": "^2.88.2",
     "rutracker-api": "^1.1.2",
     "socket.io": "^2.3.0",
     "socket.io-stream": "^0.9.1",

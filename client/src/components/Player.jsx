@@ -14,7 +14,29 @@ import {
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-
+const BookInfo = ({info, onClick}) => {
+  delete info.cover
+  let keys = Object.keys(info)
+  useEffect(() => {
+    gsap.timeline()
+      .staggerTo('.player-text div', .5, {y: -25, opacity: 0}, .2)
+      .staggerFrom('.player-book-info-raw', .5, {y: 25, opacity: 0}, .05)
+  }, [])
+  return (
+    <div className="player-book-info" onClick={onClick}>
+      <div className="player-book-info-content">
+      {keys.map((k, i) => {
+        return <div key={i} className="player-book-info-raw">
+          {k === 'Описание'
+          ? <div className="player-book-info-description">{info['Описание']}</div>
+          : <><div className="player-book-info-keys">{k}</div><div className="player-book-info-values">{info[`${k}`]}</div></>
+          }
+          </div>
+      })}
+      </div>
+    </div>
+    )
+}
 const Speed = (props) => {
   let playSpeed = useSelector(state => state.player.speed)
   const dispatch = useDispatch()
@@ -310,6 +332,24 @@ function Player() {
   const toggleView = () => {
     setFullView(!isFullView)
   }
+
+  const getInfo = () => {
+
+    const socket = io(proxy)
+    if (document.getElementsByClassName('player-book-info').length) {
+      gsap.timeline()
+      .staggerTo('.player-book-info-raw', .5, {y: -25, opacity: 0}, .05)
+      .staggerFromTo('.player-text div', .6, {y: 25, opacity: 0}, {y: 0, opacity: 1}, .2)
+      .call(() => dispatch(setCurrent({...current, info: ""})))
+    } else {
+      socket.emit('get-book-info', {torrentID: current.torrentID})
+      socket.on('book-info-ready', info => {
+        dispatch(setCurrent({...current, info}))
+      })
+    }
+    
+
+  }
   const PlayerText = (props) => {
 
     let { title, author } = props
@@ -326,8 +366,8 @@ function Player() {
 
 
     return <div className='player-text' ref={playerTextRef}>
-      <div className='player-title'>{title}</div>
-      <div className='player-author'>{author}</div>
+      <div className='player-title' onClick={props.onClick}>{title}</div>
+      <div className='player-author' onClick={props.onClick}>{author}</div>
     </div>
   }
 
@@ -345,7 +385,8 @@ function Player() {
     <div id='player' className="player" style={playerStyle} ref={playerRef}>
       <div className="player-hide" style={{ transform: isFullView ? "rotate(0)" : "rotate(180deg)" }} onClick={toggleView}><HideIcon /></div>
       <div className="player-box" style={playerBoxStyle} ref={playerBoxRef}>
-        {current && <PlayerText title={current.title} author={current.author} chapter={current.chapter} chapters={current.chapters} />}
+        {current && <PlayerText onClick={getInfo} title={current.title} author={current.author} chapter={current.chapter} chapters={current.chapters} />}
+        {current.info && <BookInfo info={current.info} onClick={getInfo}/>}
         <div className="player-controls">
           <Prev current={current} />
           <Back15/>

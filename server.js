@@ -1,9 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const https = require('https')
+const iconv = require('iconv-lite')
+const cheerio = require("cheerio")
 const fs = require('fs')
 const cors = require('cors')
 const app = express()
-const ss = require('socket.io-stream')
 const path = require('path')
 const findAuthor = require('./utils/findAuthor')
 const findTitle = require('./utils/findTitle')
@@ -15,6 +17,7 @@ let client = new WebTorrent()
 const audiodir = path.join(__dirname, "audio")
 
 const mongoose = require('mongoose');
+const { response } = require('express')
 
 app.use(cors())
 app.use(bodyParser.urlencoded());
@@ -69,7 +72,6 @@ io.on('connection', function (socket) {
         torrentFiles = torrentFiles.sort(customSort);
         torrentFiles.forEach(function (file, index) {
             if (index === chapter - 1) {
-                console.log(file)
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                     chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
                     console.log('Sending Existing')
@@ -99,7 +101,6 @@ io.on('connection', function (socket) {
     socket.on('search-book', function(data) {
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
-
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
             .then(() => rutracker.search({ query: data.title, sort: 'seeds' }))
             .then(torrents => {
@@ -108,12 +109,28 @@ io.on('connection', function (socket) {
                     let book_title = findTitle(t.title)
                     let book_author = findAuthor(t.title)
                     let {id, size, seeds} = t;
-                    return {id, title: book_title, author: book_author, torrent: t.title, size, seeds}
+                    let result = {id, title: book_title, author: book_author, torrent: t.title, size, seeds}
+                    return result
                 })
+                console.log(searchResult)
                 socket.emit('search-result', {result: searchResult})
             })
     })
-
+    socket.on('get-book-info', function({torrentID}) {
+        console.log('get info for '+torrentID)
+        https.get('https://rutracker.org/forum/viewtopic.php?t='+torrentID, (res) => {
+            res.pipe(iconv.decodeStream("win1251")).collect((err, body) => {
+                if (err) throw err;
+                let info = {}
+                let matches = [...body.matchAll(/(?<=>)([^<]+)<\/span>:\s([^<]+)(?=<(?:br|hr|span))|(?<=<var class="postImg postImgAligned img-right" title=")([^"]+)/g)]
+                matches.forEach(r => {
+                    if (r[1] && r[2]) info[r[1]] = r[2];
+                    if (r[3]) info['cover'] = r[3]
+                })
+                socket.emit('book-info-ready', info)
+            })
+        });
+    })
     socket.on('download-chapter', function (data) {
         let chapter = data.chapter
         let torrentID = data.torrentID
@@ -150,14 +167,13 @@ io.on('connection', function (socket) {
         })    
     })
      socket.on('delete-file', function ({torrentID, fileName}) {
-       console.log('Checking PATH:',path.join(audiodir,torrentID))
        try {
            fs.readdir(path.join(audiodir,torrentID), (err, files) => {
                 if (!err) {
                     files.forEach(file => {
                         if (file === fileName) {
                             fs.unlink(path.join(audiodir,torrentID,fileName), function(err) {
-                                if (!err) console.log('File Deleted')
+                                if (!err) console.log(`File ${fileName} is deleted`)
                             })
                         } else {
                             console.log(file)
