@@ -375,8 +375,8 @@ function Player() {
 
 
   let playerBoxStyle = {
-    top: isFullView ? (isMobile ? '10vh' : '15vh') : (isMobile ? '0vh' : '10vh'),
-    height: isFullView ? (isMobile ? "80vh" : "60vh") : (isMobile ? "70vh" : "55vh")
+    top: isFullView ? (isMobile ? '5vh' : '15vh') : (isMobile ? '0vh' : '10vh'),
+    height: isFullView ? (isMobile ? "80vh" : "60vh") : (isMobile ? "60vh" : "55vh")
   }
 
   let playerStyle = {
