@@ -203,12 +203,11 @@ const Seek = (props) => {
 
   useEffect(() => {
     let cleanupFunction = false;
-    setCurrentTime(currentTime = props.currentTime)
-
     if (props.currentTime >= 0 && audio) {
-      setCurrentTime(currentTime = props.currentTime)
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration)}
       audio.currentTime = currentTime
+      console.log(audio.currentTime, props.currentTime)
+      setCurrentTime(currentTime = props.currentTime)
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
@@ -348,7 +347,7 @@ function Player() {
   }
 
   const onCanPlayThrough = () => {
-    dispatch(setLoading(false))    
+    dispatch(setLoading(false))
     console.log('%cCanPlayThrough', 'color: yellowgreen')
   }
   const toggleView = () => {
@@ -377,7 +376,7 @@ function Player() {
 
   let playerBoxStyle = {
     top: isFullView ? (isMobile ? '10vh' : '15vh') : (isMobile ? '0vh' : '10vh'),
-    height: isFullView ? (isMobile ? "70vh" : "60vh") : (isMobile ? "60vh" : "55vh")
+    height: isFullView ? (isMobile ? "80vh" : "60vh") : (isMobile ? "70vh" : "55vh")
   }
 
   let playerStyle = {
