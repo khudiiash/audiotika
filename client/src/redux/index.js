@@ -32,7 +32,7 @@ const initialState = {
     current: "",
     player: { isLoading: false, isPlaying: false, isPaused: false, percent: 0, speed: 1 },
     proxy: "",
-    proxy: "http://localhost:5000",
+    //proxy: "http://localhost:5000",
 }
 function rootReducer(state = initialState, action) {
     switch (action.type) {
