@@ -20,7 +20,7 @@ const BookInfo = ({info, onClick}) => {
   useEffect(() => {
     gsap.timeline()
       .staggerTo('.player-text div', .5, {y: -25, opacity: 0}, .2)
-      .staggerFrom('.player-book-info-raw', .5, {y: 25, opacity: 0}, .05)
+      .staggerTo('.player-book-info-raw', .5, {y: 0, opacity: 1}, .05)
   }, [])
   return (
     <div className="player-book-info" onClick={onClick}>
@@ -75,6 +75,28 @@ const Forw15 = (props) => {
     </div>
    
   )
+}
+
+const PlayerText = (props) => {
+
+  let { title, author } = props
+
+
+  useEffect(() => {
+    audio.playbackRate = store.getState().player.speed
+    console.log('%cPlayer Text Effect', 'color: orange')
+    let title = document.getElementsByClassName('player-text')[0]
+    let author = document.getElementsByClassName('player-author')[0]
+    gsap.timeline()
+      .staggerFromTo('.player-text div', .7, {y: 25, opacity: 0},{y: 0, opacity: 1}, .2)
+
+  }, [props.title])
+
+
+  return <div className='player-text'>
+    <div className='player-title' onClick={props.onClick}>{title}</div>
+    <div className='player-author' onClick={props.onClick}>{author}</div>
+  </div>
 }
 
 
@@ -350,26 +372,7 @@ function Player() {
     
 
   }
-  const PlayerText = (props) => {
 
-    let { title, author } = props
-
-    useEffect(() => {
-      audio.playbackRate = store.getState().player.speed
-      
-      if (!mounted)
-        newBookTL.current = gsap.timeline()
-          .staggerFrom(playerTextRef.current.children, 1, { y: 25, opacity: 0 }, .4)
-          .call(() => setMounted(true))
-
-    }, [])
-
-
-    return <div className='player-text' ref={playerTextRef}>
-      <div className='player-title' onClick={props.onClick}>{title}</div>
-      <div className='player-author' onClick={props.onClick}>{author}</div>
-    </div>
-  }
 
 
   let playerBoxStyle = {
