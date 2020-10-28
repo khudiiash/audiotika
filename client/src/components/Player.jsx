@@ -82,7 +82,6 @@ const PlayerText = (props) => {
   let { title, author } = props
   useEffect(() => {
     audio.playbackRate = store.getState().player.speed
-    console.log('%cPlayer Text Effect', 'color: orange')
     gsap.timeline()
       .staggerFromTo('.player-text div', .7, {y: 25, opacity: 0},{y: 0, opacity: 1}, .2)
   }, [props.title])
@@ -198,7 +197,6 @@ const Seek = (props) => {
     if (props.currentTime >= 0 && audio) {
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration)}
       audio.currentTime = currentTime
-      console.log(audio.currentTime, props.currentTime)
       setCurrentTime(currentTime = props.currentTime)
     }
     audio.addEventListener('timeupdate', () => {
@@ -274,7 +272,6 @@ function Player() {
     }
   })
 
-  console.log(current)
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
@@ -297,7 +294,6 @@ function Player() {
     let audio =  document.getElementById('audio')
     let current = store.getState().current
     if (current.time >= 0) audio.currentTime = current.time
-    console.log('%cLoad','color: yellow')
 
   }
   const onEnded = () => {
@@ -321,13 +317,11 @@ function Player() {
     }
   }
   const onCanPlay = () => {
-    console.log('%cCanPlay', 'color: orange')
     if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
   }
 
   const onCanPlayThrough = () => {
     dispatch(setLoading(false))
-    console.log('%cCanPlayThrough', 'color: yellowgreen')
   }
   const toggleView = () => {
     setFullView(!isFullView)

@@ -2,11 +2,10 @@ import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import {SearchIcon} from "../assets/icons.js";
 import io from "socket.io-client";
-import ss from "socket.io-stream";
 import axios from 'axios'
 
 import "./style/Search.css";
-import { addBook, setCurrent, setLoading } from '../redux/index.js';
+import { addBook } from '../redux/index.js';
 
 const sizeToString = (bytes) => {
     let size =  Math.floor(bytes / 1000000)
@@ -25,9 +24,6 @@ const sizeToString = (bytes) => {
     let [searchResult, setSearchResult] = useState([])
     let isMobile = window.innerWidth < window.innerHeight
     const proxy = useSelector(state => state.proxy)
-    const current = useSelector(state => state.current)
-
-
     const user = useSelector(state => state.user)
 
     let lastTitle = "";

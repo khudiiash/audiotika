@@ -34,7 +34,7 @@
 }
 .player-controls {
   position: absolute;
-  width: 85%;
+  width: 86.7%;
   bottom: 90px;
   display: flex;
   color: #555;
@@ -49,7 +49,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-top: -20%;
+  margin-top: -15%;
   width: 100%;
 }
 .player-title {
@@ -66,7 +66,7 @@
 
 }
 .player-author {
-  margin-top: 10% ;
+  margin-top: 7% ;
   font-size: 11px;
   position: relative;
   letter-spacing: 3px;
@@ -155,7 +155,7 @@
 .player-book-info {
   position: absolute;
   top: 20px;
-  width: 95%;
+  width: 80%;
   color: #EB778E;
   font-family: 'Montserrat';
   height: 68%;
@@ -247,6 +247,9 @@
 
   .player-chapter-text {
     font-size: 13px;    
+  }
+  .player-book-info { 
+    width: 92%;
   }
 }
 

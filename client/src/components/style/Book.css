@@ -6,10 +6,10 @@
   flex-shrink: 0;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  color: #333;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
@@ -20,10 +20,9 @@
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  background: radial-gradient(#222, #333);
+  background: linear-gradient(#222, #2c2c2c);
   border-radius: 3px;
   margin: 10px 0 0 10px;
-  color: white;
   -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
@@ -32,6 +31,8 @@
   font-size: .8rem;
   text-align: center;
   width: 90%;
+  color: #999;
+
 }
 
 .book-author {

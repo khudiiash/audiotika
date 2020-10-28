@@ -10,6 +10,7 @@ import { CloseIcon, PlayerLoading } from '../assets/icons'
 
 function Book({ book }) {
     const bookRef = createRef();
+    const titleRef  = createRef();
     const enterTL = useRef();
     const store = useStore();
     let chunkSize = 0;
@@ -23,7 +24,8 @@ function Book({ book }) {
     let isCurrent = book._id === user.currentBookID;
 
     useEffect(() => {
-        let bookHTML = bookRef.current
+        let bookHTML = bookRef.current;
+        let titleHTML = titleRef.current;
         if (book._id === user.currentBookID) {
             playBook()
         }
@@ -32,8 +34,8 @@ function Book({ book }) {
             .staggerFrom(bookHTML.children, .5, {y: 10, opacity: 0}, .15)
             
         store.subscribe(() => {
-                if (store.getState().current?._id === book._id) gsap.timeline().to(bookHTML, 1, {color: '#EB768E'}) 
-                else gsap.to(bookHTML, .5, {color: "#e8e8e8"})
+                if (store.getState().current?._id === book._id) gsap.to(titleHTML, 1, {color: '#EB768E'}) 
+                else gsap.to(titleHTML, .5, {color: "#999"})
         })
         dispatch(setNextSrc(""))
 
@@ -57,14 +59,11 @@ function Book({ book }) {
         gsap.to(bookRef.current, .5, {color: '#ff0000', opacity: 0})
     }
     function playBook() {
-        console.log('Play book')
         dispatch(setLoading(true))
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         socket.on('audio-loaded', function ({fileName, torrentID, chapters, forFuture, info}) {
-            console.log('Audio Loaded')
-            console.log('Book Info: ', info)
             if (!forFuture) {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
                 audio.src = src
@@ -84,7 +83,7 @@ function Book({ book }) {
                 book.cover
                     ? <img className="book-cover" src={book.cover}></img>
 
-                    : <><div className="book-title">{book.title}</div>
+                    : <><div className="book-title" ref={titleRef}>{book.title}</div>
                         <div className="book-author">{book.author}</div>
                         {isLoading && isCurrent && <div className="book-loader"><PlayerLoading/></div>}
                         </>
