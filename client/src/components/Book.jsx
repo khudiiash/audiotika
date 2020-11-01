@@ -34,7 +34,7 @@ function Book({ book }) {
             
         store.subscribe(() => {
                 if (store.getState().current?._id === book._id) gsap.to(titleHTML, 1, {color: '#EB768E'}) 
-                else gsap.to(titleHTML, .5, {color: "#666"})
+                else gsap.to(titleHTML, .5, {color: "#555"})
         })
         dispatch(setNextSrc(""))
 
