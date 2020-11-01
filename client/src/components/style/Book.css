@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
-
 .book {
   width: 200px;
   height: 17vh;
@@ -28,8 +27,9 @@
 .book-title {
   font-size: .8rem;
   text-align: center;
-  width: 90%;
-  color: #999;
+  width: 80%;
+  color: white;
+  font-weight: 700;
 
 }
 
@@ -53,7 +53,7 @@
   top: 5%;
   cursor: pointer;
 }
-.book-delete svg .cls-1{fill:#444;}
+.book-delete svg .cls-1{fill:#333;}
 .book-delete svg .cls-2{fill:#fff;}
 
 .book-loader {
