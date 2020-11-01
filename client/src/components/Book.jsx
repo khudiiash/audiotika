@@ -13,7 +13,6 @@ function Book({ book }) {
     const titleRef  = createRef();
     const enterTL = useRef();
     const store = useStore();
-    let chunkSize = 0;
     const { _id } = book
 
     const dispatch = useDispatch()
@@ -35,7 +34,7 @@ function Book({ book }) {
             
         store.subscribe(() => {
                 if (store.getState().current?._id === book._id) gsap.to(titleHTML, 1, {color: '#EB768E'}) 
-                else gsap.to(titleHTML, .5, {color: "#999"})
+                else gsap.to(titleHTML, .5, {color: "#777"})
         })
         dispatch(setNextSrc(""))
 
