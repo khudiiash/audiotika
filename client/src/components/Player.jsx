@@ -189,26 +189,28 @@ const Seek = (props) => {
   const audio = document.getElementById('audio')
   let [currentTime, setCurrentTime] = useState(0)
   let [duration, setDuration] = useState(0)  
+  let dispatch = useDispatch()
 
   const proxy = useSelector(state => state.proxy)
 
   useEffect(() => {
     let cleanupFunction = false;
     if (props.currentTime >= 0 && audio) {
-      if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration)}
       audio.currentTime = currentTime
+      if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
       setCurrentTime(currentTime = props.currentTime)
+      
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
-        if (audio.duration !== duration) setDuration(audio.duration)
-        setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
         axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime })
+        if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
+        setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
       }
     })
     audio.addEventListener('durationchange', () => {
-      if (isFinite(audio.duration)) setDuration(audio.duration)
       if (props.currentTime) setCurrentTime(props.currentTime)
+      if (isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
     })
     return () => cleanupFunction = true;
   }, [props.src, props.currentTime])
