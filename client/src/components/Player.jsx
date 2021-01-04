@@ -299,7 +299,10 @@ function Player() {
     dispatch(setPlaying(true))
   }
   const onLoad = () => {
-    
+     const audio = document.getElementById('audio')
+     if (audio && store.getState()?.current?.time) {
+       audio.currentTime = store.getState().current.time
+     }
   }
 
   const onEnded = () => {
