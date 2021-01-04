@@ -242,9 +242,9 @@ const Seek = (props) => {
  
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime || currentTime || props.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
+      <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
-        <div className="player-controls-cts">{secToTime(audio.currentTime || currentTime || props.currentTime)}</div>
+        <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
         <div className='player-chapter-text'>{props.chapter}/{props.chapters}</div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
@@ -270,7 +270,6 @@ function Player() {
   let isMobile = window.innerWidth < window.innerHeight
 
   store.subscribe(() => {
-    console.log(store.getState().current.time)
     setCurrent(store.getState().current)
     if (store.getState().current.title && store.getState().current.title !== document.title) {
       document.title = store.getState().current.title
@@ -315,9 +314,7 @@ function Player() {
       current.nextFileName = undefined
       audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
-      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}  
-      console.log('Audio 2 (onended): ',audio.currentTime)
-    
+      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}      
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(nextChapter(current))   
