@@ -23,7 +23,15 @@
   margin: 10px 0 0 10px;
 
 }
-
+.book-content {
+  position: absolute;
+  width: inherit;
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 .book-title {
   font-size: .8rem;
   text-align: center;

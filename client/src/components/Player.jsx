@@ -45,7 +45,7 @@ const Speed = (props) => {
     else playSpeed = .75
     dispatch(setSpeed(playSpeed))
     let audio = document.getElementById('audio')
-    audio.playbackRate = playSpeed
+    if (audio && isFinite(playSpeed)) audio.playbackRate = playSpeed
   }
   return (
   <div className="player-speed" onClick={switchSpeed}>{playSpeed}X</div>
@@ -81,7 +81,7 @@ const PlayerText = (props) => {
 
   let { title, author } = props
   useEffect(() => {
-    audio.playbackRate = store.getState().player.speed
+    if (store.getState()?.player?.speed) audio.playbackRate = store.getState().player.speed
     gsap.timeline()
       .staggerFromTo('.player-text div', .7, {y: 25, opacity: 0},{y: 0, opacity: 1}, .2)
   }, [props.title])
@@ -137,6 +137,7 @@ const Next = ({ current }) => {
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       audio.load()
+
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(setCurrent(current))   
@@ -171,6 +172,7 @@ const Prev = ({ current }) => {
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
           current.src = src
           current.fileName = fileName
+
           axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
           axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
           dispatch(setCurrent(current))   
@@ -195,17 +197,19 @@ const Seek = (props) => {
 
   useEffect(() => {
     let cleanupFunction = false;
-    if (props.currentTime >= 0 && audio) {
-      audio.currentTime = currentTime
+    if (props.currentTime > 0 && audio) {
+      audio.currentTime = props.currentTime
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
-      setCurrentTime(currentTime = props.currentTime)
-      
+      //setCurrentTime(0)
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
-        axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime })
+        if (currentTime > 0) {
+          axios.post(proxy + '/books/update-time/' + props.currentID, { time: parseInt(audio.currentTime, 10) });
+        }
         if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
         setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
+        
       }
     })
     audio.addEventListener('durationchange', () => {
@@ -214,7 +218,6 @@ const Seek = (props) => {
     })
     return () => cleanupFunction = true;
   }, [props.src, props.currentTime])
-
 
   const onChange = ({ target: { value } }) => {
     setCurrentTime(currentTime = parseInt(value));
@@ -240,9 +243,9 @@ const Seek = (props) => {
  
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime === 0 && props.currentTime > 0 ? props.currentTime : audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
+      <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
-        <div className="player-controls-cts">{audio.currentTime === 0 && props.currentTime ? secToTime(props.currentTime) : secToTime(audio.currentTime)}</div>
+        <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
         <div className='player-chapter-text'>{props.chapter}/{props.chapters}</div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
@@ -268,6 +271,7 @@ function Player() {
   let isMobile = window.innerWidth < window.innerHeight
 
   store.subscribe(() => {
+    console.log(store.getState().current.time)
     setCurrent(store.getState().current)
     if (store.getState().current.title && store.getState().current.title !== document.title) {
       document.title = store.getState().current.title
@@ -277,6 +281,8 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
+
+    
   }, []);
 
   const onPause = () => {
@@ -293,11 +299,9 @@ function Player() {
     dispatch(setPlaying(true))
   }
   const onLoad = () => {
-    let audio =  document.getElementById('audio')
-    let current = store.getState().current
-    if (current.time >= 0) audio.currentTime = current.time
-
+    
   }
+
   const onEnded = () => {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
@@ -312,7 +316,9 @@ function Player() {
       current.nextFileName = undefined
       audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
-      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}      
+      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}  
+      console.log('Audio 2 (onended): ',audio.currentTime)
+    
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(nextChapter(current))   

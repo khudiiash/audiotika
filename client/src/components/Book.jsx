@@ -1,7 +1,7 @@
-import React, { useRef, useState, createRef, useEffect } from "react";
+import React, { useRef, createRef, useEffect } from "react";
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import axios from 'axios'
-import {store, setNextSrc, setSearched, setLoading, setPercent, isStreamingFuture} from '../redux'
+import {setNextSrc, setLoading} from '../redux'
 import io from "socket.io-client";
 import "./style/Book.css";
 import gsap from "gsap";
@@ -28,9 +28,9 @@ function Book({ book }) {
         if (book._id === user.currentBookID) {
             playBook()
         }
-        enterTL.current = gsap.timeline({delay: .5})
-            .from(bookHTML, .5, {scale: .8, autoAlpha: 0, y: -25})
-            .staggerFrom(bookHTML.children, .5, {y: 10, opacity: 0}, .15)
+        //enterTL.current = gsap.timeline({delay: .5})
+            //.from(bookHTML, .5, {scale: .8, autoAlpha: 0, y: -25})
+            //.staggerFrom(bookHTML.children, .5, {y: 10, opacity: 0}, .15)
             
         store.subscribe(() => {
                 if (store.getState().current?._id === book._id) gsap.to(titleHTML, 1, {color: '#EB768E'}) 
@@ -43,6 +43,7 @@ function Book({ book }) {
     function onDelete (e) {
         const audio = document.getElementById('audio')
         let socket = io(proxy);
+        let current = store.getState().current
         e.stopPropagation()
         axios.delete(proxy + '/books/'+_id)
         if (current.fileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
@@ -59,6 +60,8 @@ function Book({ book }) {
     }
     function playBook() {
         dispatch(setLoading(true))
+        dispatch(setCurrent({...store.getState().current, time: 0}))
+        const audio = document.getElementById('audio')
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         axios.get(proxy + '/books/'+book._id)
@@ -66,7 +69,7 @@ function Book({ book }) {
                     socket.emit('download-chapter', {title: res.data.title, chapter: res.data.chapter, author: res.data.author, torrentID: res.data.torrentID, forFuture: false})
                 })
         socket.on('audio-loaded', function ({fileName, torrentID, chapters, forFuture, info}) {
-            if (!forFuture) {
+            if (!forFuture && audio) {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
                 audio.src = src
                 audio.load()
@@ -80,16 +83,12 @@ function Book({ book }) {
     }
     return (
         <div className="book" ref={bookRef} onClick={playBook}>
-            <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
-            {
-                book.cover
-                    ? <img className="book-cover" src={book.cover}></img>
-
-                    : <><div className="book-title" ref={titleRef}>{book.title}</div>
-                        <div className="book-author">{book.author}</div>
-                        {isLoading && isCurrent && <div className="book-loader"><PlayerLoading/></div>}
-                        </>
-            }
+            <div className='book-content'>
+                <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
+                <div className="book-title" ref={titleRef}>{book.title}</div>
+                <div className="book-author">{book.author}</div>
+                {isLoading && isCurrent && <div className="book-loader"><PlayerLoading/></div>}
+            </div>
         </div>
     );
 }

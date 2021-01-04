@@ -59,12 +59,10 @@ const io = require('socket.io').listen(server)
 
 io.on('connection', function (socket) {
 
-    
-
     function handleTorrent({torrent, torrentID, title, author, chapter, forFuture}) {
 
-        let torrentFiles = torrent.files.filter((f, i) => {
-            if (/\.mp3|\.aac|\.wav/.test(f.name)) return f
+        let torrentFiles = torrent.files.filter((f, i) => { 
+            if (/\.mp3/.test(f.name)) return f
         })
         var customSort = function (a, b) {
             return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
@@ -73,7 +71,7 @@ io.on('connection', function (socket) {
         torrentFiles.forEach(function (file, index) {
             if (index === chapter - 1) {
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
-                    chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                    chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
                     console.log('Sending Existing')
                     socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                 } else {
@@ -88,7 +86,7 @@ io.on('connection', function (socket) {
                         writer.write(data);
                     });
                     stream.on('end', () => {
-                        chapters = torrent.files.filter(f => /\.mp3|\.aac|\.wav/.test(f.name)).length
+                        chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
                         console.log('Sending New')
                         socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                         
