@@ -60,13 +60,13 @@ function Book({ book }) {
     }
     function playBook() {
         dispatch(setLoading(true))
-        dispatch(setCurrent({...store.getState().current, time: 0}))
         const audio = document.getElementById('audio')
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
         axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     socket.emit('download-chapter', {title: res.data.title, chapter: res.data.chapter, author: res.data.author, torrentID: res.data.torrentID, forFuture: false})
+                    dispatch(setCurrent({...store.getState().current, time: res.data.time}))
                 })
         socket.on('audio-loaded', function ({fileName, torrentID, chapters, forFuture, info}) {
             if (!forFuture && audio) {
