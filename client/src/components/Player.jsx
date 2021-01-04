@@ -200,7 +200,6 @@ const Seek = (props) => {
     if (props.currentTime > 0 && audio) {
       audio.currentTime = props.currentTime
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
-      //setCurrentTime(0)
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
@@ -246,9 +245,9 @@ const Seek = (props) => {
  
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
+      <input type="range" value={audio.currentTime || currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
-        <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
+        <div className="player-controls-cts">{secToTime(audio.currentTime || currentTime)}</div>
         <div className='player-chapter-text'>{props.chapter}/{props.chapters}</div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
