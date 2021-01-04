@@ -213,7 +213,10 @@ const Seek = (props) => {
       }
     })
     audio.addEventListener('durationchange', () => {
-      if (props.currentTime) setCurrentTime(props.currentTime)
+      if (props.currentTime) {
+        setCurrentTime(props.currentTime)
+        audio.currentTime = props.currentTime
+      }
       if (isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
     })
     return () => cleanupFunction = true;
