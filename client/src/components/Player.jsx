@@ -197,18 +197,15 @@ const Seek = (props) => {
 
   useEffect(() => {
     let cleanupFunction = false;
-    if (props.currentTime > 0 && audio) {
+    if (props.currentTime >= 0 && audio) {
       audio.currentTime = props.currentTime
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
-        if (currentTime > 0) {
-          axios.post(proxy + '/books/update-time/' + props.currentID, { time: parseInt(audio.currentTime, 10) });
-        }
+        axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
         if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
         setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
-        
       }
     })
     audio.addEventListener('durationchange', () => {
@@ -245,9 +242,9 @@ const Seek = (props) => {
  
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime || currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
+      <input type="range" value={audio.currentTime || currentTime || props.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
-        <div className="player-controls-cts">{secToTime(audio.currentTime || currentTime)}</div>
+        <div className="player-controls-cts">{secToTime(audio.currentTime || currentTime || props.currentTime)}</div>
         <div className='player-chapter-text'>{props.chapter}/{props.chapters}</div>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
