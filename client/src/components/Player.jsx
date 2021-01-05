@@ -38,14 +38,14 @@ const BookInfo = ({info, onClick}) => {
     )
 }
 const Speed = (props) => {
-  let playSpeed = useSelector(state => state.player.speed)
+  let playSpeed = useSelector(state => state.player.speed) || 1
   const dispatch = useDispatch()
   const switchSpeed = () => {
     if (playSpeed < 2) playSpeed += .25
     else playSpeed = .75
     dispatch(setSpeed(playSpeed))
     let audio = document.getElementById('audio')
-    if (audio && isFinite(playSpeed)) audio.playbackRate = playSpeed
+    if (audio) audio.playbackRate = playSpeed
   }
   return (
   <div className="player-speed" onClick={switchSpeed}>{playSpeed}X</div>
