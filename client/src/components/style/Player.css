@@ -225,6 +225,11 @@ select {
   background-color: transparent !important;
   color: #555;
   border: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
+  text-align-last:center;
+  font-size: 14px;
 }
 select:focus {
   outline: none;
