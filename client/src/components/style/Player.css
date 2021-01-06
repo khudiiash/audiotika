@@ -154,6 +154,10 @@
   width: 23% !important;
 }
 
+.player-book-info * {
+  max-width: 100%;
+
+}
 .player-book-info {
   position: absolute;
   top: 20px;
@@ -175,7 +179,8 @@
   width: 100%;
   height: auto;
   margin: -25px auto 70px auto !important;
-  box-shadow: 0 0 35px #eb778e38;
+  box-shadow: 0 0 25px #eb778e38;
+  border-radius: 5px;
 }
 .small-cover {
   width: 70%;
@@ -290,12 +295,6 @@ select:focus {
   }
   .full-cover {
     width: 90%;
-  }
-  .player-book-info-description {
-    margin: 0 8% 50px 8%;
-  }
-  .player-book-info-content:last-child {
-    margin: 0 2% 50px 2%;
   }
 }
 
