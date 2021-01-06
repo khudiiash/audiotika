@@ -169,6 +169,10 @@
   mask-mode: luminance;
   
 }
+.player-book-info-cover {
+  width: 100%;
+  margin: 0 10% 10% 0 !important;
+}
 
 .player-book-info::-webkit-scrollbar {
   display: none;

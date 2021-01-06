@@ -15,8 +15,9 @@ import {
 import "react-circular-progressbar/dist/styles.css";
 
 const BookInfo = ({info, onClick}) => {
-  delete info.cover
+  let {cover} = info
   let keys = Object.keys(info)
+  delete keys[0]
   useEffect(() => {
     gsap.timeline()
       .staggerTo('.player-text div', .5, {y: -25, opacity: 0}, .2)
@@ -25,6 +26,7 @@ const BookInfo = ({info, onClick}) => {
   return (
     <div className="player-book-info" onClick={onClick}>
       <div className="player-book-info-content">
+      <img src={cover} className='player-book-info-cover player-book-info-raw'></img>
       {keys.map((k, i) => {
         return <div key={i} className="player-book-info-raw">
           {k === 'Описание'
@@ -37,7 +39,7 @@ const BookInfo = ({info, onClick}) => {
     </div>
     )
 }
-const Speed = (props) => {
+const Speed = () => {
   let playSpeed = useSelector(state => state.player.speed) || 1
   const dispatch = useDispatch()
   const switchSpeed = () => {
