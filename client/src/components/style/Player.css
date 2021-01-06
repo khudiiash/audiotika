@@ -170,8 +170,10 @@
   
 }
 .player-book-info-cover {
-  width: 100%;
-  margin: 0 10% 10% 0 !important;
+  width: 80%;
+  height: 80%;
+  margin: 0 0 10% 10% !important;
+  box-shadow: 0 0 25px rgba(0,0,0,.4);
 }
 
 .player-book-info::-webkit-scrollbar {
@@ -211,6 +213,18 @@
   text-align: justify;
   margin: 0 10px;
 
+}
+
+select {
+  background-color: transparent !important;
+  color: #444;
+  border: none;
+}
+select:focus {
+  outline: none;
+}
+.player-controls-option[selected] {
+  color: #EB778E;
 }
 
 @media screen and (max-width: 660px) {

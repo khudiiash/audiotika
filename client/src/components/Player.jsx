@@ -14,9 +14,52 @@ import {
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
+function checkImage(image_url){
+    var img = new Image();
+    img.src = image_url;
+    img.onload = () => {gsap.to('.player-book-info-cover', {display: 'block'})}; 
+    img.onerror = () => {gsap.to('.player-book-info-cover', {display: 'none'})}; 
+}
+const ChapterSelector = ({chapters, selected}) => {
+  const dispatch = useDispatch();
+  const proxy = useSelector(state => state.proxy)
+  const socket = io(proxy)
+
+  let c = []
+  for (let i = 1; i <= chapters; i++) {
+    c.push(i)
+  }
+  const selectChapter = ({target:{value}}) => {
+    let nextChapter = parseInt(value)
+    let current = store.getState().current
+    let audio = document.getElementById('audio')
+    dispatch(setLoading(true))
+    audio.currentTime = 0;
+    audio.src = ''
+    current = {...current,  src: '', fileName: '', chapter: nextChapter, time: 0}
+    socket.emit('download-chapter', { title: current.title, author: current.author, torrentID: current.torrentID,chapter: current.chapter, forFuture: false })
+    socket.on('audio-loaded', function ({fileName, torrentID}) {
+      let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+      current.src = src
+      current.fileName = fileName
+      axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
+      axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
+      dispatch(setCurrent(current))   
+      dispatch(setLoading(true))
+    });
+  }
+
+  return (
+    <select className='player-controls-select' onChange={selectChapter} value={selected}>
+      {
+        c.map(ch => <option key={ch} value={ch} className='player-controls-option'>Глава {ch}</option>)
+      }
+    </select>
+  )
+}
 const BookInfo = ({info, onClick}) => {
   let {cover} = info
-  console.log(info)
+  checkImage(cover)
   let keys = Object.keys(info)
   if (keys.includes('Описание')) {
     keys.splice(keys.indexOf('Описание'),1)
@@ -47,15 +90,21 @@ const BookInfo = ({info, onClick}) => {
 const Speed = () => {
   let playSpeed = useSelector(state => state.player.speed) || 1
   const dispatch = useDispatch()
-  const switchSpeed = () => {
-    if (playSpeed < 2) playSpeed += .25
-    else playSpeed = .75
-    dispatch(setSpeed(playSpeed))
+  const switchSpeed = ({target: {value}}) => {
+    dispatch(setSpeed(value))
     let audio = document.getElementById('audio')
-    if (audio) audio.playbackRate = playSpeed
+    if (audio) audio.playbackRate = value
   }
   return (
-  <div className="player-speed" onClick={switchSpeed}>{playSpeed}X</div>
+  <select className="player-speed" onChange={switchSpeed} value={playSpeed}>
+    <option value={.5}>0.5X</option>
+    <option value={.75}>0.75X</option>
+    <option value={1}>1X</option>
+    <option value={1.25}>1.25X</option>
+    <option value={1.5}>1.5X</option>
+    <option value={1.75}>1.75X</option>
+    <option value={2}>2X</option>
+  </select>
   )
 }
 const Back15 = (props) => {
@@ -205,8 +254,9 @@ const Seek = (props) => {
   useEffect(() => {
     let cleanupFunction = false;
     if (props.currentTime >= 0 && audio) {
-      audio.currentTime = currentTime
+      audio.currentTime = props.currentTime
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
+      console.log('useEffect',props.currentTime)
       setCurrentTime(currentTime = props.currentTime)
     }
     audio.addEventListener('timeupdate', () => {
@@ -214,13 +264,16 @@ const Seek = (props) => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
         //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
         //console.log('%cProps Time: '+secToTime(props.currentTime), 'color: yellowgreen')
+        console.log(audio.currentTime)
         axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
         if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
+        console.log('timeupdate',parseInt(audio.currentTime, 10))
         setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
       }
     })
     audio.addEventListener('durationchange', () => {
       if (props.currentTime) {
+        console.log('durationchange',parseInt(audio.currentTime, 10))
         setCurrentTime(props.currentTime)
         audio.currentTime = props.currentTime
       }
@@ -250,13 +303,14 @@ const Seek = (props) => {
     </div>
     else return <div className='player-chapter-pie'></div>
   }
- 
+
   return (
     <div className='player-controls-seek'>
       <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
         <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
-        <div className='player-chapter-text'>{props.chapter}/{props.chapters}</div>
+        {/* <div className='player-chapter-text' onClick={selectChapter}>{props.chapter}/{props.chapters}</div> */}
+        <ChapterSelector chapters={props.chapters} selected={props.chapter}/>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
         <div className="player-controls-ds">{duration >= 0 ? secToTime(duration) : "00:00"}</div>
@@ -370,7 +424,7 @@ function Player() {
         {current && <PlayerText onClick={getInfo} title={current.title} author={current.author} chapter={current.chapter} chapters={current.chapters} />}
         {current.info && <BookInfo info={current.info} onClick={getInfo}/>}
         <div className="player-controls">
-          <Prev current={current} />
+          <Prev current={current}/>
           <Back15/>
           <Play title={current?.title} />
           <Forw15/>
