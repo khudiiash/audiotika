@@ -37,7 +37,7 @@
   width: 86.7%;
   bottom: 90px;
   display: flex;
-  color: #555;
+  color: #444;
 
   justify-content: space-around;
 }
@@ -76,7 +76,6 @@
 .player-chapter-pie {
   width: 30%;
   text-align: center;
-  color: #555;
   font-size: 10px;
 
 }
@@ -89,7 +88,7 @@
   width: 100%;
   height: 100%;
   position: absolute;
-  color: #555;
+  color: #444;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -219,11 +218,14 @@
   margin: 0 2% 50px 2%;
 
 }
+.player-book-info-content:last-child {
+  margin: 0 2% 50px 2%;
+}
 
 select {
   font-family: "Montserrat", sans-serif;
   background-color: transparent !important;
-  color: #555;
+  color: #444;
   border: none;
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -291,7 +293,9 @@ select:focus {
   }
   .player-book-info-description {
     margin: 0 8% 50px 8%;
-
+  }
+  .player-book-info-content:last-child {
+    margin: 0 2% 50px 2%;
   }
 }
 
