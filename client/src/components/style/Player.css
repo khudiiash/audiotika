@@ -223,7 +223,7 @@
 select {
   font-family: "Montserrat", sans-serif;
   background-color: transparent !important;
-  color: #444;
+  color: #555;
   border: none;
 }
 select:focus {
@@ -267,8 +267,9 @@ select:focus {
     opacity: 0;
     transform: translateY(25px);
   }
-  .player-controls-cts, .player-controls-ds, section {
+  .player-controls-cts, .player-controls-ds, section, option{
     font-size: 13px;
+    font-family: "Montserrat";
   }
 
   .player-chapter-text {
