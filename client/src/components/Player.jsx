@@ -61,10 +61,15 @@ const ChapterSelector = ({chapters, selected}) => {
 const BookInfo = ({info, onClick}) => {
   let {cover} = info
   checkImage(cover)
-  let isFull = /60/.test(document.querySelector('.player-box').style.height)
+  console.log(document.querySelector('.player-box').style.height)
   let isP = window.innerWidth < window.innerHeight
+  let isFull = isP ? /80/.test(document.querySelector('.player-box').style.height) : 
+                     /60/.test(document.querySelector('.player-box').style.height)
+
+  setTimeout(() => gsap.set('.player-book-info-cover', {width: isFull ? (isP ? '90%' : '80%') : '70%'}), 200)
+
   let keys = Object.keys(info)
-  let coverClass = `player-book-info-cover player-book-info-raw ${isFull ? 'full-cover' : 'small-cover'}`
+  let coverClass = `player-book-info-cover player-book-info-raw`
   if (keys.includes('Описание')) {
     keys.splice(keys.indexOf('Описание'),1)
     keys.push('Описание')
@@ -398,7 +403,8 @@ function Player() {
   }
   const toggleView = () => {
     let isM = window.innerWidth < window.innerHeight;
-    gsap.to('.player-book-info-cover', {width: isFullView ?  '70%' : isM ? '80%' : '80%'})
+    let isFull = !isFullView;
+    gsap.to('.player-book-info-cover', .5, {width: isFull ? (isM ? '90%' : '80%') : '70%'})
     setFullView(!isFullView)
 
   }

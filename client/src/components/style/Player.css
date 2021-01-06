@@ -172,7 +172,7 @@
 .player-book-info-cover {
   width: 100%;
   height: auto;
-  margin: -20px auto 45px !important;
+  margin: -20px auto 70px !important;
   box-shadow: 0 0 35px #eb778e38;
 }
 .small-cover {
@@ -281,7 +281,7 @@ select:focus {
     width: 70%;
   }
   .full-cover {
-    width: 85%;
+    width: 90%;
   }
   .player-book-info-description {
     margin: 0 8% 50px 8%;
