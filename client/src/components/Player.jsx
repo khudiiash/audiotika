@@ -345,6 +345,10 @@ function Player() {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
 
+    document.addEventListener('touchmove', function (event) {
+      if (event.scale !== 1) { event.preventDefault(); }
+    }, false);
+
     
   }, []);
 
