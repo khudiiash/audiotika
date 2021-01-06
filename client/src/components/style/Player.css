@@ -145,11 +145,13 @@
 }
 .player-speed {
     width: 18%;
+    position: relative;
+    left: 20px;
     text-align: center;
 }
 
 .CircularProgressbar {
-  width: 30% !important;
+  width: 23% !important;
 }
 
 .player-book-info {
@@ -172,7 +174,7 @@
 .player-book-info-cover {
   width: 100%;
   height: auto;
-  margin: -20px auto 70px !important;
+  margin: -25px auto 70px auto !important;
   box-shadow: 0 0 35px #eb778e38;
 }
 .small-cover {
@@ -184,8 +186,6 @@
 .player-book-info::-webkit-scrollbar {
   display: none;
 }
-
-
 
 .player-book-info-content {
   width: 100%;
@@ -213,15 +213,12 @@
   color: #EB778E
 }
 .player-book-info-description {
-  width: 100%;
+  width: 90%;
   color: #EB778E;
   text-align: justify;
-  margin: 0 2% 50px 2%;
+  margin: 0 5% 50px 5%;
+}
 
-}
-.player-book-info-content:last-child {
-  margin: 0 2% 50px 2%;
-}
 
 select {
   width: 18%;
@@ -232,11 +229,11 @@ select {
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;
-  text-align-last:center;
   font-size: 14px;
 }
 .player-controls-chapter-select {
   width: 20%;
+  text-align-last:center;
 }
 select:focus {
   outline: none;
@@ -245,7 +242,11 @@ select:focus {
 
 @media screen and (orientation: portrait) {
 
-  
+  .player-speed {
+    width: 18%;
+    position: relative;
+    left: 15px;
+  }
   .player-controls {
     width: 97%;
   }

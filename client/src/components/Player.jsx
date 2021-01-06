@@ -66,7 +66,7 @@ const BookInfo = ({info, onClick}) => {
   let isFull = isP ? /80/.test(document.querySelector('.player-box').style.height) : 
                      /60/.test(document.querySelector('.player-box').style.height)
 
-  setTimeout(() => gsap.set('.player-book-info-cover', {width: isFull ? (isP ? '90%' : '80%') : '70%'}), 200)
+  setTimeout(() => gsap.set('.player-book-info-cover', {width: isFull ? (isP ? '90%' : '82%') : (isP ? '70%':'75%')}), 200)
 
   let keys = Object.keys(info)
   let coverClass = `player-book-info-cover player-book-info-raw`
@@ -106,13 +106,13 @@ const Speed = () => {
   }
   return (
   <select className="player-speed" onChange={switchSpeed} value={playSpeed}>
-    <option value={.5}>0.5X</option>
-    <option value={.75}>0.75X</option>
-    <option value={1}>1X</option>
-    <option value={1.25}>1.25X</option>
-    <option value={1.5}>1.5X</option>
-    <option value={1.75}>1.75X</option>
-    <option value={2}>2X</option>
+    <option value={.5}>50%</option>
+    <option value={.75}>75%</option>
+    <option value={1}>100%</option>
+    <option value={1.25}>125%</option>
+    <option value={1.5}>150%</option>
+    <option value={1.75}>175%</option>
+    <option value={2}>200%</option>
   </select>
   )
 }
@@ -404,7 +404,7 @@ function Player() {
   const toggleView = () => {
     let isM = window.innerWidth < window.innerHeight;
     let isFull = !isFullView;
-    gsap.to('.player-book-info-cover', .5, {width: isFull ? (isM ? '90%' : '80%') : '70%'})
+    gsap.to('.player-book-info-cover', .5, {width: isFull ? (isM ? '90%' : '82%') : (isM ? '70%':'75%')})
     setFullView(!isFullView)
 
   }
