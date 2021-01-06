@@ -33,6 +33,7 @@ const ChapterSelector = ({chapters, selected}) => {
     let nextChapter = parseInt(value)
     let current = store.getState().current
     let audio = document.getElementById('audio')
+    window.scrollTo(0, 0)
     dispatch(setLoading(true))
     audio.currentTime = 0;
     audio.src = ''
@@ -101,6 +102,7 @@ const Speed = () => {
   const dispatch = useDispatch()
   const switchSpeed = ({target: {value}}) => {
     dispatch(setSpeed(value))
+    window.scrollTo(0, 0)
     let audio = document.getElementById('audio')
     if (audio) audio.playbackRate = value
   }
