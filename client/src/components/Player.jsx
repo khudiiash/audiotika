@@ -61,7 +61,10 @@ const ChapterSelector = ({chapters, selected}) => {
 const BookInfo = ({info, onClick}) => {
   let {cover} = info
   checkImage(cover)
+  let isFull = /60/.test(document.querySelector('.player-box').style.height)
+  let isP = window.innerWidth < window.innerHeight
   let keys = Object.keys(info)
+  let coverClass = `player-book-info-cover player-book-info-raw ${isFull ? 'full-cover' : 'small-cover'}`
   if (keys.includes('Описание')) {
     keys.splice(keys.indexOf('Описание'),1)
     keys.push('Описание')
@@ -75,7 +78,7 @@ const BookInfo = ({info, onClick}) => {
   return (
     <div className="player-book-info" onClick={onClick}>
       <div className="player-book-info-content">
-      <img src={cover} className='player-book-info-cover player-book-info-raw'></img>
+      <img src={cover} className={coverClass}></img>
       {keys.map((k, i) => {
         return <div key={i} className="player-book-info-raw">
           {k === 'Описание'
@@ -394,7 +397,10 @@ function Player() {
     dispatch(setLoading(false))
   }
   const toggleView = () => {
+    let isM = window.innerWidth < window.innerHeight;
+    gsap.to('.player-book-info-cover', {width: isFullView ?  '70%' : isM ? '80%' : '80%'})
     setFullView(!isFullView)
+
   }
   const getInfo = () => {
     const socket = io(proxy)
