@@ -51,7 +51,7 @@ const ChapterSelector = ({chapters, selected}) => {
   }
 
   return (
-    <select className='player-controls-select' onChange={selectChapter} value={selected}>
+    <select className='player-controls-chapter-select' onChange={selectChapter} value={selected}>
       {
         c.map(ch => <option key={ch} value={ch} className='player-controls-option'>Глава {ch}</option>)
       }
