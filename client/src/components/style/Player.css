@@ -151,7 +151,7 @@
 }
 
 .CircularProgressbar {
-  width: 23% !important;
+  width: 26% !important;
 }
 
 .player-book-info * {
@@ -250,7 +250,7 @@ select:focus {
   .player-speed {
     width: 18%;
     position: relative;
-    left: 10px;
+    left: 8px;
   }
   .player-controls {
     width: 97%;
