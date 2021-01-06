@@ -16,6 +16,7 @@ import "react-circular-progressbar/dist/styles.css";
 
 const BookInfo = ({info, onClick}) => {
   let {cover} = info
+  console.log(info)
   let keys = Object.keys(info)
   delete keys[0]
   useEffect(() => {
