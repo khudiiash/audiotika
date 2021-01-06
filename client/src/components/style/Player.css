@@ -250,7 +250,7 @@ select:focus {
   .player-speed {
     width: 18%;
     position: relative;
-    left: 15px;
+    left: 10px;
   }
   .player-controls {
     width: 97%;
