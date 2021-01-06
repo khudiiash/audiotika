@@ -44,6 +44,7 @@ const ChapterSelector = ({chapters, selected}) => {
       current.fileName = fileName
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
+      console.log(current)
       dispatch(setCurrent(current))   
       dispatch(setLoading(true))
     });
@@ -344,10 +345,6 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
-
-    document.addEventListener('touchmove', function (event) {
-      if (event.scale !== 1) { event.preventDefault(); }
-    }, false);
 
     
   }, []);
