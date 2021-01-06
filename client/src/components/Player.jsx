@@ -18,6 +18,10 @@ const BookInfo = ({info, onClick}) => {
   let {cover} = info
   console.log(info)
   let keys = Object.keys(info)
+  if (keys.includes('Описание')) {
+    keys.splice(keys.indexOf('Описание'),1)
+    keys.push('Описание')
+  }
   delete keys[0]
   useEffect(() => {
     gsap.timeline()
