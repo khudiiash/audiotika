@@ -200,6 +200,7 @@ const Seek = (props) => {
     if (props.currentTime >= 0 && audio) {
       audio.currentTime = props.currentTime
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
+      setCurrentTime(props.currentTime)
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
