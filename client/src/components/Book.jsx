@@ -60,7 +60,6 @@ function Book({ book }) {
     }
     function playBook() {
         dispatch(setLoading(true))
-        dispatch(setCurrent({...store.getState().current, time: 0}))
         const audio = document.getElementById('audio')
         let socket = io(proxy);
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
