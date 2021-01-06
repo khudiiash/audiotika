@@ -72,7 +72,7 @@ const BookInfo = ({info, onClick}) => {
   let coverClass = `player-book-info-cover player-book-info-raw`
   if (keys.includes('Описание')) {
     keys.splice(keys.indexOf('Описание'),1)
-    keys.push('Описание')
+    if (info['Описание'].includes('.')) keys.push('Описание')
   }
   delete keys[0]
   useEffect(() => {
