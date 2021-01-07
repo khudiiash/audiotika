@@ -74,11 +74,13 @@
 
 }
 .player-chapter-pie {
-  width: 30%;
+  width: 20%;
   text-align: center;
   font-size: 10px;
   background: transparent;
-
+}
+.CircularProgressbar {
+  width: 40% !important;
 }
 .player-chapter-text {
   width: 15%;
@@ -109,10 +111,10 @@
 }
 
 .player-controls-cts {
-  width: 19%;
+  width: 15%;
 }
 .player-controls-ds {
-  width: 20%;
+  width: 15%;
   text-align: right;
   opacity: 1;
 }
@@ -143,16 +145,16 @@
   border: 2px solid #444;
 
 }
-.player-speed {
-    width: 18%;
-    position: relative;
-    left: 20px;
+.player-controls-speed {
+    width: 25%;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.CircularProgressbar {
-  width: 26% !important;
-}
+
+
 
 .player-book-info * {
   max-width: 100%;
@@ -224,9 +226,13 @@
   margin: 0 5% 50px 5%;
 }
 
-
+.player-controls-chapter {
+  width: 25%;
+  display: flex;
+  justify-content: center;
+}
 select {
-  width: 18%;
+  width: fit-content;
   font-family: "Montserrat", sans-serif;
   background-color: transparent !important;
   color: #444;
@@ -237,8 +243,7 @@ select {
   font-size: 14px;
 }
 .player-controls-chapter-select {
-  width: 20%;
-  text-align-last:center;
+
 }
 select:focus {
   outline: none;
@@ -247,11 +252,6 @@ select:focus {
 
 @media screen and (orientation: portrait) {
 
-  .player-speed {
-    width: 18%;
-    position: relative;
-    left: 8px;
-  }
   .player-controls {
     width: 97%;
   }

@@ -52,11 +52,13 @@ const ChapterSelector = ({chapters, selected}) => {
   }
 
   return (
-    <select className='player-controls-chapter-select' onChange={selectChapter} value={selected}>
-      {
-        c.map(ch => <option key={ch} value={ch} className='player-controls-option'>Глава {ch}</option>)
-      }
-    </select>
+    <div className='player-controls-chapter'>
+        <select className='player-controls-chapter-select' onChange={selectChapter} value={selected}>
+        {
+          c.map(ch => <option key={ch} value={ch} className='player-controls-option'>Глава {ch}</option>)
+        }
+      </select>
+    </div>
   )
 }
 const BookInfo = ({info, onClick}) => {
@@ -107,7 +109,8 @@ const Speed = () => {
     if (audio) audio.playbackRate = value
   }
   return (
-  <select className="player-speed" onChange={switchSpeed} value={playSpeed}>
+  <div className='player-controls-speed'>
+  <select className="player-controls-speed-select" onChange={switchSpeed} value={playSpeed}>
     <option value={.5}>50%</option>
     <option value={.75}>75%</option>
     <option value={1}>100%</option>
@@ -116,6 +119,8 @@ const Speed = () => {
     <option value={1.75}>175%</option>
     <option value={2}>200%</option>
   </select>
+  </div>
+  
   )
 }
 const Back15 = (props) => {
@@ -320,7 +325,6 @@ const Seek = (props) => {
       <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
         <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
-        {/* <div className='player-chapter-text' onClick={selectChapter}>{props.chapter}/{props.chapters}</div> */}
         <ChapterSelector chapters={props.chapters} selected={props.chapter}/>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
