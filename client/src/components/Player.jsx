@@ -45,7 +45,6 @@ const ChapterSelector = ({chapters, selected}) => {
       current.fileName = fileName
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-      console.log(current)
       dispatch(setCurrent(current))   
       dispatch(setLoading(true))
     });
@@ -64,7 +63,6 @@ const ChapterSelector = ({chapters, selected}) => {
 const BookInfo = ({info, onClick}) => {
   let {cover} = info
   checkImage(cover)
-  console.log(document.querySelector('.player-box').style.height)
   let isP = window.innerWidth < window.innerHeight
   let isFull = isP ? /80/.test(document.querySelector('.player-box').style.height) : 
                      /60/.test(document.querySelector('.player-box').style.height)
@@ -270,24 +268,22 @@ const Seek = (props) => {
   useEffect(() => {
     let cleanupFunction = false;
     if (props.currentTime >= 0 && audio) {
-      console.log('effect: audio & currentTime == ', props.currentTime)
-      audio.currentTime = props.currentTime
-      console.log('%cAudio Current Time: '+audio.currentTime)
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
       setCurrentTime(currentTime = props.currentTime)
     }
+    audio.addEventListener('canplay', () => {
+      audio.currentTime = props.currentTime
+      setCurrentTime(currentTime = audio.currentTime)
+
+    })
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10)) {
         //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
         //console.log('%cProps Time: '+secToTime(props.currentTime), 'color: yellowgreen')
-        if (audio.currentTime === 0 && props.currentTime > 0) {
-          audio.currentTime = props.currentTime
-        } else {
-          console.log('update', parseInt(audio.currentTime, 10), currentTime, props.currentTime)
           axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
           if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
           setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
-        }
+        
       }
     })
     audio.addEventListener('durationchange', () => {
@@ -317,12 +313,11 @@ const Seek = (props) => {
     </div>
     else return <div className='player-chapter-pie'></div>
   }
-
   return (
     <div className='player-controls-seek'>
-      <input type="range" value={audio.currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
+      <input type="range" value={currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
-        <div className="player-controls-cts">{secToTime(audio.currentTime)}</div>
+        <div className="player-controls-cts">{secToTime(currentTime)}</div>
         <ChapterSelector chapters={props.chapters} selected={props.chapter}/>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
@@ -371,9 +366,6 @@ function Player() {
     })
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
-  }
-  const onLoad = () => {
-     
   }
 
   const onEnded = () => {
@@ -446,7 +438,7 @@ function Player() {
           <Next current={current} />
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
-        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onLoadedData={onLoad} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlayThrough}>
+        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlayThrough}>
         </audio>
       </div>
     </div>
