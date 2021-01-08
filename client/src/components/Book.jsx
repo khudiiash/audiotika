@@ -1,7 +1,7 @@
-import React, { useRef, createRef, useEffect } from "react";
+import React, { useRef, useState, createRef, useEffect } from "react";
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import axios from 'axios'
-import {setNextSrc, setLoading, setBookInfo } from '../redux'
+import {setNextSrc, setLoading, setPlaying, setBookInfo } from '../redux'
 import io from "socket.io-client";
 import "./style/Book.css";
 import gsap from "gsap";
@@ -19,14 +19,16 @@ function Book({ book }) {
 
     const user = useSelector(state => state.user)
     const proxy = useSelector(state => state.proxy)
-    const isLoading = useSelector(state => state.player.isLoading)
+    const [isLoading, bookLoading] = useState(false)
     let isCurrent = book._id === user.currentBookID;
 
     useEffect(() => {
+        
         let bookHTML = bookRef.current;
         let titleHTML = titleRef.current;
         if (book._id === user.currentBookID) {
             playBook()
+
         }
         //enterTL.current = gsap.timeline({delay: .5})
             //.from(bookHTML, .5, {scale: .8, autoAlpha: 0, y: -25})
@@ -58,11 +60,22 @@ function Book({ book }) {
 
         gsap.to(bookRef.current, .5, {color: '#ff0000', opacity: 0})
     }
-    function playBook() {
+    function playBook(title) {
+
+        if (title) {
+            bookLoading(title);
+        }
+
+        dispatch(setPlaying(false))
         dispatch(setLoading(true))
+
         const audio = document.getElementById('audio')
         const current = store.getState().current
         let socket = io(proxy);
+
+        audio.pause()
+        
+        
        
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
@@ -72,6 +85,7 @@ function Book({ book }) {
         socket.on('book-info-ready', info => {
             dispatch(setBookInfo(info))
         })
+        
         socket.on('audio-loaded', function ({fileName, torrentID, chapters, forFuture}) {
             if (!forFuture && audio) {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
@@ -80,7 +94,9 @@ function Book({ book }) {
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     if (res.data.time !== store.getState().current.time) {
+                        bookLoading(false)
                         dispatch(setCurrent({...res.data, fileName, chapters, src}))
+
                     }
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
@@ -88,12 +104,12 @@ function Book({ book }) {
         })
     }
     return (
-        <div className="book" ref={bookRef} onClick={playBook}>
+        <div className="book" ref={bookRef} onClick={() => playBook(book.title)}>
             <div className='book-content'>
                 <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
                 <div className="book-title" ref={titleRef}>{book.title}</div>
-                <div className="book-author">{book.author}</div>
-                {isLoading && isCurrent && <div className="book-loader"><PlayerLoading/></div>}
+                <div className="book-author">{book.author}</div>    
+                {isLoading === book.title && <div className="book-loader"><PlayerLoading/></div>}
             </div>
         </div>
     );

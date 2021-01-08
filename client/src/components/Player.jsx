@@ -263,28 +263,24 @@ const Seek = (props) => {
   useEffect(() => {
     let cleanupFunction = false;
     if (props.currentTime >= 0 && audio) {
-      if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
+      //if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
+      if (props.currentTime > 0) dispatch(setLoading(false))
+      console.log('Props Time: ', props.currentTime)
       setCurrentTime(currentTime = props.currentTime)
     }
-
-    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-      audio.addEventListener('canplay', () => {
-        audio.currentTime = props.currentTime
-      })
-    }
-
     audio.addEventListener('timeupdate', () => {
-      if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10)) {
+      if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && !audio.paused) {
         //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
         //console.log('%cProps Time: '+secToTime(props.currentTime), 'color: yellowgreen')
           axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
-          if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
+          //if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
+          console.log('Update: ', parseInt(audio.currentTime, 10))
           setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
         
       }
     })
     audio.addEventListener('durationchange', () => {
-      if (isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
+      if (isFinite(audio.duration)) {setDuration(audio.duration)}
     })
     return () => {cleanupFunction = true};
   }, [props.src, props.currentTime])
@@ -350,8 +346,6 @@ function Player() {
 
   useEffect(() => {
     gsap.config({ force3D: false })
-   
-
     setTimeout(() => setFullView(!isFullView), 1500)
   }, []);
 
@@ -360,6 +354,7 @@ function Player() {
   }
   const onPlay = () => {
     const socket = io(proxy);
+    if (audio && audio.currentTime === 0) audio.currentTime = current.time
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
@@ -390,11 +385,11 @@ function Player() {
     }
   }
   const onCanPlay = () => {
-    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
+    //if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
   }
 
   const onCanPlayThrough = () => {
-    dispatch(setLoading(false))
+    //dispatch(setLoading(false))
   }
   const toggleView = () => {
     let isM = window.innerWidth < window.innerHeight;
