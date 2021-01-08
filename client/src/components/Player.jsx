@@ -33,7 +33,7 @@ const ChapterSelector = ({chapters, selected}) => {
     let nextChapter = parseInt(value)
     let current = store.getState().current
     let audio = document.getElementById('audio')
-    window.scrollTo(0, 0, 'smooth')
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
     dispatch(setLoading(true))
     audio.currentTime = 0;
     audio.src = ''
@@ -271,11 +271,7 @@ const Seek = (props) => {
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
       setCurrentTime(currentTime = props.currentTime)
     }
-    audio.addEventListener('canplay', () => {
-      audio.currentTime = props.currentTime
-      setCurrentTime(currentTime = audio.currentTime)
 
-    })
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10)) {
         //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
@@ -353,11 +349,6 @@ function Player() {
 
   useEffect(() => {
     gsap.config({ force3D: false })
-    //gsap.set('.player-book-info-raw', {y: -25, opacity: 0})
-    // infoTL = gsap.timeline()
-    //   .staggerTo('.player-book-info-raw', .5, {y: 0, opacity: 1}, .05)
-    //   .staggerFromTo('.player-text div', .6, {y: 25, opacity: 0}, {y: 0, opacity: 1}, .2)
-    //   .pause()
 
     setTimeout(() => setFullView(!isFullView), 1500)
   }, []);
@@ -397,11 +388,11 @@ function Player() {
     }
   }
   const onCanPlay = () => {
-    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
+    //if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
   }
 
   const onCanPlayThrough = () => {
-    dispatch(setLoading(false))
+    //dispatch(setLoading(false))
   }
   const toggleView = () => {
     let isM = window.innerWidth < window.innerHeight;

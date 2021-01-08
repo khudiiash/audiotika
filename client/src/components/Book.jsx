@@ -59,18 +59,19 @@ function Book({ book }) {
         gsap.to(bookRef.current, .5, {color: '#ff0000', opacity: 0})
     }
     function playBook() {
-        console.log('Play Book')
         dispatch(setLoading(true))
         const audio = document.getElementById('audio')
         const current = store.getState().current
         let socket = io(proxy);
-        if (current) {
-            socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
-        } else {
-            socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
-        }
-        if (store.getState().current.time > 0) dispatch(setCurrent({...store.getState().current, time: 0}))
+       
+        socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
+
+        if (current.time && current.time > 0) dispatch(setCurrent({...store.getState().current, time: 0}))
+       
+        socket.on('book-info-ready', info => {
+            dispatch(setBookInfo(info))
+        })
         socket.on('audio-loaded', function ({fileName, torrentID, chapters, forFuture}) {
             if (!forFuture && audio) {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
