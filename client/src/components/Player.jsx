@@ -267,6 +267,12 @@ const Seek = (props) => {
       setCurrentTime(currentTime = props.currentTime)
     }
 
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+      audio.addEventListener('canplay', () => {
+        audio.currentTime = props.currentTime
+      })
+    }
+
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10)) {
         //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
@@ -408,17 +414,6 @@ function Player() {
       .staggerTo('.player-book-info-raw', .5, {y: -25, opacity: 0}, .05)
       .staggerFromTo('.player-text div', .6, {y: 25, opacity: 0},{y: 0, opacity: 1}, .2)
     }
-    // if (document.getElementsByClassName('player-book-info').length) {
-    //   gsap.timeline()
-    //   .staggerTo('.player-book-info-raw', .5, {y: -25, opacity: 0}, .05)
-    //   .staggerFromTo('.player-text div', .6, {y: 25, opacity: 0}, {y: 0, opacity: 1}, .2)
-    //   .call(() => dispatch(setBookInfo("")))
-    // } else {
-    //   socket.emit('get-book-info', {torrentID: current.torrentID})
-    //   socket.on('book-info-ready', info => {
-    //     dispatch(setBookInfo(info))
-    //   })
-    // }
   }
   let playerBoxStyle = {
     top: isFullView ? (isMobile ? '5vh' : '15vh') : (isMobile ? '0vh' : '10vh'),
