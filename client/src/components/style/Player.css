@@ -253,10 +253,10 @@ select:focus {
 @media screen and (orientation: portrait) {
 
   .player-controls {
-    width: 97%;
+    width: 102%;
   }
   .player-controls-seek {
-    width: 85%;
+    width: 89%;
   }
   
   .player-box {

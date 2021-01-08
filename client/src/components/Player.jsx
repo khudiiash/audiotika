@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, createRef, memo } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
-import { nextChapter, setCurrent, setNextSrc, setBookInfo, setCurrentSrc, setLoading, setPlaying, unload, setPercent, setSpeed, isStreamingFuture} from '../redux';
+import { nextChapter, setCurrent, setNextSrc, setBookInfo, setCurrentSrc, setLoading, setPlaying, setPlayerTime, unload, setPercent, setSpeed, isStreamingFuture, store} from '../redux';
 import io from "socket.io-client";
 import axios from "axios"
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading, Back15Icon, Forw15Icon } from '../assets/icons'
@@ -270,24 +270,30 @@ const Seek = (props) => {
   useEffect(() => {
     let cleanupFunction = false;
     if (props.currentTime >= 0 && audio) {
+      console.log('effect: audio & currentTime == ', props.currentTime)
       audio.currentTime = props.currentTime
+      console.log('%cAudio Current Time: '+audio.currentTime)
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
       setCurrentTime(currentTime = props.currentTime)
     }
     audio.addEventListener('timeupdate', () => {
-      
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10)) {
         //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
         //console.log('%cProps Time: '+secToTime(props.currentTime), 'color: yellowgreen')
-        axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
-        if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
-        setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
+        if (audio.currentTime === 0 && props.currentTime > 0) {
+          audio.currentTime = props.currentTime
+        } else {
+          console.log('update', parseInt(audio.currentTime, 10), currentTime, props.currentTime)
+          axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
+          if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
+          setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
+        }
       }
     })
     audio.addEventListener('durationchange', () => {
       if (isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
     })
-    return () => cleanupFunction = true;
+    return () => {cleanupFunction = true};
   }, [props.src, props.currentTime])
 
   const onChange = ({ target: { value } }) => {
@@ -351,8 +357,6 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
-
-    
   }, []);
 
   const onPause = () => {

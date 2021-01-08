@@ -18,6 +18,7 @@ const SET_SEARCHED = 'SET_SEARCHED'
 const SET_LOADING = 'SET_LOADING'
 const SET_PLAYING = 'SET_PLAYING'
 const SET_PERCENT = 'SET_PERCENT'
+const SET_PLAYER_TIME = 'SET_PLAYER_TIME'
 const SET_SPEED = 'SET_SPEED'
 const STREAMING_FUTURE = 'STREAMING_FUTURE'
 const UNLOAD = 'UNLOAD'
@@ -63,6 +64,8 @@ function rootReducer(state = initialState, action) {
             return { ...state, player: Object.assign({}, { ...state.player, isPlaying: action.payload }) }
         case SET_PERCENT:
             return { ...state, player: Object.assign({}, { ...state.player, percent: action.payload }) }
+        case SET_PLAYER_TIME:
+            return { ...state, player: Object.assign({}, { ...state.player, time: action.payload }) }
         case SET_SPEED:
             return { ...state, player: Object.assign({}, { ...state.player, speed: action.payload }) }
         case SET_BOOK_INFO:
@@ -115,6 +118,9 @@ export function setPlaying(payload) {
 }
 export function setPercent(payload) {
     return { type: SET_PERCENT, payload };
+}
+export function setPlayerTime(payload) {
+    return { type: SET_PLAYER_TIME, payload };
 }
 export function setSpeed(payload) {
     return { type: SET_SPEED, payload };
