@@ -263,27 +263,20 @@ const Seek = (props) => {
   useEffect(() => {
     let cleanupFunction = false;
     if (props.currentTime >= 0 && audio) {
-      //if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
-      if (props.currentTime > 0) dispatch(setLoading(false))
-      console.log('Props Time: ', props.currentTime)
+      if (props.canPlay) dispatch(setLoading(false))
       setCurrentTime(currentTime = props.currentTime)
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && !audio.paused) {
-        //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
-        //console.log('%cProps Time: '+secToTime(props.currentTime), 'color: yellowgreen')
           axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
-          //if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
-          console.log('Update: ', parseInt(audio.currentTime, 10))
           setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
-        
       }
     })
     audio.addEventListener('durationchange', () => {
       if (isFinite(audio.duration)) {setDuration(audio.duration)}
     })
     return () => {cleanupFunction = true};
-  }, [props.src, props.currentTime])
+  }, [props.src, props.currentTime, props.canPlay])
 
   const onChange = ({ target: { value } }) => {
     setCurrentTime(currentTime = parseInt(value));
@@ -431,7 +424,7 @@ function Player() {
           <Forw15/>
           <Next current={current} />
         </div>
-        {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} />}
+        {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} canPlay={current.canPlay}/>}
         <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlayThrough}>
         </audio>
       </div>

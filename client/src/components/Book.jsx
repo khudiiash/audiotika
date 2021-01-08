@@ -80,7 +80,7 @@ function Book({ book }) {
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
-        if (current.time && current.time > 0) dispatch(setCurrent({...store.getState().current, time: 0}))
+        dispatch(setCurrent({...store.getState().current, time: 0, canPlay: false}))
        
         socket.on('book-info-ready', info => {
             dispatch(setBookInfo(info))
@@ -93,11 +93,9 @@ function Book({ book }) {
                 audio.load()
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
-                    if (res.data.time !== store.getState().current.time) {
-                        bookLoading(false)
-                        dispatch(setCurrent({...res.data, fileName, chapters, src}))
-
-                    }
+                    bookLoading(false)
+                    console.log('%cCurrent Can Play True', 'color: green')
+                    dispatch(setCurrent({...res.data, fileName, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
             }
