@@ -76,11 +76,6 @@ const BookInfo = ({info, onClick}) => {
     if (info['Описание'].includes('.')) keys.push('Описание')
   }
   delete keys[0]
-  useEffect(() => {
-    gsap.timeline()
-      .staggerTo('.player-text div', .5, {y: -25, opacity: 0}, .2)
-      .staggerTo('.player-book-info-raw', .5, {y: 0, opacity: 1}, .05)
-  }, [])
   return (
     <div className="player-book-info" onClick={onClick}>
       <div className="player-book-info-content">
@@ -338,7 +333,7 @@ function Player() {
   let [isFullView, setFullView] = useState(true)
   let isMobile = window.innerWidth < window.innerHeight
   
-  let infoTL;
+
 
   store.subscribe(() => {
     setCurrent(store.getState().current)
@@ -349,6 +344,7 @@ function Player() {
 
   useEffect(() => {
     gsap.config({ force3D: false })
+   
 
     setTimeout(() => setFullView(!isFullView), 1500)
   }, []);
@@ -388,11 +384,11 @@ function Player() {
     }
   }
   const onCanPlay = () => {
-    //if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
+    if (!/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) dispatch(setLoading(false))
   }
 
   const onCanPlayThrough = () => {
-    //dispatch(setLoading(false))
+    dispatch(setLoading(false))
   }
   const toggleView = () => {
     let isM = window.innerWidth < window.innerHeight;
@@ -402,11 +398,16 @@ function Player() {
 
   }
   const getInfo = () => {
-    const socket = io(proxy)
-    if (infoTL.progress === 0)
-      infoTL.play()
-    else
-      infoTL.reverse()
+    if (gsap.getProperty('.player-text div', 'opacity')) {
+      gsap.timeline()
+      .staggerFromTo('.player-text div', .6, {y: 0, opacity: 1}, {y: -25, opacity: 0}, .2)
+      .staggerFromTo('.player-book-info-raw', .5, {y: 25, opacity: 0},{y: 0, opacity: 1}, .05)
+    }
+    else {
+      gsap.timeline()
+      .staggerTo('.player-book-info-raw', .5, {y: -25, opacity: 0}, .05)
+      .staggerFromTo('.player-text div', .6, {y: 25, opacity: 0},{y: 0, opacity: 1}, .2)
+    }
     // if (document.getElementsByClassName('player-book-info').length) {
     //   gsap.timeline()
     //   .staggerTo('.player-book-info-raw', .5, {y: -25, opacity: 0}, .05)
