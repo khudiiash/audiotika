@@ -57,24 +57,7 @@ const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Ru
 
 const io = require('socket.io').listen(server)
 
-
-
 io.on('connection', function (socket) {
-
-    function getBookInfo(torrentID) {
-        https.get('https://rutracker.org/forum/viewtopic.php?t='+torrentID, (res) => {
-            res.pipe(iconv.decodeStream("win1251")).collect((err, body) => {
-                if (err) throw err;
-                let info = {}
-                let matches = [...body.matchAll(/(?<=>)([^<]+)<\/span>:\s([^<]+)(?=<(?:br|hr|span))|(?<=<var class="postImg postImgAligned img-right" title=")([^"]+)/g)]
-                matches.forEach(r => {
-                    if (r[1] && r[2]) info[r[1]] = r[2];
-                    if (r[3]) info['cover'] = r[3]
-                })
-                socket.emit('book-info-ready', info)
-            })
-        });
-    }
 
     function handleTorrent({torrent, torrentID, title, author, chapter, forFuture}) {
 
@@ -131,21 +114,21 @@ io.on('connection', function (socket) {
                 socket.emit('search-result', {result: searchResult})
             })
     })
-    //socket.on('get-book-info', function({torrentID}) {
-        // console.log('get info for '+torrentID)
-        // https.get('https://rutracker.org/forum/viewtopic.php?t='+torrentID, (res) => {
-        //     res.pipe(iconv.decodeStream("win1251")).collect((err, body) => {
-        //         if (err) throw err;
-        //         let info = {}
-        //         let matches = [...body.matchAll(/(?<=>)([^<]+)<\/span>:\s([^<]+)(?=<(?:br|hr|span))|(?<=<var class="postImg postImgAligned img-right" title=")([^"]+)/g)]
-        //         matches.forEach(r => {
-        //             if (r[1] && r[2]) info[r[1]] = r[2];
-        //             if (r[3]) info['cover'] = r[3]
-        //         })
-        //         socket.emit('book-info-ready', info)
-        //     })
-        // });
-    //})
+    socket.on('get-book-info', function({torrentID}) {
+        console.log('get info for '+torrentID)
+        https.get('https://rutracker.org/forum/viewtopic.php?t='+torrentID, (res) => {
+            res.pipe(iconv.decodeStream("win1251")).collect((err, body) => {
+                if (err) throw err;
+                let info = {}
+                let matches = [...body.matchAll(/(?<=>)([^<]+)<\/span>:\s([^<]+)(?=<(?:br|hr|span))|(?<=<var class="postImg postImgAligned img-right" title=")([^"]+)/g)]
+                matches.forEach(r => {
+                    if (r[1] && r[2]) info[r[1]] = r[2];
+                    if (r[3]) info['cover'] = r[3]
+                })
+                socket.emit('book-info-ready', info)
+            })
+        });
+    })
     socket.on('download-chapter', function (data) {
         let chapter = data.chapter
         let torrentID = data.torrentID
@@ -155,7 +138,6 @@ io.on('connection', function (socket) {
         playing = false;
         audio = "";
         console.log('downloading', data.title, 'chapter:', chapter, 'forFuture', forFuture)
-        let info = getBookInfo(torrentID)
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })

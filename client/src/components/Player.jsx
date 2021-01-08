@@ -341,8 +341,6 @@ function Player() {
   let [current, setCurrent] = useState("")
   let [isFullView, setFullView] = useState(true)
   let isMobile = window.innerWidth < window.innerHeight
-  
-  let infoTL;
 
   store.subscribe(() => {
     setCurrent(store.getState().current)
@@ -353,11 +351,6 @@ function Player() {
 
   useEffect(() => {
     gsap.config({ force3D: false })
-    gsap.set('.player-book-info-raw', {y: -25, opacity: 0})
-    infoTL = gsap.timeline({paused: true})
-    .staggerTo('.player-book-info-raw', .5, {y: 0, opacity: 1}, .05)
-    .staggerFromTo('.player-text div', .6, {y: 25, opacity: 0}, {y: 0, opacity: 1}, .2);
-
     setTimeout(() => setFullView(!isFullView), 1500)
   }, []);
 
@@ -411,10 +404,7 @@ function Player() {
   }
   const getInfo = () => {
     const socket = io(proxy)
-    if (infoTL.progress === 0)
-      infoTL.play()
-    else
-      infoTL.reverse()
+    
     // if (document.getElementsByClassName('player-book-info').length) {
     //   gsap.timeline()
     //   .staggerTo('.player-book-info-raw', .5, {y: -25, opacity: 0}, .05)
