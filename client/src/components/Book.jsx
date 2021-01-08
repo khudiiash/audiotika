@@ -1,7 +1,7 @@
 import React, { useRef, createRef, useEffect } from "react";
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import axios from 'axios'
-import {setNextSrc, setLoading} from '../redux'
+import {setNextSrc, setLoading, setBookInfo} from '../redux'
 import io from "socket.io-client";
 import "./style/Book.css";
 import gsap from "gsap";
