@@ -68,14 +68,14 @@ function getBookInfo(torrentID) {
                 if (r[1] && r[2]) info[r[1]] = r[2];
                 if (r[3]) info['cover'] = r[3]
             })
-            return info
+            socket.emit('book-info-ready', info)
         })
     });
 }
 
 io.on('connection', function (socket) {
 
-    function handleTorrent({torrent, torrentID, title, author, chapter, info, forFuture}) {
+    function handleTorrent({torrent, torrentID, title, author, chapter, forFuture}) {
 
         let torrentFiles = torrent.files.filter((f, i) => { 
             if (/\.mp3/.test(f.name)) return f
@@ -89,7 +89,7 @@ io.on('connection', function (socket) {
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                     chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
                     console.log('Sending Existing')
-                    socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, info, forFuture})
+                    socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                 } else {
                     if (!fs.existsSync(path.join(audiodir, torrentID))) {
                         fs.mkdirSync(path.join(audiodir, torrentID))
@@ -104,7 +104,7 @@ io.on('connection', function (socket) {
                     stream.on('end', () => {
                         chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
                         console.log('Sending New')
-                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, info, forFuture})
+                        socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                         
                     })
                 }
@@ -165,13 +165,13 @@ io.on('connection', function (socket) {
                 if (client.torrents.filter(t => t.id === torrentID).length > 0) {
                     console.log('Getting Torrent')
                     let torrent = client.torrents.find(t => t.id === torrentID)
-                    handleTorrent({torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, info, forFuture})
+                    handleTorrent({torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                 } else {
                     console.log('Adding Torrent')
                     try {
                         client.add(URI, function (torrent) {
                             torrent.id = torrentID
-                            handleTorrent({torrent: torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, info, forFuture})
+                            handleTorrent({torrent: torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                         })
                     } catch (err) {
                         console.log(err)
