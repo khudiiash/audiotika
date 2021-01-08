@@ -272,27 +272,19 @@ const Seek = (props) => {
     if (props.currentTime >= 0 && audio) {
       audio.currentTime = props.currentTime
       if (audio.duration >= 0 && isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
-      console.log('useEffect',props.currentTime)
       setCurrentTime(currentTime = props.currentTime)
     }
     audio.addEventListener('timeupdate', () => {
       
-      if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && audio.currentTime > 0) {
+      if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10)) {
         //console.log('%cCurrent Time: '+secToTime(currentTime), 'color: olive')
         //console.log('%cProps Time: '+secToTime(props.currentTime), 'color: yellowgreen')
-        console.log(audio.currentTime)
         axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
         if (audio.duration !== duration) {setDuration(audio.duration);dispatch(setLoading(false))}
-        console.log('timeupdate',parseInt(audio.currentTime, 10))
         setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
       }
     })
     audio.addEventListener('durationchange', () => {
-      if (props.currentTime) {
-        console.log('durationchange',parseInt(audio.currentTime, 10))
-        setCurrentTime(props.currentTime)
-        audio.currentTime = props.currentTime
-      }
       if (isFinite(audio.duration)) {setDuration(audio.duration);dispatch(setLoading(false))}
     })
     return () => cleanupFunction = true;
