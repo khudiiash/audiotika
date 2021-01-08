@@ -34,7 +34,7 @@ const initialState = {
     current: "",
     player: { isLoading: false, isPlaying: false, isPaused: false, percent: 0, speed: 1 },
     proxy: "",
-    proxy: "http://audiotika.herokuapp.com"
+    //proxy: "http://audiotika.herokuapp.com"
 }
 function rootReducer(state = initialState, action) {
     switch (action.type) {
