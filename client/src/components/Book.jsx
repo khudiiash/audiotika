@@ -73,8 +73,10 @@ function Book({ book }) {
                 audio.load()
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
-                    if (res.data.time !== store.getState().current.time)
+                    if (res.data.time !== store.getState().current.time) {
+                        console.log(res.data.info)
                         dispatch(setCurrent({...res.data, fileName, chapters, src}))
+                    }
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
             }
