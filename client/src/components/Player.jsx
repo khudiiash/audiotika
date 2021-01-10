@@ -158,7 +158,7 @@ const PlayerText = (props) => {
   return <div className='player-text'>
     <div className='player-title' onClick={props.onClick}>{title}</div>
     <div className='player-author' onClick={props.onClick}>{author}</div>
-    <div className='player-author' id='log'></div>
+    {/* <div className='player-author' id='log'></div> */}
   </div>
 }
 
@@ -353,11 +353,8 @@ function Player() {
     const socket = io(proxy);
     if (audio && audio.currentTime === 0) audio.currentTime = current.time
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
-    socket.on('audio-loaded', ({fileName, torrentID}) => {
-      log(`downloading chapter ${current.chapter + 1}`)
-      
+    socket.on('audio-loaded', ({fileName, torrentID}) => {      
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-      log(`current chapter ${current.chapter} (${current.fileName})\nnext chapter ${current.chapter + 1} (${fileName})`)
       dispatch(setNextSrc({src, nextFileName: fileName}))
     })
     dispatch(setLoading(false))
@@ -366,7 +363,6 @@ function Player() {
 
   const onEnded = () => {
     dispatch(setPlaying(false))
-    //log('')
     const audio = document.getElementById('audio');
     const socket = io(proxy)
     if (current.chapter < current.chapters) {
