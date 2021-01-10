@@ -83,13 +83,12 @@ io.on('connection', function (socket) {
         let torrentFiles = torrent.files.filter((f, i) => { 
             if (/\.mp3/.test(f.name)) return f
         })
-        console.log('Before sorting')
+        console.log('Before')
         torrentFiles.map(i => console.log(i.name))
         var customSort = function (a, b) {
             return (Number(a.name.replace(/\.mp3/,'').replace(/\D+/g, '')) - Number(b.name.replace(/\.mp3/,'').replace(/\D+/g, '')));
           }
-        console.log('After sorting')
-
+        console.log('After')
         torrentFiles = torrentFiles.sort(customSort);
         torrentFiles.map(i => console.log(i.name))
         torrentFiles.forEach(function (file, index) {
