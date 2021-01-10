@@ -80,7 +80,7 @@
   background: transparent;
 }
 .CircularProgressbar {
-  width: 35% !important;
+  width: 30% !important;
 }
 .player-chapter-text {
   width: 15%;
@@ -229,7 +229,9 @@
 .player-controls-chapter {
   width: 25%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: center;
 }
 select {
   width: fit-content;

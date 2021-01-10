@@ -94,10 +94,8 @@ function Book({ book }) {
         audio.pause()
         
         if (current && current.title && current.chapter) {
-            console.log('%cDownloading chapter '+current.chapter, 'color: orange')
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         } else {
-            console.log('%cDownloading chapter '+book.chapter, 'color: red')
             socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         }
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
@@ -116,8 +114,6 @@ function Book({ book }) {
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     bookLoading(false)
-                    console.log(`Book: fileName - ${fileName}, chapter: ${res.data.chapter}`)
-                    console.log('%cCurrent Can Play True', 'color: green')
                     dispatch(setCurrent({...res.data, fileName, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
