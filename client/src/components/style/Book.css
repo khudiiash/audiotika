@@ -76,6 +76,21 @@
 }
 /*# sourceMappingURL=Book.css.map */
 
+.book-chapter-pie {
+  width: 40%;
+  text-align: center;
+  font-size: 10px;
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  background: transparent;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(0,0,0,0.15))
+}
+.CircularProgressbar {
+  width: 25% !important;
+}
+
 @media screen and (max-width: 660px) {
   .book {
     width: 150px;

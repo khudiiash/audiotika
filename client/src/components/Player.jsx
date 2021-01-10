@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, createRef, memo } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import "./style/Player.css"
-import { nextChapter, setCurrent, setNextSrc, setBookInfo, setCurrentSrc, setLoading, setPlaying, setPlayerTime, unload, setPercent, setSpeed, isStreamingFuture, store} from '../redux';
+import { nextChapter, setCurrent, setNextSrc, setBookInfo, setCurrentSrc, setLoading, setPlaying, setPlayerTime, unload, setPercent, setSpeed, isStreamingFuture, store, deleteBook} from '../redux';
 import io from "socket.io-client";
 import axios from "axios"
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, HideIcon, PlayerLoading, Back15Icon, Forw15Icon } from '../assets/icons'
@@ -14,6 +14,11 @@ import {
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
+function log(text) {
+  if (document.getElementById('log'))
+      document.getElementById('log').innerText = text
+
+}
 function checkImage(image_url){
     var img = new Image();
     img.src = image_url;
@@ -45,8 +50,7 @@ const ChapterSelector = ({chapters, selected}) => {
       current.fileName = fileName
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-      dispatch(setCurrent(current))   
-      dispatch(setLoading(true))
+      dispatch(setCurrent({...current, canPlay: true}))   
     });
   }
 
@@ -155,6 +159,8 @@ const PlayerText = (props) => {
   return <div className='player-text'>
     <div className='player-title' onClick={props.onClick}>{title}</div>
     <div className='player-author' onClick={props.onClick}>{author}</div>
+    <div className='player-author' id='log'></div>
+
   </div>
 }
 
@@ -350,7 +356,9 @@ function Player() {
     if (audio && audio.currentTime === 0) audio.currentTime = current.time
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
+      log(`downloading chapter ${current.chapter + 1}`)
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+      log(`current chapter ${current.chapter} (${current.fileName})\nnext chapter ${current.chapter + 1} (${fileName})`)
       dispatch(setNextSrc({src, nextFileName: fileName}))
     })
     dispatch(setLoading(false))
@@ -359,6 +367,7 @@ function Player() {
 
   const onEnded = () => {
     dispatch(setPlaying(false))
+    log('')
     const audio = document.getElementById('audio');
     const socket = io(proxy)
     if (current.chapter < current.chapters) {
@@ -375,6 +384,8 @@ function Player() {
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(nextChapter(current))   
+    } else if (current.chapter === current.chapters) {
+      if (current.fileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
     }
   }
   const onCanPlay = () => {

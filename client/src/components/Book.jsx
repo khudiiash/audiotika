@@ -7,7 +7,28 @@ import "./style/Book.css";
 import gsap from "gsap";
 import { setCurrent, deleteBook } from "../redux";
 import { CloseIcon, PlayerLoading } from '../assets/icons'
+import {
+    CircularProgressbar,
+    buildStyles
+  } from "react-circular-progressbar";
+  import "react-circular-progressbar/dist/styles.css";
 
+const Chapter = (props) => {
+    let { chapter, chapters } = props
+    if (chapter && chapters) return <div className='book-chapter-pie'>
+      <CircularProgressbar
+      value={chapter/chapters * 100}
+      strokeWidth={10}
+      styles={buildStyles({
+        pathColor: "#c06174",
+        trailColor: "#2d2d2d",
+        strokeLinecap: "butt"
+
+      })}
+      />
+    </div>
+    else return <div className='book-chapter-pie'></div>
+  }
 function Book({ book }) {
     const bookRef = createRef();
     const titleRef  = createRef();
@@ -28,7 +49,6 @@ function Book({ book }) {
         let titleHTML = titleRef.current;
         if (book._id === user.currentBookID) {
             playBook()
-
         }
         //enterTL.current = gsap.timeline({delay: .5})
             //.from(bookHTML, .5, {scale: .8, autoAlpha: 0, y: -25})
@@ -75,9 +95,13 @@ function Book({ book }) {
 
         audio.pause()
         
-        
-       
-        socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
+        if (current && current.title && current.chapter) {
+            console.log('%cDownloading chapter '+current.chapter, 'color: orange')
+            socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
+        } else {
+            console.log('%cDownloading chapter '+book.chapter, 'color: red')
+            socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
+        }
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
         dispatch(setCurrent({...store.getState().current, time: 0, canPlay: false}))
@@ -94,6 +118,7 @@ function Book({ book }) {
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     bookLoading(false)
+                    console.log(`Book: fileName - ${fileName}, chapter: ${res.data.chapter}`)
                     console.log('%cCurrent Can Play True', 'color: green')
                     dispatch(setCurrent({...res.data, fileName, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
@@ -107,6 +132,7 @@ function Book({ book }) {
                 <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
                 <div className="book-title" ref={titleRef}>{book.title}</div>
                 <div className="book-author">{book.author}</div>    
+               <Chapter chapter={book.chapter} chapters={book.chapters}/>
                 {isLoading === book.title && <div className="book-loader"><PlayerLoading/></div>}
             </div>
         </div>
