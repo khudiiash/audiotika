@@ -50,10 +50,7 @@ function Book({ book }) {
         if (book._id === user.currentBookID) {
             playBook()
         }
-        //enterTL.current = gsap.timeline({delay: .5})
-            //.from(bookHTML, .5, {scale: .8, autoAlpha: 0, y: -25})
-            //.staggerFrom(bookHTML.children, .5, {y: 10, opacity: 0}, .15)
-            
+      
         store.subscribe(() => {
                 if (store.getState().current?._id === book._id) gsap.to(titleHTML, 1, {color: '#EB768E'}) 
                 else gsap.to(titleHTML, .5, {color: "#555"})
@@ -71,6 +68,7 @@ function Book({ book }) {
         if (current.fileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
         if (current.nextFileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.nextFileName})
         dispatch(deleteBook(book))
+        dispatch(setLoading(false))
         if (audio && !audio.paused && book._id === user.currentBookID) {
             audio.pause()
             audio.currentTime = 0;

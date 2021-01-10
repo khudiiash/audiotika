@@ -85,7 +85,7 @@ const BookInfo = ({info, onClick}) => {
       <div className="player-book-info-content">
       <img src={cover} className={coverClass}></img>
       {keys.map((k, i) => {
-        return <div key={i} className="player-book-info-raw">
+        return <div key={i} style={{'margin-bottom': i === keys.length-1 ? '40px' : 'auto'}}className="player-book-info-raw">
           {k === 'Описание'
           ? <div className="player-book-info-description">{info['Описание']}</div>
           : <><div className="player-book-info-keys">{k}</div><div className="player-book-info-values">{info[`${k}`]}</div></>
@@ -155,12 +155,10 @@ const PlayerText = (props) => {
       .staggerFromTo('.player-text div', .7, {y: 25, opacity: 0},{y: 0, opacity: 1}, .2)
   }, [props.title])
 
-
   return <div className='player-text'>
     <div className='player-title' onClick={props.onClick}>{title}</div>
     <div className='player-author' onClick={props.onClick}>{author}</div>
     <div className='player-author' id='log'></div>
-
   </div>
 }
 
@@ -184,7 +182,7 @@ const Play = () => {
   }
   return (
     <div className='player-controls-play' id="play-button" onClick={onPlay}>
-      {isLoading ? <PlayerLoading percent={percent}/> : isPlaying ? <PauseIcon /> : <PlayIcon />}
+      {isLoading && store.getState().current.title ? <PlayerLoading percent={percent}/> : isPlaying ? <PauseIcon /> : <PlayIcon />}
     </div>
   )
 }
@@ -357,6 +355,7 @@ function Player() {
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {
       log(`downloading chapter ${current.chapter + 1}`)
+      
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       log(`current chapter ${current.chapter} (${current.fileName})\nnext chapter ${current.chapter + 1} (${fileName})`)
       dispatch(setNextSrc({src, nextFileName: fileName}))
@@ -367,7 +366,7 @@ function Player() {
 
   const onEnded = () => {
     dispatch(setPlaying(false))
-    log('')
+    //log('')
     const audio = document.getElementById('audio');
     const socket = io(proxy)
     if (current.chapter < current.chapters) {

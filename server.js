@@ -83,10 +83,15 @@ io.on('connection', function (socket) {
         let torrentFiles = torrent.files.filter((f, i) => { 
             if (/\.mp3/.test(f.name)) return f
         })
+        console.log('Before sorting')
+        torrentFiles.map(i => console.log(i.name))
         var customSort = function (a, b) {
             return (Number(a.name.match(/(\d+)/g)[0]) - Number((b.name.match(/(\d+)/g)[0])));
         }
+        console.log('After sorting')
+
         torrentFiles = torrentFiles.sort(customSort);
+        torrentFiles.map(i => console.log(i.name))
         torrentFiles.forEach(function (file, index) {
             if (index === chapter - 1) {
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
