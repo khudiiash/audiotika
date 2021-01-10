@@ -85,7 +85,7 @@ const BookInfo = ({info, onClick}) => {
       <div className="player-book-info-content">
       <img src={cover} className={coverClass}></img>
       {keys.map((k, i) => {
-        return <div key={i} style={{'margin-bottom': i === keys.length-1 ? '40px' : 'auto'}}className="player-book-info-raw">
+        return <div key={i} style={{height: i === keys.length-1 && k !== 'Описание' ? '50px' : 'auto'}} className="player-book-info-raw">
           {k === 'Описание'
           ? <div className="player-book-info-description">{info['Описание']}</div>
           : <><div className="player-book-info-keys">{k}</div><div className="player-book-info-values">{info[`${k}`]}</div></>
