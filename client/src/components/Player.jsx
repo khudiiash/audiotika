@@ -353,8 +353,11 @@ function Player() {
     const socket = io(proxy);
     if (audio && audio.currentTime === 0) audio.currentTime = current.time
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
-    socket.on('audio-loaded', ({fileName, torrentID}) => {      
+    socket.on('audio-loaded', ({fileName, torrentID}) => {     
+      if (fileName === current.fileName) log('onPlay: equal files') 
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+      if (src === current.src) log('onPlay: equal src') 
+
       dispatch(setNextSrc({src, nextFileName: fileName}))
     })
     dispatch(setLoading(false))
@@ -373,6 +376,7 @@ function Player() {
       audio.src = current.nextsrc
       if (!current.nextsrc) log('no next src')
       if (!current.fileName) log('no next file')
+      if (current.nextFileName === current.fileName) log('equal files')
       let prevFileName = current.fileName
       current.fileName = current.nextFileName
       current.nextFileName = undefined
