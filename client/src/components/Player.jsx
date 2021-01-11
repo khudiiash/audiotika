@@ -101,7 +101,7 @@ const Speed = () => {
   const dispatch = useDispatch()
   const switchSpeed = ({target: {value}}) => {
     dispatch(setSpeed(value))
-    window.scrollTo(0, 0, 'smooth')
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
     let audio = document.getElementById('audio')
     if (audio) audio.playbackRate = value
   }
@@ -158,7 +158,7 @@ const PlayerText = (props) => {
   return <div className='player-text'>
     <div className='player-title' onClick={props.onClick}>{title}</div>
     <div className='player-author' onClick={props.onClick}>{author}</div>
-    {/* <div className='player-author' id='log'></div> */}
+    <div className='player-author' id='log'></div>
   </div>
 }
 
@@ -366,10 +366,13 @@ function Player() {
     const audio = document.getElementById('audio');
     const socket = io(proxy)
     if (current.chapter < current.chapters) {
+      try {
       audio.pause()
       audio.currentTime = 0;
       current.prevsrc = audio.src
       audio.src = current.nextsrc
+      if (!current.nextsrc) log('no next src')
+      if (!current.fileName) log('no next file')
       let prevFileName = current.fileName
       current.fileName = current.nextFileName
       current.nextFileName = undefined
@@ -378,9 +381,16 @@ function Player() {
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}      
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-      dispatch(nextChapter(current))   
+      dispatch(nextChapter(current)) 
+      }
+      catch (err){
+        log('error in onEnded code\n'+err.message)
+      }
     } else if (current.chapter === current.chapters) {
       if (current.fileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
+    } else {
+      if (!current.fileName) log(`else: it says that ${current.chapter} > ${current.chapters}`)
+
     }
   }
   const onCanPlay = () => {
