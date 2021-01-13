@@ -362,8 +362,7 @@ function Player() {
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
-      else log('onPlay: Eurica (current needed to be updated)')
-
+      else log('On Play: Same File')
     })
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
