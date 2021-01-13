@@ -15,8 +15,10 @@ import {
 import "react-circular-progressbar/dist/styles.css";
 
 function log(text) {
-  if (document.getElementById('log'))
-      document.getElementById('log').innerText = text
+  let l = document.getElementById('log')
+  if (l) {
+      l.innerText = l.innerText ? l.innerText + '\n' + text : text
+  }
 
 }
 function checkImage(image_url){
@@ -351,14 +353,17 @@ function Player() {
   }
   const onPlay = () => {
     const socket = io(proxy);
+    let initialChapter = current.chapter
+    current = store.getState().current
+    let updatedChapter = current.chapter
+    if (initialChapter !== updatedChapter) log('onPlay: Eurica (current needed to be updated)')
     if (audio && audio.currentTime === 0) audio.currentTime = current.time
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
-      if (fileName === current.fileName) log('onPlay: equal files') 
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-      if (src === current.src) log('onPlay: equal src') 
+      if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
+      else log('onPlay: Eurica (current needed to be updated)')
 
-      dispatch(setNextSrc({src, nextFileName: fileName}))
     })
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
