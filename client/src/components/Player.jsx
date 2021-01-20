@@ -353,17 +353,18 @@ function Player() {
   }
   const onPlay = () => {
     const socket = io(proxy);
-    let initialChapter = current.chapter
     current = store.getState().current
-    let updatedChapter = current.chapter
-    if (initialChapter !== updatedChapter) log('onPlay: Eurica (current needed to be updated)')
-    if (audio && audio.currentTime === 0) audio.currentTime = current.time
-    if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
-    socket.on('audio-loaded', ({fileName, torrentID}) => {     
-      let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-      if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
-      else log('On Play: Same File')
-    })
+    axios.get(proxy + '/books/'+current._id)
+      .then(res => {
+        if (current.chapter !== res.chapter) log('onPlay: book.chapter !== current.chapter')
+        if (audio && audio.currentTime === 0) audio.currentTime = current.time
+        if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.chapter + 1, torrentID: current.torrentID, forFuture: true })
+        socket.on('audio-loaded', ({fileName, torrentID}) => {     
+          let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+          if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
+          else log('On Play: Same File')
+        })
+      })
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
