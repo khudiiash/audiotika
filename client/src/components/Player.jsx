@@ -17,7 +17,7 @@ import "react-circular-progressbar/dist/styles.css";
 function log(text) {
   let l = document.getElementById('log')
   if (l) {
-      l.innerText = l.innerText ? l.innerText + '\n' + text : text
+      l.innerText = text
   }
 
 }
@@ -243,7 +243,6 @@ const Prev = ({ current }) => {
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
           current.src = src
           current.fileName = fileName
-
           axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
           axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
           dispatch(setCurrent(current))   
@@ -356,7 +355,7 @@ function Player() {
     current = store.getState().current
     axios.get(proxy + '/books/'+current._id)
       .then(res => {
-        if (current.chapter !== res.chapter) log('onPlay: book.chapter !== current.chapter')
+        if (current.chapter !== res.chapter) log(`onPlay: book.chapter ${book.chapter} !== current.chapter ${current.chapter}`)
         if (audio && audio.currentTime === 0) audio.currentTime = current.time
         if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.chapter + 1, torrentID: current.torrentID, forFuture: true })
         socket.on('audio-loaded', ({fileName, torrentID}) => {     
