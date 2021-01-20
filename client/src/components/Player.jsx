@@ -354,9 +354,8 @@ function Player() {
     const socket = io(proxy);
     const audio = document.getElementById('audio');
     current = store.getState().current
-    if (audio && audio.currentTime === 0) {
+    if (audio && audio.currentTime === 0 && current.time > 0) {
       audio.currentTime = current.time
-      log(`OK: current.time == ${current.time}; audio.currentTime == ${audio.currentTime}`)
     } else {
       log(`FAIL: current.time == ${current.time}; audio.currentTime == ${audio.currentTime}`)
     }
