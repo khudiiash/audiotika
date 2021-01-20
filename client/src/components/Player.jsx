@@ -247,7 +247,7 @@ const Prev = ({ current }) => {
           axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
           axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
           dispatch(setCurrent(current))   
-          dispatch(setLoading(true))
+          dispatch(setLoading(false))
         });
     }
 
