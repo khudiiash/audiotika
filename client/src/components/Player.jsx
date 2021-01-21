@@ -366,6 +366,7 @@ function Player() {
           if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
         })
       })
+      .catch(err => log(err))
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
