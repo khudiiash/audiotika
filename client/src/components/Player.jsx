@@ -354,19 +354,16 @@ function Player() {
     const socket = io(proxy);
     const audio = document.getElementById('audio');
     current = store.getState().current
-    if (audio && audio.currentTime === 0 && current.time > 0) {
+    if (audio && audio.currentTime === 0) {
       audio.currentTime = current.time
-    } else {
-      log(`FAIL: current.time == ${current.time}; audio.currentTime == ${audio.currentTime}`)
     }
     axios.get(proxy + '/books/'+current._id)
       .then(res => {
-        if (current.chapter !== res.chapter) log(`onPlay: book.chapter ${book.chapter} !== current.chapter ${current.chapter}`)
+        if (current.chapter !== res.chapter) log(`onPlay: book.chapter ${res.chapter} !== current.chapter ${current.chapter}`)
         if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.chapter + 1, torrentID: current.torrentID, forFuture: true })
         socket.on('audio-loaded', ({fileName, torrentID}) => {     
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
           if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
-          else log('On Play: Same File')
         })
       })
     dispatch(setLoading(false))
