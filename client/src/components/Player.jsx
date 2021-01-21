@@ -359,8 +359,8 @@ function Player() {
     }
     axios.get(proxy + '/books/'+current._id)
       .then(res => {
-        if (current.chapter !== res.chapter) log(`onPlay: book.chapter ${res.chapter} !== current.chapter ${current.chapter}`)
-        if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.chapter + 1, torrentID: current.torrentID, forFuture: true })
+        if (current.chapter !== res.data.chapter) log(`onPlay: book.chapter ${res.data.chapter} !== current.chapter ${current.chapter}`)
+        if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.data.chapter + 1, torrentID: current.torrentID, forFuture: true })
         socket.on('audio-loaded', ({fileName, torrentID}) => {     
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
           if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
