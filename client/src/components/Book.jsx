@@ -98,8 +98,7 @@ function Book({ book }) {
         axios.get(proxy + '/books/'+book._id)
             .then(res => {
                 log('book-log', 'book: '+book.chapter+'\n'+'res: '+res.data.chapter+'\n'+'current: '+current.chapter)
-
-                socket.emit('download-chapter', {title: res.data.title, chapter: res.data.chapter, author: res.data.author, torrentID: res.data.torrentID, forFuture: false})
+                socket.emit('download-chapter', {title: res.data.title, chapter: current.chapter, author: res.data.author, torrentID: res.data.torrentID, forFuture: false})
             })
             .catch()
         // if (current && current.title && current.chapter) {
@@ -110,7 +109,7 @@ function Book({ book }) {
         current.chapter = book.chapter
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
-        //dispatch(setCurrent({...current, time: 0, canPlay: false}))
+        dispatch(setCurrent({...current, time: 0, canPlay: false}))
        
         socket.on('book-info-ready', info => {
             dispatch(setBookInfo(info))
