@@ -47,7 +47,7 @@ function rootReducer(state = initialState, action) {
         case DELETE_BOOK:
             return { ...state, books: state.books.filter(book => book._id !== action.payload._id), current: action.payload._id === state.current?._id ? "" : state.current, player: state.current._id === action.payload._id ? Object.assign({}, { isPlaying: false, isLoading: false, percent: 0 }) : state.player }
         case NEXT_CHAPTER:
-            return { ...state, books: state.books.map(book => (book._id === action.payload._id) ? action.payload : book), current: action.payload }
+            return { ...state, books: state.books.map(book => (book._id === action.payload._id) ? action.payload : book), current: Object.assign({}, action.payload) }
         case SET_CURRENT:
             return { ...state, user: { ...state.user, currentBookID: action.payload._id }, current: Object.assign({}, action.payload) }
         case SET_NEXT_SRC:
