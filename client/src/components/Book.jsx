@@ -97,7 +97,8 @@ function Book({ book }) {
         audio.pause()
         axios.get(proxy + '/books/'+book._id)
             .then(res => {
-                log('book-log', 'downloading '+res.data.chapter)
+                log('book-log', 'book: '+book.chapter+'\n'+'res: '+res.data.chapter+'\n'+'current: '+current.chapter)
+
                 socket.emit('download-chapter', {title: res.data.title, chapter: res.data.chapter, author: res.data.author, torrentID: res.data.torrentID, forFuture: false})
             })
             .catch()
@@ -120,10 +121,11 @@ function Book({ book }) {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
                 audio.src = src
                 audio.load()
+                log('book-data', 'loaded chapter: '+chapter)
+
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     bookLoading(false)
-                    log('book-data', 'book data chapter: '+res.data.chapter)
                     dispatch(setCurrent({...res.data, chapter, fileName, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
