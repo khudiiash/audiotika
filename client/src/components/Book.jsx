@@ -29,6 +29,10 @@ const Chapter = (props) => {
     </div>
     else return <div className='book-chapter-pie'></div>
   }
+function log(msg) {
+    if (document.getElementById('log'))
+        document.getElementById('log').text = msg
+}
 function Book({ book }) {
     const bookRef = createRef();
     const titleRef  = createRef();
@@ -92,8 +96,11 @@ function Book({ book }) {
         let socket = io(proxy);
 
         audio.pause()
+
+        log('current: '+current.chapter, 'book: '+book.chapter)
         
         if (current && current.title && current.chapter) {
+            log('downloading', current.chapter)
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         } else {
             socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
