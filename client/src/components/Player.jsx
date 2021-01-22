@@ -345,13 +345,15 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
-    axios.get(proxy + '/books/'+current._id)
-      .then(res => {
-        if (current.chapter < res.data.chapter) {
-          document.location.reload()
-          return
-        }
-      })
+    if (current && current._id) {
+      axios.get(proxy + '/books/'+current._id)
+        .then(res => {
+          if (current.chapter < res.data.chapter) {
+            document.location.reload()
+            return
+          }
+        })
+    }
   }, []);
 
   const onPause = () => {
@@ -400,7 +402,6 @@ function Player() {
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-      log('updated current chapter: '+ current.chapter)
       dispatch(nextChapter(current)) 
       }
       catch (err){
