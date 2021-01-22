@@ -31,7 +31,7 @@ const Chapter = (props) => {
   }
 function log(id, msg) {
     if (document.getElementById(id))
-        document.getElementById(id).text = msg
+        document.getElementById(id).innerText = msg
 }
 function Book({ book }) {
     const bookRef = createRef();
@@ -95,12 +95,14 @@ function Book({ book }) {
         const current = store.getState().current
         let socket = io(proxy);
         audio.pause()
-        current.chapter = book.chapter
         
         //if (current && current.title && current.chapter) {
         //    log('downloading', current.chapter)
         //    socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         //} else {
+        if (current.chapter < book.chapter) {
+            log('book-log', 'downloading '+book.chapter)
+        }
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         //}
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
