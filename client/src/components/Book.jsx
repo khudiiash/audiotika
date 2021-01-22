@@ -29,9 +29,9 @@ const Chapter = (props) => {
     </div>
     else return <div className='book-chapter-pie'></div>
   }
-function log(msg) {
-    if (document.getElementById('log'))
-        document.getElementById('log').text = msg
+function log(id, msg) {
+    if (document.getElementById(id))
+        document.getElementById(id).text = msg
 }
 function Book({ book }) {
     const bookRef = createRef();
@@ -94,23 +94,18 @@ function Book({ book }) {
         const audio = document.getElementById('audio')
         const current = store.getState().current
         let socket = io(proxy);
-
         audio.pause()
-
-        let cc = current.chapter;
-        let bc = book.chapter;
-
-       // setTimeout(() => log('current: '+cc, 'book: '+bc), 2000)
+        current.chapter = book.chapter
         
         //if (current && current.title && current.chapter) {
         //    log('downloading', current.chapter)
         //    socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         //} else {
-            socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
+        socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         //}
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
-        dispatch(setCurrent({...store.getState().current, time: 0, canPlay: false}))
+        dispatch(setCurrent({...current, time: 0, canPlay: false}))
        
         socket.on('book-info-ready', info => {
             dispatch(setBookInfo(info))
@@ -124,6 +119,7 @@ function Book({ book }) {
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     bookLoading(false)
+                    log('book-data', 'book data chapter: '+res.data.chapter)
                     dispatch(setCurrent({...res.data, fileName, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
@@ -136,7 +132,9 @@ function Book({ book }) {
                 <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
                 <div className="book-title" ref={titleRef}>{book.title}</div>
                 <div className="book-author">{book.author}</div>  
-                <div className="book-author">{book.chapter}/{store.getState().current.chapter}</div>    
+                <div className="book-author" id='book-log'>{book.chapter}/{store.getState().current.chapter}</div>  
+                <div className="book-author" id='book-data'></div>    
+  
                <Chapter chapter={book.chapter} chapters={book.chapters}/>
                 {isLoading === book.title && <div className="book-loader"><PlayerLoading/></div>}
             </div>
