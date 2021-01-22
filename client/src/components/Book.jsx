@@ -97,6 +97,7 @@ function Book({ book }) {
         audio.pause()
         
         if (current && current.title && current.chapter) {
+            if (book.chapter !== current.chapter) current.chapter += 1
             log('book-log', 'downloading '+current.chapter)
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         } else {
