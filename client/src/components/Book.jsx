@@ -106,7 +106,6 @@ function Book({ book }) {
         // } else {
         //     socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         // }
-        current.chapter = book.chapter
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
         dispatch(setCurrent({...current, time: 0, canPlay: false}))

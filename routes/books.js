@@ -57,6 +57,7 @@ router.route('/update-time/:id').post((req, res) => {
   });
 router.route('/update-chapter/:id').post((req, res) => {
     const {chapter} = req.body
+    console.log('Book chapter updated:', chapter)
     Book.findById(req.params.id)
     .then(Book => {
       Book.chapter = chapter
