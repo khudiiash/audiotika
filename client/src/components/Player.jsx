@@ -360,7 +360,7 @@ function Player() {
     axios.get(proxy + '/books/'+current._id)
       .then(res => {
         if (current.chapter < res.data.chapter) {
-          window.reload()
+          document.location.reload()
           return
         }
         log(`next: ${res.data.chapter + 1}`)
