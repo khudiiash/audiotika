@@ -362,6 +362,7 @@ function Player() {
   const onPlay = () => {
     const socket = io(proxy);
     const audio = document.getElementById('audio');
+    log('')
     current = store.getState().current
     if (audio && audio.currentTime === 0) {
       audio.currentTime = current.time
