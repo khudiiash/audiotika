@@ -398,7 +398,8 @@ function Player() {
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-      dispatch(setCurrent({...current, chapter })) 
+      log('updatd current chapter: '+ current.chapter)
+      dispatch(setCurrent({...current })) 
       }
       catch (err){
         log('error in onEnded code\n'+err.message)
