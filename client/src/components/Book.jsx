@@ -96,14 +96,12 @@ function Book({ book }) {
         let socket = io(proxy);
         audio.pause()
         
-        //if (current && current.title && current.chapter) {
-        //    log('downloading', current.chapter)
-        //    socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
-        //} else {
-        log('book-log', 'downloading '+book.chapter)
-
-        socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
-        //}
+        if (current && current.title && current.chapter) {
+            log('book-log', 'downloading '+current.chapter)
+            socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
+        } else {
+            socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
+        }
         current.chapter = book.chapter
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
