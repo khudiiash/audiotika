@@ -97,7 +97,10 @@ function Book({ book }) {
 
         audio.pause()
 
-        log('current: '+current.chapter, 'book: '+book.chapter)
+        let cc = current.chapter;
+        let bc = book.chapter;
+
+        setTimeout(() => log('current: '+cc, 'book: '+bc), 2000)
         
         if (current && current.title && current.chapter) {
             log('downloading', current.chapter)
