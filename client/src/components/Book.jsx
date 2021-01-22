@@ -97,7 +97,6 @@ function Book({ book }) {
         audio.pause()
         
         if (current && current.title && current.chapter) {
-            if (book.chapter !== current.chapter) current.chapter += 1
             log('book-log', 'downloading '+current.chapter)
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         } else {
@@ -106,7 +105,7 @@ function Book({ book }) {
         current.chapter = book.chapter
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
-        dispatch(setCurrent({...current, time: 0, canPlay: false}))
+        //dispatch(setCurrent({...current, time: 0, canPlay: false}))
        
         socket.on('book-info-ready', info => {
             dispatch(setBookInfo(info))
