@@ -89,6 +89,7 @@ io.on('connection', function (socket) {
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                     chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
                     console.log('Sending Existing')
+                    console.log(`Chapter ${chapter}`)
                     socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                     getBookInfo(torrentID)
                 } else {
@@ -105,6 +106,7 @@ io.on('connection', function (socket) {
                     stream.on('end', () => {
                         chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
                         console.log('Sending New')
+                        console.log(`Chapter ${chapter}`)
                         socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                         getBookInfo(torrentID)
                     })
