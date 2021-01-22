@@ -345,6 +345,10 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
+    window.onbeforeunload = function(event)
+    {
+        dispatch(setCurrent(''))
+    };
   }, []);
 
   const onPause = () => {
@@ -386,15 +390,12 @@ function Player() {
       audio.currentTime = 0;
       current.prevsrc = audio.src
       audio.src = current.nextsrc
-      if (!current.nextsrc) log('no next src')
-      if (!current.fileName) log('no next file')
-      if (current.nextFileName === current.fileName) log('equal files')
       let prevFileName = current.fileName
       current.fileName = current.nextFileName
       current.nextFileName = undefined
       audio.load()
       socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
-      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}      
+      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
       dispatch(nextChapter(current)) 
