@@ -135,7 +135,8 @@ function Book({ book }) {
             <div className='book-content'>
                 <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
                 <div className="book-title" ref={titleRef}>{book.title}</div>
-                <div className="book-author">{book.author}</div>    
+                <div className="book-author">{book.author}</div>  
+                <div className="book-author">{book.chapter}/{current.chapter}</div>    
                <Chapter chapter={book.chapter} chapters={book.chapters}/>
                 {isLoading === book.title && <div className="book-loader"><PlayerLoading/></div>}
             </div>
