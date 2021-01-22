@@ -345,10 +345,13 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
-    window.onbeforeunload = function(event)
-    {
-        dispatch(setCurrent(''))
-    };
+    axios.get(proxy + '/books/'+current._id)
+      .then(res => {
+        if (current.chapter < res.data.chapter) {
+          document.location.reload()
+          return
+        }
+      })
   }, []);
 
   const onPause = () => {
@@ -367,7 +370,6 @@ function Player() {
           document.location.reload()
           return
         }
-        log(`next: ${res.data.chapter + 1}`)
         if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.data.chapter + 1, torrentID: current.torrentID, forFuture: true })
         socket.on('audio-loaded', ({fileName, torrentID}) => {     
           let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName

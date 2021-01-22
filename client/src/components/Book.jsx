@@ -95,12 +95,6 @@ function Book({ book }) {
         const current = store.getState().current
         let socket = io(proxy);
         audio.pause()
-        // axios.get(proxy + '/books/'+book._id)
-        //     .then(res => {
-        //         log('book-log', 'book: '+book.chapter+'\n'+'res: '+res.data.chapter+'\n'+'current: '+current.chapter)
-        //         socket.emit('download-chapter', {title: res.data.title, chapter: current.chapter, author: res.data.author, torrentID: res.data.torrentID, forFuture: false})
-        //     })
-        //     .catch()
         if (current && current.title && current.chapter) {
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         } else {
@@ -135,10 +129,7 @@ function Book({ book }) {
             <div className='book-content'>
                 <div className="book-delete" onClick={onDelete}><CloseIcon/></div>
                 <div className="book-title" ref={titleRef}>{book.title}</div>
-                <div className="book-author">{book.author}</div>  
-                <div className="book-author" id='book-log'>{book.chapter}/{store.getState().current.chapter}</div>  
-                <div className="book-author" id='book-data'></div>    
-  
+                <div className="book-author">{book.author}</div>
                <Chapter chapter={book.chapter} chapters={book.chapters}/>
                 {isLoading === book.title && <div className="book-loader"><PlayerLoading/></div>}
             </div>
