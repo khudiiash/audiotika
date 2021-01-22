@@ -387,9 +387,10 @@ function Player() {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
     const socket = io(proxy)
-    log('')
+    log('onEnded')
     if (current.chapter < current.chapters) {
       try {
+      log('onEnded')
       audio.pause()
       audio.currentTime = 0;
       current.prevsrc = audio.src
@@ -410,8 +411,7 @@ function Player() {
     } else if (current.chapter === current.chapters) {
       if (current.fileName) socket.emit('delete-file', {torrentID: current.torrentID, fileName: current.fileName})
     } else {
-      if (!current.fileName) log(`else: it says that ${current.chapter} > ${current.chapters}`)
-
+      log(`else: it says that ${current.chapter} >= ${current.chapters}`)
     }
   }
   const onCanPlay = () => {
