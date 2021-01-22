@@ -100,11 +100,11 @@ function Book({ book }) {
         //    log('downloading', current.chapter)
         //    socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         //} else {
-        if (current.chapter < book.chapter) {
-            log('book-log', 'downloading '+book.chapter)
-        }
+        log('book-log', 'downloading '+book.chapter)
+
         socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         //}
+        current.chapter = book.chapter
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
         dispatch(setCurrent({...current, time: 0, canPlay: false}))
@@ -122,7 +122,7 @@ function Book({ book }) {
                 .then(res => {
                     bookLoading(false)
                     log('book-data', 'book data chapter: '+res.data.chapter)
-                    dispatch(setCurrent({...res.data, fileName, chapters, src, canPlay: true}))
+                    dispatch(setCurrent({...res.data, fileName, chapter: book.chapter, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
             }
