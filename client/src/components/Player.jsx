@@ -388,10 +388,11 @@ function Player() {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
     const socket = io(proxy)
-    log('onEnded')
     if (current.chapter < current.chapters) {
       try {
-      log('onEnded')
+      log(`currentFile: ${current.fileName}\nnextFile: ${current.nextFileName}`)
+      if (current.nextFileName === current.fileName) log(`equal files`)
+      if (!current.nextFileName) log(`no next file`)
       audio.pause()
       audio.currentTime = 0;
       current.prevsrc = audio.src
