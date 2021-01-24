@@ -298,7 +298,14 @@ const Seek = (props) => {
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && !audio.paused) {
+          let seconds = parseInt(audio.currentTime, 10)
           axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
+          if (seconds === 10 && !store.getState().current.nextFileName) {
+              getFutureChapter(dispatch, store.getState().current, socket)
+          }
+          if (seconds === 100 && !store.getState().current.nextFileName) {
+            getFutureChapter(dispatch, store.getState().current, socket)
+          }
           setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
       }
     })
@@ -374,7 +381,6 @@ function Player() {
 
   socket.on('connect', () => {
     log('on-play-log', 'socket connected', 'aquamarine')
-    if (store.getState().current && !store.getState().current.nextFileName) getFutureChapter(dispatch, store.getState().current, socket)
   })
 
   useEffect(() => {
