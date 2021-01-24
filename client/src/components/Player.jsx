@@ -14,8 +14,8 @@ import {
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-function log(text) {
-  let l = document.getElementById('log')
+function log(id, text) {
+  let l = document.getElementById(id)
   if (l) {
       l.innerText = text
   }
@@ -160,7 +160,8 @@ const PlayerText = (props) => {
   return <div className='player-text'>
     <div className='player-title' onClick={props.onClick}>{title}</div>
     <div className='player-author' onClick={props.onClick}>{author}</div>
-    <div className='player-author' id='log'></div>
+    <div className='player-author' style={{color: 'yellowgreen'}} id='on-play-log'></div>
+    <div className='player-author' style={{color: 'orange'}} id='on-ended-log'></div>
   </div>
 }
 
@@ -318,7 +319,16 @@ const Seek = (props) => {
   )
 }
 
-
+function getFutureChapter() {
+  let current = store.getState().current
+  log('on-play-log', `getting future chapter ${current.chapter + 1}`)
+  if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
+  socket.on('audio-loaded', ({fileName, torrentID}) => {     
+    let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+    log('on-play-log', `set future chapter ${current.chapter + 1}`)
+    if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
+  })
+}
 function Player() {
   const store = useStore();
   const playerRef = createRef();
@@ -362,24 +372,24 @@ function Player() {
   const onPlay = () => {
     const socket = io(proxy);
     const audio = document.getElementById('audio');
-    log('')
-    current = store.getState().current
-    if (audio && audio.currentTime === 0) {
-      audio.currentTime = current.time
-    }
-    axios.get(proxy + '/books/'+current._id)
-      .then(res => {
-        if (current.chapter < res.data.chapter) {
-          document.location.reload()
-          return
-        }
-        if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.data.chapter + 1, torrentID: current.torrentID, forFuture: true })
-        socket.on('audio-loaded', ({fileName, torrentID}) => {     
-          let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-          if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
-        })
-      })
-      .catch(err => log(err))
+    // current = store.getState().current
+    getFutureChapter()
+    // if (audio && audio.currentTime === 0) {
+    //   audio.currentTime = current.time
+    // }
+    // axios.get(proxy + '/books/'+current._id)
+    //   .then(res => {
+    //     if (current.chapter < res.data.chapter) {
+    //       document.location.reload()
+    //       return
+    //     }
+    //     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.data.chapter + 1, torrentID: current.torrentID, forFuture: true })
+    //     socket.on('audio-loaded', ({fileName, torrentID}) => {     
+    //       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+    //       if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
+    //     })
+    //   })
+    //   .catch(err => log(err))
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
@@ -390,10 +400,12 @@ function Player() {
     const socket = io(proxy)
     if (current.chapter < current.chapters) {
       try {
-      log(`currentFile: ${current.fileName}\nnextFile: ${current.nextFileName}`)
-      if (current.nextFileName === current.fileName) log(`equal files`)
-      if (!current.nextFileName) log(`no next file`)
-      
+    
+      if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`)
+      if (!current.nextFileName) {
+        log('on-ended-log', 'no next file')
+      }
+
       audio.pause()
       audio.currentTime = 0;
       current.prevsrc = audio.src
