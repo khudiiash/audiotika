@@ -23,6 +23,31 @@ function log(id, text, color) {
   }
 
 }
+function getFutureChapter(dispatch, current, socket) {
+  try {
+    log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
+    if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
+    else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
+    socket.on('audio-loaded', ({fileName, torrentID}) => {     
+      let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+      if (fileName !== current.fileName && src !== current.src) {
+        log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
+        dispatch(setNextSrc({src, nextFileName: fileName})) 
+      }
+      else if (fileName === current.fileName) {
+        log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
+      }
+      else if (src === current.src) {
+        log('on-play-log', `future src ${src} == current src ${current.src}`, 'red')
+      } else {
+        log('on-play-log', `unknown issue`, 'red')
+      }
+    })
+  } catch (err) {
+    log('on-play-log', 'getFutureChapter Error\n'+err, 'red')
+  }
+}
+
 function checkImage(image_url){
     var img = new Image();
     img.src = image_url;
@@ -264,6 +289,7 @@ const Seek = (props) => {
   let dispatch = useDispatch()
   const {socket} = props
   const proxy = useSelector(state => state.proxy)
+  const current = store.getState().current
 
   useEffect(() => {
     let cleanupFunction = false;
@@ -273,6 +299,7 @@ const Seek = (props) => {
     }
     audio.addEventListener('timeupdate', () => {
       if (!cleanupFunction && currentTime !== parseInt(audio.currentTime, 10) && !audio.paused) {
+          if (!current.nextFileName) getFutureChapter(dispatch, store.getState().current, socket)
           axios.post(proxy + '/books/update-time/' + props.currentID, { time: currentTime });
           setCurrentTime(currentTime = parseInt(audio.currentTime, 10))
       }
@@ -360,34 +387,7 @@ function Player() {
     }
   }, []);
 
-  function getFutureChapter(isError) {
-    try {
-      log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
-      if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
-      else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
-      socket.on('audio-loaded', ({fileName, torrentID}) => {     
-        let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-        if (fileName !== current.fileName && src !== current.src) {
-          log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
-          dispatch(setNextSrc({src, nextFileName: fileName}))
-          if (isError) {
-            log('on-ended-log', 'getting next last moment', 'red')
-            onEnded()
-          }        
-        }
-        else if (fileName === current.fileName) {
-          log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
-        }
-        else if (src === current.src) {
-          log('on-play-log', `future src ${src} == current src ${current.src}`, 'red')
-        } else {
-          log('on-play-log', `unknown issue`, 'red')
-        }
-      })
-    } catch (err) {
-      log('on-play-log', 'getFutureChapter Error\n'+err, 'red')
-    }
-  }
+  
 
   const onPause = () => {
     dispatch(setPlaying(false))
@@ -398,7 +398,7 @@ function Player() {
     if (audio && audio.currentTime === 0) {
       audio.currentTime = current.time
     }
-    if (!current.nextFileName) getFutureChapter()
+    if (!current.nextFileName) getFutureChapter(dispatch, current, socket)
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
@@ -427,7 +427,7 @@ function Player() {
         axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
         dispatch(nextChapter(current)) 
       }
-      catch (err){
+      catch (err) {
         log('error in onEnded code\n'+err.message)
       }
     } else if (current.chapter === current.chapters) {
