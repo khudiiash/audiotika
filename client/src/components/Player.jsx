@@ -369,7 +369,11 @@ function Player() {
 
   socket.on('error', () => {
     log('on-play-log', 'socket error', 'aquamarine')
-    getFutureChapter()
+    socket.connect()
+  })
+
+  socket.on('connect', () => {
+    log('on-play-log', 'socket connected', 'aquamarine')
   })
 
   useEffect(() => {
