@@ -143,7 +143,6 @@ io.on('connection', function (socket) {
             rutracker.getMagnetLink(torrentID)
             .then(URI => {
                 if (client.torrents.filter(t => t.id === torrentID).length > 0) {
-                    console.log('Getting Torrent')
                     let torrent = client.torrents.find(t => t.id === torrentID)
                     handleTorrent({torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                 } else {

@@ -330,8 +330,20 @@ function getFutureChapter() {
     else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-      log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
-      if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
+      if (fileName !== current.fileName && src !== current.src) {
+        dispatch(setNextSrc({src, nextFileName: fileName}))
+        log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
+      }
+      else if (fileName === current.fileName) {
+        log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
+      }
+      else if (src === current.src) {
+        log('on-play-log', `future src ${src} == current src ${current.src}`, 'red')
+      } else {
+        log('on-play-log', `unknown issue`, 'red')
+      }
+
+
     })
   } catch (err) {
     log('on-play-log', 'getFutureChapter Error\n'+err, 'red')
