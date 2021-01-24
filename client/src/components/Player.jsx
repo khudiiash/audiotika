@@ -355,7 +355,7 @@ function Player() {
     }
   }, []);
 
-  function getFutureChapter(isError) {
+  function getFutureChapter() {
     try {
       log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
       if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
@@ -365,7 +365,6 @@ function Player() {
         if (fileName !== current.fileName && src !== current.src) {
           log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
           dispatch(setNextSrc({src, nextFileName: fileName}))
-          if (isError) onEnded()
         }
         else if (fileName === current.fileName) {
           log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
@@ -404,25 +403,24 @@ function Player() {
     const audio = document.getElementById('audio');
     if (current.chapter < current.chapters) {
       try {
-      if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`, 'red')
-      if (!current.nextFileName) {
-        log('on-ended-log', 'no next file', 'red')
-        getFutureChapter(true)
-      }
-
-      audio.pause()
-      audio.currentTime = 0;
-      current.prevsrc = audio.src
-      audio.src = current.nextsrc
-      let prevFileName = current.fileName
-      current.fileName = current.nextFileName
-      current.nextFileName = undefined
-      audio.load()
-      socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
-      current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
-      axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
-      axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-      dispatch(nextChapter(current)) 
+        if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`, 'red')
+        audio.pause()
+        audio.currentTime = 0;
+        current.prevsrc = audio.src
+        audio.src = current.nextsrc
+        let prevFileName = current.fileName
+        current.fileName = current.nextFileName
+        current.nextFileName = undefined
+        audio.load()
+        socket.emit('delete-file', {torrentID: current.torrentID, fileName: prevFileName})
+        current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
+        axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
+        axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
+        dispatch(nextChapter(current)) 
+        if (!current.nextFileName) {
+          log('on-ended-log', 'no next file', 'red')
+          document.location.reload()
+        }
       }
       catch (err){
         log('error in onEnded code\n'+err.message)
