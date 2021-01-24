@@ -358,7 +358,7 @@ function Player() {
     }
   }, []);
 
-  function getFutureChapter() {
+  function getFutureChapter(isError) {
     try {
       const socket = io(proxy);
       log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
@@ -369,6 +369,7 @@ function Player() {
         if (fileName !== current.fileName && src !== current.src) {
           log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
           dispatch(setNextSrc({src, nextFileName: fileName}))
+          if (isError) onEnded()
         }
         else if (fileName === current.fileName) {
           log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
@@ -395,25 +396,11 @@ function Player() {
       audio.currentTime = current.time
     }
     getFutureChapter()
-
-    // axios.get(proxy + '/books/'+current._id)
-    //   .then(res => {
-    //     if (current.chapter < res.data.chapter) {
-    //       document.location.reload()
-    //       return
-    //     }
-    //     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: res.data.chapter + 1, torrentID: current.torrentID, forFuture: true })
-    //     socket.on('audio-loaded', ({fileName, torrentID}) => {     
-    //       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-    //       if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
-    //     })
-    //   })
-    //   .catch(err => log(err))
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
 
-  const onEnded = () => {
+  function onEnded() {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
     const socket = io(proxy)
@@ -422,6 +409,7 @@ function Player() {
       if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`, 'red')
       if (!current.nextFileName) {
         log('on-ended-log', 'no next file', 'red')
+        getFutureChapter(true)
       }
 
       audio.pause()
