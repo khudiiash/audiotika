@@ -413,8 +413,7 @@ function Player() {
         audio.currentTime = 0;
         if (!current.nextFileName) {
           log('on-ended-log', 'no next file', 'red')
-          getFutureChapter(true)
-          return
+          setTimeout(() => document.location.reload(), 1000)
         }
         current.prevsrc = audio.src
         audio.src = current.nextsrc
