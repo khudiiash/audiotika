@@ -374,6 +374,7 @@ function Player() {
 
   socket.on('connect', () => {
     log('on-play-log', 'socket connected', 'aquamarine')
+    if (store.getState().current && !store.getState().current.nextFileName) getFutureChapter(dispatch, store.getState().current, socket)
   })
 
   useEffect(() => {
