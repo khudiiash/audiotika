@@ -25,13 +25,13 @@ function log(id, text, color) {
 }
 function getFutureChapter(dispatch, current, socket) {
   try {
-    log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
+    //log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       if (fileName !== current.fileName && src !== current.src) {
-        log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
+        //log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
         dispatch(setNextSrc({src, nextFileName: fileName})) 
       }
       else if (fileName === current.fileName) {
@@ -375,13 +375,10 @@ function Player() {
   })
 
   socket.on('error', () => {
-    log('on-play-log', 'socket error', 'aquamarine')
+    //log('on-play-log', 'socket error', 'aquamarine')
     socket.connect()
   })
 
-  socket.on('connect', () => {
-    log('on-play-log', 'socket connected', 'aquamarine')
-  })
 
   useEffect(() => {
     gsap.config({ force3D: false })
