@@ -326,7 +326,7 @@ function getFutureChapter() {
     let proxy = store.getState().proxy
     const socket = io(proxy);
     log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
-    if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
+    if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
