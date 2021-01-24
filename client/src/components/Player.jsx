@@ -323,9 +323,8 @@ const Seek = (props) => {
 function getFutureChapter() {
   try {
     let current = store.getState().current
-    let proxy = stere.getState().proxy
+    let proxy = store.getState().proxy
     const socket = io(proxy);
-    const audio = document.getElementById('audio');
     log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
     else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
@@ -381,11 +380,12 @@ function Player() {
   const onPlay = () => {
     const socket = io(proxy);
     const audio = document.getElementById('audio');
-    // current = store.getState().current
+    current = store.getState().current
+    if (audio && audio.currentTime === 0) {
+      audio.currentTime = current.time
+    }
     getFutureChapter()
-    // if (audio && audio.currentTime === 0) {
-    //   audio.currentTime = current.time
-    // }
+
     // axios.get(proxy + '/books/'+current._id)
     //   .then(res => {
     //     if (current.chapter < res.data.chapter) {
