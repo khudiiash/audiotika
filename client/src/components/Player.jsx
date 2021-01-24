@@ -380,6 +380,10 @@ function Player() {
           log('on-play-log', `unknown issue`, 'red')
         }
       })
+      socket.on('error', () => {
+        socket.disconnect()
+        getFutureChapter()
+      })
     } catch (err) {
       log('on-play-log', 'getFutureChapter Error\n'+err, 'red')
     }
