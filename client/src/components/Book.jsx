@@ -109,12 +109,10 @@ function Book({ book }) {
         })
         
         socket.on('audio-loaded', function ({fileName, torrentID, chapter, chapters, forFuture}) {
-            if (!forFuture && audio) {
+            if (!forFuture && audio && book.title === current.title) {
                 let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
                 audio.src = src
                 audio.load()
-                log('book-data', 'loaded chapter: '+chapter)
-
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     bookLoading(false)
