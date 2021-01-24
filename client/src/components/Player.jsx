@@ -393,13 +393,12 @@ function Player() {
     dispatch(setPlaying(false))
   }
   const onPlay = () => {
-    const socket = io(proxy);
     const audio = document.getElementById('audio');
     current = store.getState().current
     if (audio && audio.currentTime === 0) {
       audio.currentTime = current.time
     }
-    if (!current.nextFile) getFutureChapter()
+    if (!current.nextFileName) getFutureChapter()
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
