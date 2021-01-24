@@ -399,7 +399,7 @@ function Player() {
     if (audio && audio.currentTime === 0) {
       audio.currentTime = current.time
     }
-    getFutureChapter()
+    if (!current.nextFile) getFutureChapter()
     dispatch(setLoading(false))
     dispatch(setPlaying(true))
   }
