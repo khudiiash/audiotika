@@ -60,7 +60,6 @@ const io = require('socket.io').listen(server)
 io.on('connection', function (socket) {
 
     function getBookInfo(torrentID) {
-        console.log('get info for '+torrentID)
         https.get('https://rutracker.org/forum/viewtopic.php?t='+torrentID, (res) => {
             res.pipe(iconv.decodeStream("win1251")).collect((err, body) => {
                 if (err) throw err;
@@ -88,8 +87,6 @@ io.on('connection', function (socket) {
             if (index === chapter - 1) {
                 if (fs.existsSync(path.join(audiodir, torrentID, file.name))) {
                     chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
-                    console.log('Sending Existing')
-                    console.log(`Chapter ${chapter}`)
                     socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                     getBookInfo(torrentID)
                 } else {
@@ -99,14 +96,11 @@ io.on('connection', function (socket) {
                     const stream = file.createReadStream();
                     const audioPath = path.join(audiodir, torrentID, file.name)
                     const writer = fs.createWriteStream(audioPath);
-                    console.log('Writing')
                     stream.on('data', function (data) {
                         writer.write(data);
                     });
                     stream.on('end', () => {
                         chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
-                        console.log('Sending New')
-                        console.log(`Chapter ${chapter}`)
                         socket.emit('audio-loaded', {fileName: file.name, torrentID, title, author, chapter, chapters, forFuture})
                         getBookInfo(torrentID)
                     })
@@ -146,7 +140,6 @@ io.on('connection', function (socket) {
         const rutracker = new RutrackerApi();
         rutracker.login({ username: process.env.RUNAME || 'Khudiiash', password: process.env.RUPASS || '149600earthsun' })
         .then(() => {
-            console.log('Getting Magnet URI')
             rutracker.getMagnetLink(torrentID)
             .then(URI => {
                 if (client.torrents.filter(t => t.id === torrentID).length > 0) {
@@ -154,7 +147,6 @@ io.on('connection', function (socket) {
                     let torrent = client.torrents.find(t => t.id === torrentID)
                     handleTorrent({torrent, torrentID, title: bookTitle, author: bookAuthor, chapter, forFuture})
                 } else {
-                    console.log('Adding Torrent')
                     try {
                         client.add(URI, function (torrent) {
                             torrent.id = torrentID

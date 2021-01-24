@@ -321,17 +321,21 @@ const Seek = (props) => {
 }
 
 function getFutureChapter() {
-  let current = store.getState().current
-  const socket = io(proxy);
-  const audio = document.getElementById('audio');
-  log('on-play-log', `getting future chapter ${current.chapter + 1}`)
-  if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
-  else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
-  socket.on('audio-loaded', ({fileName, torrentID}) => {     
-    let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
-    log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
-    if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
-  })
+  try {
+    let current = store.getState().current
+    log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
+    const socket = io(proxy);
+    const audio = document.getElementById('audio');
+    if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: chapter + 1, torrentID: current.torrentID, forFuture: true })
+    else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
+    socket.on('audio-loaded', ({fileName, torrentID}) => {     
+      let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
+      log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
+      if (fileName !== current.fileName && src !== current.src) dispatch(setNextSrc({src, nextFileName: fileName}))
+    })
+  } catch (err) {
+    log('on-play-log', 'getFutureChapter Error\n'+err)
+  }
 }
 function Player() {
   const store = useStore();
