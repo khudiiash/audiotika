@@ -367,7 +367,7 @@ function Player() {
       socket.on('audio-loaded', ({fileName, torrentID}) => {     
         let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
         if (fileName !== current.fileName && src !== current.src) {
-          log('on-play-log', `set future chapter ${current.chapter + 1}\nFileName: ${fileName}`, 'yellowgreen')
+          log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
           dispatch(setNextSrc({src, nextFileName: fileName}))
         }
         else if (fileName === current.fileName) {
@@ -419,7 +419,6 @@ function Player() {
     const socket = io(proxy)
     if (current.chapter < current.chapters) {
       try {
-    
       if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`, 'red')
       if (!current.nextFileName) {
         log('on-ended-log', 'no next file', 'red')
@@ -437,7 +436,6 @@ function Player() {
       current = { ...current, chapter: current.chapter + 1, time: 0, src: current.nextsrc}
       axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
       axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
-      log('on-ended-log', `dispatching chapter: ${current.chapter}\ntime: ${current.time}\nfileName: ${current.fileName}`, 'orange')
       dispatch(nextChapter(current)) 
       }
       catch (err){
