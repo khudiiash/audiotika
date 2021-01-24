@@ -393,6 +393,7 @@ function Player() {
       log(`currentFile: ${current.fileName}\nnextFile: ${current.nextFileName}`)
       if (current.nextFileName === current.fileName) log(`equal files`)
       if (!current.nextFileName) log(`no next file`)
+      
       audio.pause()
       audio.currentTime = 0;
       current.prevsrc = audio.src
