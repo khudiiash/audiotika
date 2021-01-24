@@ -28,10 +28,9 @@ function checkImage(image_url){
     img.onload = () => {gsap.to('.player-book-info-cover', {display: 'block'})}; 
     img.onerror = () => {gsap.to('.player-book-info-cover', {display: 'none'})}; 
 }
-const ChapterSelector = ({chapters, selected}) => {
+const ChapterSelector = ({chapters, selected, socket}) => {
   const dispatch = useDispatch();
   const proxy = useSelector(state => state.proxy)
-  const socket = io(proxy)
 
   let c = []
   for (let i = 1; i <= chapters; i++) {
@@ -123,7 +122,7 @@ const Speed = () => {
   
   )
 }
-const Back15 = (props) => {
+const Back15 = () => {
   const backward15 = () => {
     let audio = document.getElementById('audio')
     if (audio) audio.currentTime = audio.currentTime >= 15 ? audio.currentTime - 15 : 0
@@ -135,7 +134,7 @@ const Back15 = (props) => {
   
   )
 }
-const Forw15 = (props) => {
+const Forw15 = () => {
 
   const forward15 = () => {
         let audio = document.getElementById('audio')
@@ -191,7 +190,7 @@ const Play = () => {
   )
 }
 
-const Next = ({ current }) => {
+const Next = ({ current, socket }) => {
   const proxy = useSelector(state => state.proxy)
   const dispatch = useDispatch()
   const store = useStore()
@@ -199,7 +198,6 @@ const Next = ({ current }) => {
   const onNext = () => {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio')
-    const socket = io(proxy);
     audio.pause()
     if (current.chapter < current.chapters && !store.getState().player.isLoading) {
       audio.currentTime = 0;
@@ -224,13 +222,12 @@ return (
   </div>
 )
 }
-const Prev = ({ current }) => {
+const Prev = ({ current, socket }) => {
   const dispatch = useDispatch()
   const proxy = useSelector(state => state.proxy)
   const store = useStore()
   const onPrev = () => {
     const audio = document.getElementById('audio');
-    const socket = io(proxy);
     audio.currentTime = 0;
     if (current && current.chapter > 1 && !store.getState().player.isLoading) {
         dispatch(setLoading(true))
@@ -264,7 +261,7 @@ const Seek = (props) => {
   let [currentTime, setCurrentTime] = useState(0)
   let [duration, setDuration] = useState(0)  
   let dispatch = useDispatch()
-
+  const {socket} = props
   const proxy = useSelector(state => state.proxy)
 
   useEffect(() => {
@@ -311,7 +308,7 @@ const Seek = (props) => {
       <input type="range" value={currentTime} min={0} max={duration >= 0 ? duration : 0} onChange={onChange} />
       <div className='player-controls-text'>
         <div className="player-controls-cts">{secToTime(currentTime)}</div>
-        <ChapterSelector chapters={props.chapters} selected={props.chapter}/>
+        <ChapterSelector chapters={props.chapters} selected={props.chapter} socket={socket}/>
         <Chapter chapter={props.chapter} chapters={props.chapters} />
         <Speed/>
         <div className="player-controls-ds">{duration >= 0 ? secToTime(duration) : "00:00"}</div>
@@ -334,7 +331,7 @@ function Player() {
   let [current, setCurrent] = useState("")
   let [isFullView, setFullView] = useState(true)
   let isMobile = window.innerWidth < window.innerHeight
-  
+  const socket = io(proxy);
 
 
   store.subscribe(() => {
@@ -360,7 +357,6 @@ function Player() {
 
   function getFutureChapter(isError) {
     try {
-      const socket = io(proxy);
       log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
       if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
       else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
@@ -406,7 +402,6 @@ function Player() {
   function onEnded() {
     dispatch(setPlaying(false))
     const audio = document.getElementById('audio');
-    const socket = io(proxy)
     if (current.chapter < current.chapters) {
       try {
       if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`, 'red')
@@ -479,13 +474,13 @@ function Player() {
         {current && <PlayerText onClick={getInfo} title={current.title} author={current.author} chapter={current.chapter} chapters={current.chapters} />}
         {current.info && <BookInfo info={current.info} onClick={getInfo}/>}
         <div className="player-controls">
-          <Prev current={current}/>
+          <Prev current={current} socket={socket}/>
           <Back15/>
-          <Play title={current?.title} />
+          <Play title={current?.title} socket={socket}/>
           <Forw15/>
-          <Next current={current} />
+          <Next current={current} socket={socket}/>
         </div>
-        {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} canPlay={current.canPlay}/>}
+        {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} canPlay={current.canPlay} socket={socket}/>}
         <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlayThrough}>
         </audio>
       </div>
