@@ -341,6 +341,10 @@ function Player() {
     }
   })
 
+  socket.on('error', () => {
+    log('on-play-log', 'socket error', 'aquamarine')
+  })
+
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
@@ -374,10 +378,6 @@ function Player() {
         } else {
           log('on-play-log', `unknown issue`, 'red')
         }
-      })
-      socket.on('error', () => {
-        socket.disconnect()
-        getFutureChapter()
       })
     } catch (err) {
       log('on-play-log', 'getFutureChapter Error\n'+err, 'red')
