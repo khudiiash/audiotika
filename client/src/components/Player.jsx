@@ -19,6 +19,7 @@ function log(id, text, color) {
   if (l) {
       l.innerText = text
       if (color) l.style.color = color
+      setTimeout(() => l.innerText = '', 10000)
   }
 
 }
@@ -359,7 +360,7 @@ function Player() {
     }
   }, []);
 
-  function getFutureChapter() {
+  function getFutureChapter(isError) {
     try {
       log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
       if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
@@ -369,6 +370,10 @@ function Player() {
         if (fileName !== current.fileName && src !== current.src) {
           log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
           dispatch(setNextSrc({src, nextFileName: fileName}))
+          if (isError) {
+            log('on-ended-log', 'getting next last moment', 'red')
+            onEnded()
+          }        
         }
         else if (fileName === current.fileName) {
           log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
@@ -406,6 +411,11 @@ function Player() {
         if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`, 'red')
         audio.pause()
         audio.currentTime = 0;
+        if (!current.nextFileName) {
+          log('on-ended-log', 'no next file', 'red')
+          getFutureChapter(true)
+          return
+        }
         current.prevsrc = audio.src
         audio.src = current.nextsrc
         let prevFileName = current.fileName
@@ -417,10 +427,6 @@ function Player() {
         axios.post(proxy + '/books/update-time/' + current._id, { time: 0 })
         axios.post(proxy + '/books/update-chapter/' + current._id, { chapter: current.chapter })
         dispatch(nextChapter(current)) 
-        if (!current.nextFileName) {
-          log('on-ended-log', 'no next file', 'red')
-          document.location.reload()
-        }
       }
       catch (err){
         log('error in onEnded code\n'+err.message)
