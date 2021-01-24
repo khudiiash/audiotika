@@ -331,8 +331,8 @@ function getFutureChapter() {
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       if (fileName !== current.fileName && src !== current.src) {
+        log('on-play-log', `set future chapter ${current.chapter + 1}\nFileName: ${fileName}, src: ${src}`, 'yellowgreen')
         dispatch(setNextSrc({src, nextFileName: fileName}))
-        log('on-play-log', `set future chapter ${current.chapter + 1}`, 'yellowgreen')
       }
       else if (fileName === current.fileName) {
         log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
