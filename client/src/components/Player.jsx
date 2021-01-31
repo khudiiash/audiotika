@@ -202,7 +202,8 @@ const Play = () => {
   const onPlay = () => {
     const audio = document.getElementById('audio')
     if (audio.src && !isPlaying) {
-      audio.play()
+      try {audio.play()}
+      catch {document.location.reload()}
       dispatch(setPlaying(true))
     } else if (audio.src && isPlaying) {
       audio.pause()
