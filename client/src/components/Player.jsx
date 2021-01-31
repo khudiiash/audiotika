@@ -190,8 +190,6 @@ const PlayerText = (props) => {
     <div className='player-author' style={{color: 'orange'}} id='on-ended-log'></div>
   </div>
 }
-
-
 const Play = () => {
   const isLoading = useSelector(store => store.player.isLoading)
   const isPlaying = useSelector(store => store.player.isPlaying)

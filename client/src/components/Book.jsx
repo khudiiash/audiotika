@@ -92,14 +92,16 @@ function Book({ book }) {
         dispatch(setLoading(true))
 
         const audio = document.getElementById('audio')
-        const current = store.getState().current
+        const current = store.getState().current || {}
         let socket = io(proxy);
         audio.pause()
-        if (current && current.title && current.chapter) {
+
+        if (title === current.title) {
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         } else {
             socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
         }
+        
         axios.post(proxy + '/user/update-current', {userID: user._id, currentBookID: book._id})
 
         dispatch(setCurrent({...current, time: 0, canPlay: false}))
