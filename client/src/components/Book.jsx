@@ -36,7 +36,6 @@ function log(id, msg) {
 function Book({ book }) {
     const bookRef = createRef();
     const titleRef  = createRef();
-    const enterTL = useRef();
     const store = useStore();
     const { _id } = book
 
@@ -45,14 +44,13 @@ function Book({ book }) {
     const user = useSelector(state => state.user)
     const proxy = useSelector(state => state.proxy)
     const [isLoading, bookLoading] = useState(false)
-    let isCurrent = book._id === user.currentBookID;
 
     useEffect(() => {
         
         let bookHTML = bookRef.current;
         let titleHTML = titleRef.current;
         if (book._id === user.currentBookID) {
-            playBook()
+            playBook(book.title)
         }
       
         store.subscribe(() => {

@@ -63,16 +63,15 @@
 .book-delete svg .cls-2{fill:#fff;}
 
 .book-loader {
-  border-radius: 50%;
-  width: 5%;
+  width: 15px;
   display: flex;
   justify-content: center;
-  height: 25px;
   position: absolute;
-  top: 4%;
+  top: 7px;
   left: 8%;
-  transform: scale(.7);
   cursor: pointer;
+  transform: scale(.6);
+  transform-origin: left top;
 }
 /*# sourceMappingURL=Book.css.map */
 
@@ -105,9 +104,6 @@
   .book-author {
     font-size: 6px;
   }
-  .book-loader {
-    -webkit-transform: scale(.5);
-    transform: scale(.5);
-  }
+
  
 }

@@ -25,7 +25,7 @@ function log(id, text, color) {
 }
 function getFutureChapter(dispatch, current, socket) {
   try {
-    //log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')
+    //log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')cd 
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
     else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
