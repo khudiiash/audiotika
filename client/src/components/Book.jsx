@@ -95,6 +95,7 @@ function Book({ book }) {
         audio.pause()
 
         if (title === current.title) {
+            if (book.chapter > current.chapter) current.chapter = book.chapter
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
         } else {
             socket.emit('download-chapter', {title: book.title, chapter: book.chapter, author: book.author, torrentID: book.torrentID, forFuture: false})
