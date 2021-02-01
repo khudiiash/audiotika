@@ -380,7 +380,6 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
-    createAudioContext()
     if (current && current._id) {
       axios.get(proxy + '/books/'+current._id)
         .then(res => {
