@@ -186,8 +186,6 @@ const PlayerText = (props) => {
   return <div className='player-text'>
     <div className='player-title' onClick={props.onClick}>{title}</div>
     <div className='player-author' onClick={props.onClick}>{author}</div>
-    <div className='player-author' style={{color: 'yellowgreen'}} id='on-play-log'></div>
-    <div className='player-author' style={{color: 'orange'}} id='on-ended-log'></div>
   </div>
 }
 const Play = () => {
@@ -382,6 +380,8 @@ function Player() {
   useEffect(() => {
     gsap.config({ force3D: false })
     setTimeout(() => setFullView(!isFullView), 1500)
+    var ctx = new window.webkitAudioContext();
+    ctx.close()
     if (current && current._id) {
       axios.get(proxy + '/books/'+current._id)
         .then(res => {
