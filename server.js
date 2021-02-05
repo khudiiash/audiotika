@@ -98,7 +98,11 @@ io.on('connection', function (socket) {
                     const audioPath = path.join(audiodir, torrentID, file.name)
                     const writer = fs.createWriteStream(audioPath);
                     stream.on('data', function (data) {
-                        writer.write(data);
+                        try {
+                            writer.write(data);
+                        } catch (err) {
+                            console.log(err)
+                        } 
                     });
                     stream.on('end', () => {
                         chapters = torrent.files.filter(f => /\.mp3/.test(f.name)).length
@@ -110,7 +114,6 @@ io.on('connection', function (socket) {
             }
         })
     }
-
     socket.on('search-book', function(data) {
         const RutrackerApi = require('rutracker-api');
         const rutracker = new RutrackerApi();
@@ -125,7 +128,6 @@ io.on('connection', function (socket) {
                     let result = {id, title: book_title, author: book_author, torrent: t.title, size, seeds}
                     return result
                 })
-                console.log(searchResult)
                 socket.emit('search-result', {result: searchResult})
             })
     })
