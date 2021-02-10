@@ -117,7 +117,7 @@ function Book({ book }) {
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     bookLoading(false)
-                    dispatch(setCurrent({...res.data, chapter, fileName, chapters, src, canPlay: true}))
+                    dispatch(setCurrent({...res.data, time: book.time, chapter, fileName, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
             }

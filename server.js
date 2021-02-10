@@ -50,12 +50,11 @@ if (process.env.NODE_ENV === 'production') {
     app.get('*', (req,res) => {
         res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'))
     })
-
 }
 
-const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'))
+const server = app.listen(process.env.PORT || 5000, () => console.log('Up and Running'));
 
-const io = require('socket.io').listen(server)
+const io = require('socket.io').listen(server);
 
 io.on('connection', function (socket) {
 
