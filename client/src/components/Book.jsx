@@ -93,7 +93,7 @@ function Book({ book }) {
         const current = store.getState().current || {}
         let socket = io(proxy);
         audio.pause()
-
+            
         if (title === current.title) {
             if (book.chapter > current.chapter) current.chapter = book.chapter
             socket.emit('download-chapter', {title: current.title, chapter: current.chapter, author: current.author, torrentID: current.torrentID, forFuture: false})
@@ -117,7 +117,7 @@ function Book({ book }) {
                 axios.get(proxy + '/books/'+book._id)
                 .then(res => {
                     bookLoading(false)
-                    dispatch(setCurrent({...res.data, time: book.time, chapter, fileName, chapters, src, canPlay: true}))
+                    dispatch(setCurrent({...res.data, time: res.data.time, chapter, fileName, chapters, src, canPlay: true}))
                     if (!res.data.chapters) axios.post(proxy + '/books/update-chapters/'+res.data._id, {chapters})
                 })
             }

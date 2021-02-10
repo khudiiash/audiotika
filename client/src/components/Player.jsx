@@ -14,8 +14,8 @@ import {
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-function log(id, text, color) {
-  let l = document.getElementById(id)
+function log(text, color) {
+  let l = document.getElementById('log')
   if (l) {
       l.innerText = text
       if (color) l.style.color = color
@@ -186,6 +186,7 @@ const PlayerText = (props) => {
   return <div className='player-text'>
     <div className='player-title' onClick={props.onClick}>{title}</div>
     <div className='player-author' onClick={props.onClick}>{author}</div>
+    <div className='player-author' id='log'></div>
   </div>
 }
 const Play = () => {
