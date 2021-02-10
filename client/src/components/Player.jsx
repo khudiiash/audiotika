@@ -25,9 +25,9 @@ function log(text, color) {
 }
 function getFutureChapter(dispatch, current, socket) {
   try {
-    //log('on-play-log', `getting future chapter ${current.chapter + 1}`, 'yellowgreen')cd 
+    //log(`getting future chapter ${current.chapter + 1}`, 'yellowgreen')cd 
     if (current.torrentID && current.chapter < current.chapters) socket.emit('download-chapter', { title: current.title, author: current.author, chapter: current.chapter + 1, torrentID: current.torrentID, forFuture: true })
-    else log('on-play-log', `error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
+    else log(`error: no current.torrentID (${current.torrentID}) or chapter (${current.chapter}) or chapters (${current.chapters})`, 'red')
     socket.on('audio-loaded', ({fileName, torrentID}) => {     
       let src = 'https://audiotika.herokuapp.com/'+torrentID+'/'+fileName
       if (fileName !== current.fileName && src !== current.src) {
@@ -35,16 +35,16 @@ function getFutureChapter(dispatch, current, socket) {
         dispatch(setNextSrc({src, nextFileName: fileName})) 
       }
       else if (fileName === current.fileName) {
-        log('on-play-log', `fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
+        log(`fileName ${fileName} == current.fileName ${current.fileName}`, 'red')
       }
       else if (src === current.src) {
-        log('on-play-log', `future src ${src} == current src ${current.src}`, 'red')
+        log(`future src ${src} == current src ${current.src}`, 'red')
       } else {
-        log('on-play-log', `unknown issue`, 'red')
+        log(`unknown issue`, 'red')
       }
     })
   } catch (err) {
-    log('on-play-log', 'getFutureChapter Error\n'+err, 'red')
+    log('getFutureChapter Error\n'+err, 'red')
   }
 }
 
@@ -373,7 +373,7 @@ function Player() {
   })
 
   socket.on('error', () => {
-    //log('on-play-log', 'socket error', 'aquamarine')
+    //log('socket error', 'aquamarine')
     socket.connect()
   })
 
@@ -413,11 +413,9 @@ function Player() {
     const audio = document.getElementById('audio');
     if (current.chapter < current.chapters) {
       try {
-        if (current.nextFileName === current.fileName) log('on-ended-log', `equal files`, 'red')
         audio.pause()
         audio.currentTime = 0;
         if (!current.nextFileName) {
-          log('on-ended-log', 'no next file', 'red')
           setTimeout(() => document.location.reload(), 1000)
         }
         current.prevsrc = audio.src
@@ -447,6 +445,9 @@ function Player() {
 
   const onCanPlayThrough = () => {
     //dispatch(setLoading(false))
+  }
+  const onAudioError = () => {
+    log('Audio Error')
   }
   const toggleView = () => {
     let isM = window.innerWidth < window.innerHeight;
@@ -489,7 +490,7 @@ function Player() {
           <Next current={current} socket={socket}/>
         </div>
         {current && <Seek currentTime={current.time} chapter={current.chapter} chapters={current.chapters} src={current.src} currentID={current._id} canPlay={current.canPlay} socket={socket}/>}
-        <audio id='audio' src={current?.src} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlayThrough}>
+        <audio id='audio' src={current?.src} onError={onAudioError} onAbort={onAudioError} onEnded={onEnded} onPlay={onPlay} onPause={onPause} onCanPlay={onCanPlay} onCanPlayThrough={onCanPlayThrough}>
         </audio>
       </div>
     </div>
