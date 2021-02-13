@@ -447,7 +447,7 @@ function Player() {
     //dispatch(setLoading(false))
   }
   const onAudioError = () => {
-    log('Audio Error')
+    console.log('Audio Error')
   }
   const toggleView = () => {
     let isM = window.innerWidth < window.innerHeight;
