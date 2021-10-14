@@ -11,12 +11,13 @@ function Auth() {
     const history = useHistory();
 
     const [isRegistration, setRegistration] = useState(false)
-
+    
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [email, setEmail] = useState("")
     const [text, setText] = useState("")
     const proxy = useSelector(state => state.proxy)
+    console.log(useSelector(state => state))
     const passwordField = createRef()
 
 

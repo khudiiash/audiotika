@@ -16,7 +16,7 @@
   width: 4vh;
   height: 4vh;
   stroke: #2d2d2d;
-  fill: #2d2d2d;
+  fill: #c06174;
   -webkit-filter: drop-shadow(0 0 5px rgba(0,0,0,.2));
   filter: drop-shadow(0 0 5px rgba(0,0,0,.2));
   cursor: pointer;
@@ -91,7 +91,7 @@
   
   .fifteen .cls-1{fill:none;}
   .fifteen .cls-2,
-  .fifteen .cls-3{fill:#2d2d2d;}
+  .fifteen .cls-3{fill:#a15161;}
   .fifteen .cls-3{font-size:94.77px;font-family:"Gotham-Light";font-weight:300;}
 
   .playerLoading circle {

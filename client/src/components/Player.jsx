@@ -161,7 +161,6 @@ const Back15 = () => {
   )
 }
 const Forw15 = () => {
-
   const forward15 = () => {
         let audio = document.getElementById('audio')
        if (audio) audio.currentTime += 15
@@ -198,6 +197,8 @@ const Play = () => {
 
   const onPlay = () => {
     const audio = document.getElementById('audio')
+    if (audio.src) audio.playbackRate = store.getState().player.speed
+    console.log(audio.playbackRate)
     if (audio.src && !isPlaying) {
       try {audio.play()}
       catch {document.location.reload()}
