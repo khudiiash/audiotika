@@ -136,6 +136,7 @@ export function unload() {
 const persistedState = loadState();
 export const store = createStore(rootReducer, persistedState, composeWithDevTools(applyMiddleware(thunk)))
 
+
 window.store = store;
 store.subscribe(throttle(() => {
     saveState({
