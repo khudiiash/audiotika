@@ -133,7 +133,6 @@ export function setBookInfo(payload) {
 export function unload() {
     return { type: UNLOAD };
 }
-// Store
 const persistedState = loadState();
 export const store = createStore(rootReducer, persistedState, composeWithDevTools(applyMiddleware(thunk)))
 
