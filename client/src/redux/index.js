@@ -135,10 +135,6 @@ export function unload() {
 }
 
 
-
-
-
-
 // Store
 const persistedState = loadState();
 export const store = createStore(rootReducer, persistedState, composeWithDevTools(applyMiddleware(thunk)))
@@ -153,7 +149,3 @@ store.subscribe(throttle(() => {
         proxy: store.getState().proxy
     });
 }, 1000));
-
-
-
-
